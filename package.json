@@ -1,0 +1,15 @@
+{
+  "name": "kaddie",
+  "private": true,
+  "scripts": {
+    "playground:web": "pnpm --filter @kaddie/mobile web",
+    "playground:ios": "pnpm --filter @kaddie/mobile ios",
+    "mobile": "pnpm --filter @kaddie/mobile start",
+    "mobile:ios": "pnpm --filter @kaddie/mobile ios",
+    "mobile:android": "pnpm --filter @kaddie/mobile android"
+  },
+  "devDependencies": {
+    "@babel/runtime": "^7.26.0",
+    "typescript": "~5.8.3"
+  }
+}
