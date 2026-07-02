@@ -67,10 +67,32 @@ You only double-click the launcher again if you **closed** the viewer window.
 
 ---
 
+## View online (share a link with anyone)
+
+GitHub shows your **code files**. To view the **live component playground** in a browser:
+
+1. Double-click **`Push to GitHub.command`** (uploads latest changes)
+2. Go to **[vercel.com](https://vercel.com)** and sign in with **GitHub**
+3. Click **Add New… → Project**
+4. Import **`brenorourker/KADDIE`**
+5. Leave the default settings and click **Deploy**
+6. Wait ~2 minutes — Vercel gives you a link like `https://kaddie-xxx.vercel.app`
+
+Open that link on any phone or computer. Tap **Open playground** to browse components.
+
+After the first setup, every time you push to GitHub, Vercel updates the live site automatically.
+
+**If you see a 404 or blank page:** the deploy config may not be on GitHub yet. Double-click **`Push to GitHub.command`**, then in Vercel open your project → **Deployments** → **Redeploy** (latest commit). Build settings should be:
+- Build command: `pnpm run build:web`
+- Output directory: `apps/mobile/dist`
+
+---
+
 ## Files in this folder
 
 | File | Purpose |
 |------|---------|
-| `View Components (Browser).command` | **Start here** — view in browser |
+| `View Components (Browser).command` | **Start here** — view locally in browser |
 | `View Components (iPhone Simulator).command` | View on simulated iPhone |
+| `Push to GitHub.command` | Upload changes to GitHub |
 | `packages/ui/` | Where components are built (you don’t need to open this) |

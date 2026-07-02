@@ -1,8 +1,13 @@
 {
   "name": "kaddie",
   "private": true,
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "playground:web": "pnpm --filter @kaddie/mobile web",
+    "build:web": "pnpm --filter @kaddie/mobile exec expo export -p web",
     "playground:ios": "pnpm --filter @kaddie/mobile ios",
     "mobile": "pnpm --filter @kaddie/mobile start",
     "mobile:ios": "pnpm --filter @kaddie/mobile ios",
