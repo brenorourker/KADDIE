@@ -30,6 +30,8 @@ export type ButtonProps = Omit<PressableProps, "children" | "style"> & {
   loading?: boolean;
   leadingIcon?: ReactNode;
   trailingIcon?: ReactNode;
+  leadingIconSize?: number;
+  trailingIconSize?: number;
   iconOnly?: boolean;
   style?: ViewStyle;
 };
@@ -120,6 +122,8 @@ export function Button({
   disabled,
   leadingIcon,
   trailingIcon,
+  leadingIconSize,
+  trailingIconSize,
   iconOnly = false,
   style,
   onPressIn,
@@ -128,6 +132,8 @@ export function Button({
 }: ButtonProps) {
   const isDisabled = disabled || loading;
   const sizeStyles = sizeConfig[size];
+  const leadingSlotSize = leadingIconSize ?? sizeStyles.icon;
+  const trailingSlotSize = trailingIconSize ?? sizeStyles.icon;
   const palette = variantColors[variant];
   const pressProgress = useRef(new Animated.Value(0)).current;
 
@@ -228,15 +234,38 @@ export function Button({
       ) : (
         <>
           {leadingIcon ? (
-            <View style={{ width: sizeStyles.icon, height: sizeStyles.icon }}>
+            <View
+              style={{
+                width: leadingSlotSize,
+                height: leadingSlotSize,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               {leadingIcon}
             </View>
           ) : null}
           {!iconOnly ? (
-            <Text style={[sizeStyles.label, { color: textColor }]}>{label}</Text>
+            <Text
+              numberOfLines={1}
+              style={[
+                sizeStyles.label,
+                styles.label,
+                { color: textColor },
+              ]}
+            >
+              {label}
+            </Text>
           ) : null}
           {trailingIcon ? (
-            <View style={{ width: sizeStyles.icon, height: sizeStyles.icon }}>
+            <View
+              style={{
+                width: trailingSlotSize,
+                height: trailingSlotSize,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               {trailingIcon}
             </View>
           ) : null}
@@ -256,5 +285,8 @@ const styles = StyleSheet.create({
   },
   background: {
     ...StyleSheet.absoluteFillObject,
+  },
+  label: {
+    flexShrink: 0,
   },
 });

@@ -22,12 +22,21 @@ export type MenuOption = {
   value?: string;
 };
 
+export type MenuPlacement = "inline" | "overlay";
+
+const DEFAULT_VISIBLE_OPTION_COUNT = 4;
+
+export function getMenuMaxHeight(visibleOptionCount: number) {
+  return visibleOptionCount * controlSize.md + spacing.xxs * 2;
+}
+
 export type MenuProps = {
   options: MenuOption[];
   onOptionPress?: (option: MenuOption, index: number) => void;
   selectedValue?: string;
   showSelectedCheck?: boolean;
   visible?: boolean;
+  placement?: MenuPlacement;
   style?: ViewStyle;
   maxHeight?: number;
 };
@@ -38,8 +47,9 @@ export function Menu({
   selectedValue,
   showSelectedCheck = false,
   visible = true,
+  placement = "inline",
   style,
-  maxHeight = 160,
+  maxHeight = getMenuMaxHeight(DEFAULT_VISIBLE_OPTION_COUNT),
 }: MenuProps) {
   const progress = useRef(new Animated.Value(visible ? 1 : 0)).current;
   const hasMounted = useRef(false);
@@ -78,7 +88,13 @@ export function Menu({
   return (
     <Animated.View
       pointerEvents={visible ? "auto" : "none"}
-      style={[styles.menu, { maxHeight }, animatedStyle, style]}
+      style={[
+        styles.menu,
+        placement === "overlay" ? styles.menuOverlay : null,
+        { maxHeight },
+        animatedStyle,
+        style,
+      ]}
     >
       <ScrollView
         nestedScrollEnabled
@@ -124,6 +140,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.06,
     shadowRadius: 6,
     elevation: 2,
+  },
+  menuOverlay: {
+    left: 0,
+    marginTop: spacing.xxs,
+    position: "absolute",
+    right: 0,
+    top: "100%",
+    width: "100%",
+    zIndex: 20,
+    elevation: 4,
   },
   option: {
     minHeight: controlSize.md,

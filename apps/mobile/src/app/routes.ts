@@ -1,0 +1,16 @@
+export type AppRoute =
+  | "home"
+  | "playground"
+  | "login"
+  | "create-account"
+  | "verify-email"
+  | "onboarding"
+  | "onboarding-location"
+  | "forgot-password"
+  | "reset-password"
+  | "main"
+  | "profile"
+  | "preferences"
+  | "my-bag"
+  | "club-details"
+  | "add-club";

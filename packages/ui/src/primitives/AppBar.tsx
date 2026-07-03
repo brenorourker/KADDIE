@@ -92,6 +92,8 @@ export function AppBar({
   const isCentered = variant === "centered";
   const showSecondTrailing = variant === "with-action";
   const hasMenu = Boolean(menuOptions?.length);
+  const hasTrailingAction =
+    hasMenu || onTrailingPress != null || trailingIcon != null;
   const isMenuOpen = menuOpen ?? internalMenuOpen;
 
   const setMenuOpen = (nextOpen: boolean) => {
@@ -122,10 +124,11 @@ export function AppBar({
       <Icon name="chevron-left" size={iconSize.lg} color={colors.text.primary} />
     );
 
-  const trailing =
-    trailingIcon ?? (
-      <Icon name="more" size={iconSize.lg} color={colors.text.primary} />
-    );
+  const trailing = hasTrailingAction
+    ? trailingIcon ?? (
+        <Icon name="more" size={iconSize.lg} color={colors.text.primary} />
+      )
+    : null;
 
   const secondTrailing =
     secondTrailingIcon ?? (
@@ -154,26 +157,28 @@ export function AppBar({
           </Text>
         )}
 
-        <View style={styles.trailingGroup}>
-          <AppBarIconSlot
-            accessibilityLabel={
-              hasMenu ? "Open menu" : trailingAccessibilityLabel
-            }
-            expanded={hasMenu ? isMenuOpen : undefined}
-            onPress={handleTrailingPress}
-          >
-            {trailing}
-          </AppBarIconSlot>
-
-          {showSecondTrailing ? (
+        {hasTrailingAction ? (
+          <View style={styles.trailingGroup}>
             <AppBarIconSlot
-              accessibilityLabel={secondTrailingAccessibilityLabel}
-              onPress={onSecondTrailingPress}
+              accessibilityLabel={
+                hasMenu ? "Open menu" : trailingAccessibilityLabel
+              }
+              expanded={hasMenu ? isMenuOpen : undefined}
+              onPress={handleTrailingPress}
             >
-              {secondTrailing}
+              {trailing}
             </AppBarIconSlot>
-          ) : null}
-        </View>
+
+            {showSecondTrailing ? (
+              <AppBarIconSlot
+                accessibilityLabel={secondTrailingAccessibilityLabel}
+                onPress={onSecondTrailingPress}
+              >
+                {secondTrailing}
+              </AppBarIconSlot>
+            ) : null}
+          </View>
+        ) : null}
       </View>
 
       {hasMenu ? (

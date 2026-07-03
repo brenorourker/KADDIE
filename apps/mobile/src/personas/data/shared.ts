@@ -1,0 +1,351 @@
+import type { AddClubCategory, ClubDetails } from "../types";
+
+export const clubImages = {
+  driver: require("../../assets/my-bag/driver-callaway-rogue.png"),
+  hybrid: require("../../assets/my-bag/hybrid-callaway-rogue.png"),
+  mizunoPro: require("../../assets/my-bag/iron-mizuno-pro.png"),
+  mizunoJpx923: require("../../assets/my-bag/iron-mizuno-jpx923.png"),
+  wedge: require("../../assets/my-bag/wedge-callaway-jaws.png"),
+  putter: require("../../assets/my-bag/putter-mizuno-mcraft.png"),
+} as const;
+
+export const golfCourseImage = require("../../assets/home/golf-course.jpg");
+
+export const makeOptions = [
+  { label: "Callaway", value: "callaway" },
+  { label: "TaylorMade", value: "taylormade" },
+  { label: "Titleist", value: "titleist" },
+  { label: "Ping", value: "ping" },
+  { label: "Mizuno", value: "mizuno" },
+  { label: "Cobra", value: "cobra" },
+  { label: "Wilson", value: "wilson" },
+  { label: "Srixon", value: "srixon" },
+  { label: "Cleveland", value: "cleveland" },
+  { label: "Bridgestone", value: "bridgestone" },
+  { label: "Honma", value: "honma" },
+  { label: "PXG", value: "pxg" },
+  { label: "Tour Edge", value: "tour-edge" },
+  { label: "XXIO", value: "xxio" },
+  { label: "Sub 70", value: "sub-70" },
+  { label: "Benross", value: "benross" },
+] as const;
+
+export const addClubCategories: AddClubCategory[] = [
+  {
+    id: "woods",
+    title: "Woods",
+    clubs: [
+      { id: "driver", label: "Driver" },
+      { id: "3-wood", label: "3 Wood" },
+      { id: "4-wood", label: "4 Wood" },
+      { id: "5-wood", label: "5 Wood" },
+      { id: "6-wood", label: "6 Wood" },
+      { id: "7-wood", label: "7 Wood" },
+      { id: "8-wood", label: "8 Wood" },
+      { id: "9-wood", label: "9 Wood" },
+      { id: "10-wood", label: "10 Wood" },
+    ],
+  },
+  {
+    id: "hybrids",
+    title: "Hybrids",
+    clubs: [
+      { id: "2-hybrid", label: "2 Hybrid" },
+      { id: "3-hybrid", label: "3 Hybrid" },
+      { id: "4-hybrid", label: "4 Hybrid" },
+      { id: "5-hybrid", label: "5 Hybrid" },
+      { id: "6-hybrid", label: "6 Hybrid" },
+      { id: "7-hybrid", label: "7 Hybrid" },
+      { id: "8-hybrid", label: "8 Hybrid" },
+      { id: "9-hybrid", label: "9 Hybrid" },
+      { id: "10-hybrid", label: "10 Hybrid" },
+    ],
+  },
+  {
+    id: "irons",
+    title: "Irons",
+    clubs: [
+      { id: "1-iron", label: "1 Iron" },
+      { id: "2-iron", label: "2 Iron" },
+      { id: "3-iron", label: "3 Iron" },
+      { id: "4-iron", label: "4 Iron" },
+      { id: "5-iron", label: "5 Iron" },
+      { id: "6-iron", label: "6 Iron" },
+      { id: "7-iron", label: "7 Iron" },
+      { id: "8-iron", label: "8 Iron" },
+      { id: "9-iron", label: "9 Iron" },
+    ],
+  },
+  {
+    id: "wedges",
+    title: "Wedges",
+    clubs: [
+      { id: "pw", label: "Pitching Wedge" },
+      { id: "gw", label: "Gap Wedge" },
+      { id: "sw", label: "Sand Wedge" },
+      { id: "lw", label: "Lob Wedge" },
+      { id: "46", label: "46°" },
+      { id: "47", label: "47°" },
+      { id: "48", label: "48°" },
+      { id: "49", label: "49°" },
+      { id: "50", label: "50°" },
+      { id: "51", label: "51°" },
+      { id: "52", label: "52°" },
+      { id: "53", label: "53°" },
+      { id: "54", label: "54°" },
+      { id: "55", label: "55°" },
+      { id: "56", label: "56°" },
+      { id: "57", label: "57°" },
+      { id: "58", label: "58°" },
+      { id: "59", label: "59°" },
+      { id: "60", label: "60°" },
+      { id: "61", label: "61°" },
+      { id: "62", label: "62°" },
+      { id: "63", label: "63°" },
+      { id: "64", label: "64°" },
+    ],
+  },
+  {
+    id: "other",
+    title: "Other",
+    clubs: [
+      { id: "putter", label: "Putter" },
+      { id: "chipper", label: "Chipper" },
+    ],
+  },
+];
+
+export const seasonedClubDetails: Record<string, ClubDetails> = {
+  driver: {
+    id: "driver",
+    intro: "Add as much club detail as you want",
+    make: "callaway",
+    name: "Rogue",
+    distance: 232,
+  },
+  hybrid: {
+    id: "hybrid",
+    intro: "Add as much club detail as you want",
+    make: "callaway",
+    name: "Rogue",
+    distance: 210,
+  },
+  "2-iron": {
+    id: "2-iron",
+    intro: "Add as much club detail as you want",
+    make: "mizuno",
+    name: "Pro",
+    distance: 195,
+  },
+  "5-iron": {
+    id: "5-iron",
+    intro: "Add as much club detail as you want",
+    make: "mizuno",
+    name: "JPX 923",
+    distance: 185,
+  },
+  "6-iron": {
+    id: "6-iron",
+    intro: "Add as much club detail as you want",
+    make: "mizuno",
+    name: "JPX 923",
+    distance: 175,
+  },
+  "7-iron": {
+    id: "7-iron",
+    intro: "Add as much club detail as you want",
+    make: "mizuno",
+    name: "JPX 923",
+    distance: 165,
+  },
+  "8-iron": {
+    id: "8-iron",
+    intro: "Add as much club detail as you want",
+    make: "mizuno",
+    name: "JPX 923",
+    distance: 155,
+  },
+  "9-iron": {
+    id: "9-iron",
+    intro: "Add as much club detail as you want",
+    make: "mizuno",
+    name: "JPX 923",
+    distance: 145,
+  },
+  pw: {
+    id: "pw",
+    intro: "Add as much club detail as you want",
+    make: "mizuno",
+    name: "JPX 923",
+    distance: 135,
+  },
+  "50": {
+    id: "50",
+    intro: "Add as much club detail as you want",
+    make: "callaway",
+    name: "Jaws Chrome",
+    distance: 125,
+  },
+  "54": {
+    id: "54",
+    intro: "Add as much club detail as you want",
+    make: "callaway",
+    name: "Jaws Chrome",
+    distance: 110,
+  },
+  "58": {
+    id: "58",
+    intro: "Add as much club detail as you want",
+    make: "callaway",
+    name: "Jaws Chrome",
+    distance: 95,
+  },
+  "64": {
+    id: "64",
+    intro: "Add as much club detail as you want",
+    make: "callaway",
+    name: "Jaws Chrome",
+    distance: 80,
+  },
+  putter: {
+    id: "putter",
+    intro: "Add as much club detail as you want",
+    make: "mizuno",
+    name: "M-Craft",
+    distance: 20,
+  },
+};
+
+export const seasonedBagSections = [
+  {
+    id: "driver",
+    layout: "single" as const,
+    clubs: [
+      {
+        id: "driver",
+        title: "Driver",
+        model: "Callaway Rogue",
+        image: clubImages.driver,
+      },
+    ],
+  },
+  {
+    id: "hybrid",
+    layout: "single" as const,
+    clubs: [
+      {
+        id: "hybrid",
+        title: "4 Hybrid",
+        model: "Callaway Rogue",
+        image: clubImages.hybrid,
+      },
+    ],
+  },
+  {
+    id: "irons",
+    layout: "group" as const,
+    clubs: [
+      {
+        id: "2-iron",
+        title: "2 Iron",
+        model: "Mizuno",
+        image: clubImages.mizunoPro,
+      },
+      {
+        id: "5-iron",
+        title: "5 Iron",
+        model: "Mizuno JPX 923",
+        image: clubImages.mizunoJpx923,
+      },
+      {
+        id: "6-iron",
+        title: "6 Iron",
+        model: "Mizuno JPX 923",
+        image: clubImages.mizunoJpx923,
+      },
+      {
+        id: "7-iron",
+        title: "7 Iron",
+        model: "Mizuno JPX 923",
+        image: clubImages.mizunoJpx923,
+      },
+      {
+        id: "8-iron",
+        title: "8 Iron",
+        model: "Mizuno JPX 923",
+        image: clubImages.mizunoJpx923,
+      },
+      {
+        id: "9-iron",
+        title: "9 Iron",
+        model: "Mizuno JPX 923",
+        image: clubImages.mizunoJpx923,
+      },
+      {
+        id: "pw",
+        title: "PW",
+        model: "Mizuno JPX 923",
+        image: clubImages.mizunoJpx923,
+      },
+    ],
+  },
+  {
+    id: "wedges",
+    layout: "group" as const,
+    clubs: [
+      {
+        id: "50",
+        title: "50°",
+        model: "Callaway Jaws Chrome - Raw",
+        image: clubImages.wedge,
+      },
+      {
+        id: "54",
+        title: "54°",
+        model: "Callaway Jaws Chrome - Raw",
+        image: clubImages.wedge,
+      },
+      {
+        id: "58",
+        title: "58°",
+        model: "Callaway Jaws Chrome - Raw",
+        image: clubImages.wedge,
+      },
+      {
+        id: "64",
+        title: "64°",
+        model: "Callaway Jaws Chrome - Raw",
+        image: clubImages.wedge,
+      },
+    ],
+  },
+  {
+    id: "putter",
+    layout: "single" as const,
+    clubs: [
+      {
+        id: "putter",
+        title: "Putter",
+        model: "Mizuno M-Craft",
+        image: clubImages.putter,
+      },
+    ],
+  },
+];
+
+export const seasonedSelectedClubIds = [
+  "driver",
+  "4-hybrid",
+  "2-iron",
+  "5-iron",
+  "6-iron",
+  "7-iron",
+  "8-iron",
+  "9-iron",
+  "pw",
+  "50",
+  "54",
+  "58",
+  "64",
+  "putter",
+];

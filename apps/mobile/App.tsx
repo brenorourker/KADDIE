@@ -1,5 +1,6 @@
+import { useEffect, useRef, useState } from "react";
+import { StyleSheet, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import {
   useFonts,
@@ -9,28 +10,48 @@ import {
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
 import { colors } from "@kaddie/ui";
-import { Playground } from "./src/playground";
+import { AppShell } from "./src/app/AppShell";
+import { SplashScreen } from "./src/screens/SplashScreen";
+
+const MIN_SPLASH_MS = 1500;
 
 export function App() {
+  const splashStartedAt = useRef(Date.now());
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_500Medium,
     Poppins_600SemiBold,
     Poppins_700Bold,
   });
+  const [splashComplete, setSplashComplete] = useState(false);
 
-  if (!fontsLoaded) {
+  useEffect(() => {
+    if (!fontsLoaded) {
+      return;
+    }
+
+    const elapsed = Date.now() - splashStartedAt.current;
+    const remaining = Math.max(0, MIN_SPLASH_MS - elapsed);
+    const timer = setTimeout(() => setSplashComplete(true), remaining);
+
+    return () => clearTimeout(timer);
+  }, [fontsLoaded]);
+
+  if (!splashComplete) {
     return (
-      <View style={styles.loading}>
-        <ActivityIndicator size="large" color={colors.action.primary} />
-      </View>
+      <SafeAreaProvider>
+        <View style={styles.splashRoot}>
+          <SplashScreen showText={fontsLoaded} />
+          <StatusBar style="dark" />
+        </View>
+      </SafeAreaProvider>
     );
   }
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <Playground />
+        <AppShell />
         <StatusBar style="auto" />
       </SafeAreaView>
     </SafeAreaProvider>
@@ -38,11 +59,9 @@ export function App() {
 }
 
 const styles = StyleSheet.create({
-  loading: {
+  splashRoot: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.surfaceMuted,
+    backgroundColor: colors.action.primary,
   },
   container: {
     flex: 1,

@@ -3,6 +3,7 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  TextInput,
   View,
   ViewStyle,
 } from "react-native";
@@ -46,6 +47,7 @@ export function NumberStepper({
   containerStyle,
 }: NumberStepperProps) {
   const [focused, setFocused] = useState(false);
+  const [editingText, setEditingText] = useState<string | null>(null);
   const [internalValue, setInternalValue] = useState(defaultValue);
   const currentValue = value ?? internalValue;
   const isError = Boolean(error);
@@ -94,7 +96,59 @@ export function NumberStepper({
     }
 
     setFocused(true);
-    updateValue(currentValue + direction * step);
+    const nextValue = currentValue + direction * step;
+    updateValue(nextValue);
+
+    if (editingText !== null) {
+      const clampedValue = Math.min(
+        max ?? nextValue,
+        Math.max(min, nextValue),
+      );
+      setEditingText(String(clampedValue));
+    }
+  };
+
+  const handleValueFocus = () => {
+    if (disabled) {
+      return;
+    }
+
+    setFocused(true);
+    setEditingText(String(currentValue));
+  };
+
+  const handleValueChangeText = (text: string) => {
+    if (text === "") {
+      setEditingText("");
+      return;
+    }
+
+    if (/^\d+$/.test(text)) {
+      setEditingText(text);
+    }
+  };
+
+  const handleValueBlur = () => {
+    setFocused(false);
+
+    if (editingText === null) {
+      return;
+    }
+
+    if (editingText === "") {
+      updateValue(min);
+      setEditingText(null);
+      return;
+    }
+
+    const parsedValue = Number.parseInt(editingText, 10);
+    if (Number.isNaN(parsedValue)) {
+      updateValue(min);
+    } else {
+      updateValue(parsedValue);
+    }
+
+    setEditingText(null);
   };
 
   return (
@@ -103,9 +157,9 @@ export function NumberStepper({
         {label}
       </Text>
 
-      <Pressable
-        accessibilityRole="adjustable"
+      <View
         accessibilityLabel={label}
+        accessibilityRole="adjustable"
         accessibilityState={{ disabled }}
         accessibilityValue={{
           min,
@@ -113,9 +167,6 @@ export function NumberStepper({
           now: currentValue,
           text: String(currentValue),
         }}
-        disabled={disabled}
-        onBlur={() => setFocused(false)}
-        onFocus={() => setFocused(true)}
         style={[
           styles.field,
           {
@@ -145,9 +196,17 @@ export function NumberStepper({
           />
         </Pressable>
 
-        <Text style={[styles.value, { color: valueColor }]}>
-          {currentValue}
-        </Text>
+        <TextInput
+          accessibilityLabel={`${label} value`}
+          editable={!disabled}
+          keyboardType="number-pad"
+          selectTextOnFocus
+          style={[styles.valueInput, { color: valueColor }]}
+          value={editingText ?? String(currentValue)}
+          onBlur={handleValueBlur}
+          onChangeText={handleValueChangeText}
+          onFocus={handleValueFocus}
+        />
 
         <Pressable
           accessibilityLabel="Increase"
@@ -166,7 +225,7 @@ export function NumberStepper({
             color={canIncrement ? iconColor : colors.text.disabled}
           />
         </Pressable>
-      </Pressable>
+      </View>
 
       {message ? (
         <Text
@@ -212,9 +271,13 @@ const styles = StyleSheet.create({
   stepButtonPressed: {
     backgroundColor: colors.background.muted,
   },
-  value: {
+  valueInput: {
     ...typography.bodyDefault,
     flex: 1,
+    minWidth: 0,
+    outlineStyle: "none",
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 0,
     textAlign: "center",
   },
   message: {

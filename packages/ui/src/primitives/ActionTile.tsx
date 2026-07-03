@@ -28,6 +28,8 @@ export type ActionTileProps = Omit<PressableProps, "children" | "style"> & {
   layout?: ActionTileLayout;
   icon?: ReactNode;
   showChevron?: boolean;
+  /** Expands to fill available row/column width (e.g. 2-column grids). */
+  fillWidth?: boolean;
   style?: ViewStyle;
 };
 
@@ -45,6 +47,7 @@ export function ActionTile({
   layout = "vertical",
   icon,
   showChevron = layout === "horizontal",
+  fillWidth = false,
   disabled,
   style,
   onPressIn,
@@ -90,7 +93,11 @@ export function ActionTile({
       onPressOut={handlePressOut}
       style={[
         styles.base,
-        isHorizontal ? styles.horizontal : styles.vertical,
+        isHorizontal
+          ? styles.horizontal
+          : fillWidth
+            ? styles.verticalFill
+            : styles.vertical,
         disabled ? styles.disabled : null,
         style,
       ]}
@@ -158,6 +165,11 @@ const styles = StyleSheet.create({
   vertical: {
     width: "100%",
     maxWidth: controlSize.actionTileVerticalWidth,
+  },
+  verticalFill: {
+    flex: 1,
+    minWidth: 0,
+    alignSelf: "stretch",
   },
   horizontal: {
     width: "100%",

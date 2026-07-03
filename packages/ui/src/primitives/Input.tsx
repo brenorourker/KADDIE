@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -15,22 +16,41 @@ import {
   typography,
 } from "../tokens";
 
+export type InputSize = "md" | "lg";
+
 export type InputProps = Omit<TextInputProps, "style" | "editable"> & {
   label: string;
   helperText?: string;
   error?: string;
   disabled?: boolean;
+  size?: InputSize;
   /** Shows focus border styling without requiring interaction (playground only). */
   previewFocused?: boolean;
+  trailingActionLabel?: string;
+  onTrailingActionPress?: () => void;
   containerStyle?: ViewStyle;
 };
+
+const sizeConfig = {
+  md: {
+    containerHeight: controlSize.md,
+    fieldPaddingVertical: 0,
+  },
+  lg: {
+    containerHeight: controlSize.lg,
+    fieldPaddingVertical: spacing.sm,
+  },
+} as const;
 
 export function Input({
   label,
   helperText,
   error,
   disabled = false,
+  size = "md",
   previewFocused = false,
+  trailingActionLabel,
+  onTrailingActionPress,
   value,
   defaultValue,
   containerStyle,
@@ -59,6 +79,7 @@ export function Input({
           : colors.border.default;
 
   const fieldBorderWidth = isFocused && !disabled && !isError ? 2 : 1;
+  const sizeStyles = sizeConfig[size];
 
   return (
     <View style={[styles.container, containerStyle]}>
@@ -71,41 +92,72 @@ export function Input({
         {label}
       </Text>
 
-      <TextInput
-        accessibilityLabel={label}
-        editable={!disabled}
-        placeholder={placeholder}
-        placeholderTextColor={
-          disabled ? colors.text.disabled : colors.text.tertiary
-        }
-        value={value ?? internalValue}
-        onChangeText={(text) => {
-          if (value === undefined) {
-            setInternalValue(text);
-          }
-          onChangeText?.(text);
-        }}
+      <View
         style={[
-          styles.field,
+          styles.fieldContainer,
           {
             borderColor: fieldBorderColor,
             borderWidth: fieldBorderWidth,
+            height: sizeStyles.containerHeight,
             backgroundColor: disabled
               ? colors.background.muted
               : colors.background.surface,
-            color: disabled ? colors.text.disabled : colors.text.primary,
           },
         ]}
-        onFocus={(event) => {
-          setFocused(true);
-          onFocus?.(event);
-        }}
-        onBlur={(event) => {
-          setFocused(false);
-          onBlur?.(event);
-        }}
-        {...textInputProps}
-      />
+      >
+        <TextInput
+          accessibilityLabel={label}
+          editable={!disabled}
+          placeholder={placeholder}
+          placeholderTextColor={
+            disabled ? colors.text.disabled : colors.text.tertiary
+          }
+          value={value ?? internalValue}
+          onChangeText={(text) => {
+            if (value === undefined) {
+              setInternalValue(text);
+            }
+            onChangeText?.(text);
+          }}
+          style={[
+            styles.field,
+            trailingActionLabel ? styles.fieldWithTrailing : null,
+            {
+              color: disabled ? colors.text.disabled : colors.text.primary,
+              paddingVertical: sizeStyles.fieldPaddingVertical,
+            },
+          ]}
+          onFocus={(event) => {
+            setFocused(true);
+            onFocus?.(event);
+          }}
+          onBlur={(event) => {
+            setFocused(false);
+            onBlur?.(event);
+          }}
+          {...textInputProps}
+        />
+
+        {trailingActionLabel ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={trailingActionLabel}
+            disabled={disabled}
+            hitSlop={8}
+            onPress={onTrailingActionPress}
+            style={styles.trailingAction}
+          >
+            <Text
+              style={[
+                styles.trailingActionLabel,
+                disabled && styles.trailingActionLabelDisabled,
+              ]}
+            >
+              {trailingActionLabel}
+            </Text>
+          </Pressable>
+        ) : null}
+      </View>
 
       {message ? (
         <Text
@@ -130,17 +182,36 @@ const styles = StyleSheet.create({
   },
   label: {
     ...typography.labelDefault,
-    color: colors.text.primary,
+    color: colors.text.secondary,
   },
   labelDisabled: {
     color: colors.text.disabled,
   },
+  fieldContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: radii.sm,
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+  },
   field: {
     ...typography.bodyDefault,
-    height: controlSize.md,
-    paddingHorizontal: spacing.md,
-    borderRadius: radii.sm,
+    flex: 1,
     outlineStyle: "none",
+    paddingHorizontal: 0,
+  },
+  fieldWithTrailing: {
+    paddingRight: 0,
+  },
+  trailingAction: {
+    paddingVertical: spacing.xs,
+  },
+  trailingActionLabel: {
+    ...typography.bodyDefault,
+    color: colors.text.tertiary,
+  },
+  trailingActionLabelDisabled: {
+    color: colors.text.disabled,
   },
   message: {
     ...typography.caption,

@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  Modal,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -14,7 +16,7 @@ import {
   typography,
 } from "../tokens";
 import { ChevronDown, ChevronUp } from "./icons";
-import { Menu } from "./Menu";
+import { Menu, getMenuMaxHeight } from "./Menu";
 
 export type DropdownOption = {
   label: string;
@@ -33,7 +35,16 @@ export type DropdownProps = {
   disabled?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /** Number of options visible before scrolling. Defaults to 4. */
+  visibleOptionCount?: number;
   containerStyle?: ViewStyle;
+};
+
+type MenuAnchor = {
+  x: number;
+  y: number;
+  width: number;
+  fieldHeight: number;
 };
 
 export function Dropdown({
@@ -48,10 +59,14 @@ export function Dropdown({
   disabled = false,
   open,
   onOpenChange,
+  visibleOptionCount = 4,
   containerStyle,
 }: DropdownProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const [internalValue, setInternalValue] = useState(defaultValue ?? "");
+  const [menuAnchor, setMenuAnchor] = useState<MenuAnchor | null>(null);
+  const containerRef = useRef<View>(null);
+  const fieldWrapRef = useRef<View>(null);
 
   const isOpen = open ?? internalOpen;
   const selectedValue = value ?? internalValue;
@@ -93,58 +108,146 @@ export function Dropdown({
     setOpen(false);
   };
 
+  const menuMaxHeight = getMenuMaxHeight(visibleOptionCount);
+
+  useEffect(() => {
+    if (!isOpen || disabled || Platform.OS !== "web") {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const element = containerRef.current as unknown as HTMLElement | null;
+      const target = event.target as Node | null;
+
+      if (element && target && !element.contains(target)) {
+        setOpen(false);
+      }
+    };
+
+    const timeoutId = window.setTimeout(() => {
+      document.addEventListener("pointerdown", handlePointerDown);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [disabled, isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || disabled || Platform.OS === "web") {
+      setMenuAnchor(null);
+      return;
+    }
+
+    const frame = requestAnimationFrame(() => {
+      fieldWrapRef.current?.measureInWindow((x, y, width, height) => {
+        setMenuAnchor({ x, y, width, fieldHeight: height });
+      });
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [disabled, isOpen]);
+
+  const renderMenu = () => (
+    <Menu
+      maxHeight={menuMaxHeight}
+      onOptionPress={(option) => handleSelect(option.value!)}
+      options={options}
+      selectedValue={selectedValue}
+      showSelectedCheck
+      visible={isOpen}
+    />
+  );
+
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View
+      ref={containerRef}
+      style={[styles.container, isOpen && styles.containerOpen, containerStyle]}
+    >
       <Text style={[styles.label, disabled && styles.labelDisabled]}>
         {label}
       </Text>
 
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ disabled, expanded: isOpen }}
-        disabled={disabled}
-        onPress={() => setOpen(!isOpen)}
-        style={[
-          styles.field,
-          {
-            borderColor: fieldBorderColor,
-            borderWidth: fieldBorderWidth,
-            backgroundColor: disabled
-              ? colors.background.muted
-              : colors.background.surface,
-          },
-        ]}
-      >
-        <Text
-          numberOfLines={1}
+      <View ref={fieldWrapRef} style={styles.fieldWrap}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ disabled, expanded: isOpen }}
+          disabled={disabled}
+          onPress={() => setOpen(!isOpen)}
           style={[
-            styles.fieldText,
-            hasValue && !disabled
-              ? styles.fieldTextValue
-              : styles.fieldTextPlaceholder,
-            disabled && styles.fieldTextDisabled,
+            styles.field,
+            {
+              borderColor: fieldBorderColor,
+              borderWidth: fieldBorderWidth,
+              backgroundColor: disabled
+                ? colors.background.muted
+                : colors.background.surface,
+            },
           ]}
         >
-          {selectedOption?.label ?? placeholder}
-        </Text>
-        {isOpen ? (
-          <ChevronUp
-            color={disabled ? colors.text.disabled : colors.text.primary}
-          />
-        ) : (
-          <ChevronDown
-            color={disabled ? colors.text.disabled : colors.text.primary}
-          />
-        )}
-      </Pressable>
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.fieldText,
+              hasValue && !disabled
+                ? styles.fieldTextValue
+                : styles.fieldTextPlaceholder,
+              disabled && styles.fieldTextDisabled,
+            ]}
+          >
+            {selectedOption?.label ?? placeholder}
+          </Text>
+          {isOpen ? (
+            <ChevronUp
+              color={disabled ? colors.text.disabled : colors.text.primary}
+            />
+          ) : (
+            <ChevronDown
+              color={disabled ? colors.text.disabled : colors.text.primary}
+            />
+          )}
+        </Pressable>
 
-      {isOpen && !disabled ? (
-        <Menu
-          onOptionPress={(option) => handleSelect(option.value!)}
-          options={options}
-          selectedValue={selectedValue}
-          showSelectedCheck
-        />
+        {isOpen && !disabled && Platform.OS === "web" ? (
+          <Menu
+            maxHeight={menuMaxHeight}
+            onOptionPress={(option) => handleSelect(option.value!)}
+            options={options}
+            placement="overlay"
+            selectedValue={selectedValue}
+            showSelectedCheck
+            visible={isOpen}
+          />
+        ) : null}
+      </View>
+
+      {isOpen && !disabled && Platform.OS !== "web" && menuAnchor ? (
+        <Modal
+          animationType="none"
+          onRequestClose={() => setOpen(false)}
+          transparent
+          visible
+        >
+          <Pressable
+            accessibilityLabel="Close dropdown"
+            accessibilityRole="button"
+            onPress={() => setOpen(false)}
+            style={styles.modalBackdrop}
+          />
+          <View
+            style={[
+              styles.modalMenuContainer,
+              {
+                left: menuAnchor.x,
+                top: menuAnchor.y + menuAnchor.fieldHeight + spacing.xxs,
+                width: menuAnchor.width,
+              },
+            ]}
+          >
+            {renderMenu()}
+          </View>
+        </Modal>
       ) : null}
 
       {message ? (
@@ -167,6 +270,15 @@ const styles = StyleSheet.create({
     gap: spacing.xxs,
     width: "100%",
     maxWidth: 320,
+    zIndex: 1,
+  },
+  containerOpen: {
+    overflow: "visible",
+    zIndex: 20,
+  },
+  fieldWrap: {
+    overflow: "visible",
+    position: "relative",
     zIndex: 1,
   },
   label: {
@@ -208,5 +320,12 @@ const styles = StyleSheet.create({
   },
   messageDisabled: {
     color: colors.text.disabled,
+  },
+  modalBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  modalMenuContainer: {
+    position: "absolute",
+    zIndex: 1,
   },
 });

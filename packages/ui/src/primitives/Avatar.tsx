@@ -17,6 +17,8 @@ export type AvatarProps = {
   size?: AvatarSize;
   initials?: string;
   source?: ImageSourcePropType;
+  initialsBackgroundColor?: string;
+  initialsTextColor?: string;
   accessibilityLabel?: string;
   style?: ViewStyle;
 };
@@ -50,6 +52,8 @@ export function Avatar({
   size = "md",
   initials = "AB",
   source,
+  initialsBackgroundColor,
+  initialsTextColor,
   accessibilityLabel,
   style,
 }: AvatarProps) {
@@ -66,7 +70,12 @@ export function Avatar({
           height: config.dimension,
           borderRadius: config.dimension / 2,
         },
-        !isImage && styles.initials,
+        !isImage && [
+          styles.initials,
+          initialsBackgroundColor
+            ? { backgroundColor: initialsBackgroundColor }
+            : null,
+        ],
         style,
       ]}
     >
@@ -92,6 +101,7 @@ export function Avatar({
               fontSize: config.fontSize,
               lineHeight: config.lineHeight,
             },
+            initialsTextColor ? { color: initialsTextColor } : null,
           ]}
         >
           {initials}
