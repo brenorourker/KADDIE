@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   },
   containerOpen: {
     overflow: "visible",
-    zIndex: 20,
+    zIndex: 50,
   },
   fieldWrap: {
     overflow: "visible",

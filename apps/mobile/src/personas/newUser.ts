@@ -99,6 +99,7 @@ export const newUserPersona: Persona = {
       name: "Charlie",
       course: "elmgreen",
       format: "stroke-gross",
+      tees: "blue",
       golfers: "Charlie",
     },
   },

@@ -5,6 +5,7 @@ import {
   Text,
   TextInput,
   TextInputProps,
+  TextStyle,
   View,
   ViewStyle,
 } from "react-native";
@@ -29,6 +30,7 @@ export type InputProps = Omit<TextInputProps, "style" | "editable"> & {
   trailingActionLabel?: string;
   onTrailingActionPress?: () => void;
   containerStyle?: ViewStyle;
+  labelStyle?: TextStyle;
 };
 
 const sizeConfig = {
@@ -54,6 +56,7 @@ export function Input({
   value,
   defaultValue,
   containerStyle,
+  labelStyle,
   onFocus,
   onBlur,
   placeholder = "Enter value",
@@ -86,6 +89,7 @@ export function Input({
       <Text
         style={[
           styles.label,
+          labelStyle,
           disabled && styles.labelDisabled,
         ]}
       >

@@ -29,6 +29,7 @@ import {
   formatPlayersSummary,
   formatRoundFormatLabel,
   getCourseLabel,
+  getTeeLabel,
   type RoundConfig,
 } from "./roundConfig";
 
@@ -112,7 +113,11 @@ export function HomeScreen({
           </View>
 
           <View style={styles.roundDetails}>
-            <Text style={styles.roundClub}>{getCourseLabel(roundConfig.course)}</Text>
+            <Text style={styles.roundClub}>
+              {getCourseLabel(roundConfig.course)}
+              <Text style={styles.roundMetaDivider}>   |   </Text>
+              {getTeeLabel(roundConfig.tees)}
+            </Text>
             <Text style={styles.roundMeta}>
               {formatPlayersSummary(roundConfig.golfers)}
               <Text style={styles.roundMetaDivider}>   |   </Text>

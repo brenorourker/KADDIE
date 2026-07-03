@@ -131,6 +131,7 @@ export const seasonedUserPersona: Persona = {
       name: "Brendan O'Rourke",
       course: "elmgreen",
       format: "stroke-gross",
+      tees: "blue",
       golfers: "Brendan O'Rourke",
     },
   },

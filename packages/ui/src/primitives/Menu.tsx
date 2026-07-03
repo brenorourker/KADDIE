@@ -148,8 +148,8 @@ const styles = StyleSheet.create({
     right: 0,
     top: "100%",
     width: "100%",
-    zIndex: 20,
-    elevation: 4,
+    zIndex: 100,
+    elevation: 8,
   },
   option: {
     minHeight: controlSize.md,

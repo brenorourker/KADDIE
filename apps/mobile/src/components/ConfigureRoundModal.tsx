@@ -22,6 +22,7 @@ import {
   courseOptions,
   defaultRoundConfig,
   formatOptions,
+  teeOptions,
   type RoundConfig,
 } from "../screens/roundConfig";
 
@@ -38,22 +39,28 @@ export function ConfigureRoundModal({
   onCancel,
   onDone,
 }: ConfigureRoundModalProps) {
-  const [name, setName] = useState(initialValues.name);
   const [course, setCourse] = useState(initialValues.course);
   const [format, setFormat] = useState(initialValues.format);
+  const [tees, setTees] = useState(initialValues.tees ?? defaultRoundConfig.tees);
   const [golfers, setGolfers] = useState(initialValues.golfers);
 
   useEffect(() => {
     if (visible) {
-      setName(initialValues.name);
       setCourse(initialValues.course);
       setFormat(initialValues.format);
+      setTees(initialValues.tees ?? defaultRoundConfig.tees);
       setGolfers(initialValues.golfers);
     }
   }, [visible, initialValues]);
 
   const handleDone = () => {
-    onDone({ name, course, format, golfers });
+    onDone({
+      name: initialValues.name,
+      course,
+      format,
+      tees,
+      golfers,
+    });
   };
 
   return (
@@ -76,19 +83,20 @@ export function ConfigureRoundModal({
             <Text style={styles.title}>Configure round</Text>
 
             <View style={styles.form}>
-              <Input
-                containerStyle={styles.field}
-                label="Name"
-                value={name}
-                onChangeText={setName}
-              />
-
               <Dropdown
                 containerStyle={styles.field}
                 label="Course"
                 options={[...courseOptions]}
                 value={course}
                 onValueChange={setCourse}
+              />
+
+              <Dropdown
+                containerStyle={styles.field}
+                label="Tees"
+                options={[...teeOptions]}
+                value={tees}
+                onValueChange={setTees}
               />
 
               <Dropdown
@@ -103,6 +111,7 @@ export function ConfigureRoundModal({
                 <Input
                   containerStyle={styles.golfersField}
                   label="Golfers"
+                  labelStyle={styles.fieldLabel}
                   value={golfers}
                   onChangeText={setGolfers}
                 />
@@ -168,6 +177,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: colors.background.surface,
     borderRadius: radii.xl,
+    gap: spacing.md,
+    overflow: "visible",
     padding: spacing.xl,
     shadowColor: "#0F172A",
     shadowOffset: { width: 0, height: 16 },
@@ -179,17 +190,22 @@ const styles = StyleSheet.create({
   title: {
     ...typography.headingH3,
     color: colors.text.primary,
-    marginBottom: spacing.md,
     textAlign: "center",
     width: "100%",
   },
   form: {
     gap: spacing.md,
+    overflow: "visible",
+    position: "relative",
     width: "100%",
+    zIndex: 2,
   },
   field: {
     maxWidth: "100%",
     width: "100%",
+  },
+  fieldLabel: {
+    color: colors.text.primary,
   },
   golfersRow: {
     alignItems: "flex-end",
@@ -208,8 +224,10 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: "row",
     gap: spacing.sm,
-    marginTop: spacing["2xl"] + spacing.md,
+    marginTop: 48,
+    position: "relative",
     width: "100%",
+    zIndex: 1,
   },
   actionButton: {
     borderRadius: radii.lg,

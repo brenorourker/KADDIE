@@ -2,6 +2,7 @@ export type RoundConfig = {
   name: string;
   course: string;
   format: string;
+  tees: string;
   golfers: string;
 };
 
@@ -17,10 +18,17 @@ export const formatOptions = [
   { label: "Stableford", value: "stableford" },
 ] as const;
 
+export const teeOptions = [
+  { label: "Blue (5727 yds - Hcp:11)", value: "blue" },
+  { label: "Yellow (5516 yds - Hcp: 10)", value: "yellow" },
+  { label: "Red (5092 yds - Hcp: 7)", value: "red" },
+] as const;
+
 export const defaultRoundConfig: RoundConfig = {
   name: "Brendan O'Rourke",
   course: "elmgreen",
   format: "stroke-gross",
+  tees: "blue",
   golfers: "Brendan O'Rourke",
 };
 
@@ -30,6 +38,10 @@ export function getCourseLabel(value: string) {
 
 export function getFormatLabel(value: string) {
   return formatOptions.find((option) => option.value === value)?.label ?? value;
+}
+
+export function getTeeLabel(value: string) {
+  return teeOptions.find((option) => option.value === value)?.label ?? value;
 }
 
 export function formatPlayersSummary(golfers: string) {

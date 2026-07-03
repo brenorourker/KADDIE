@@ -1,9 +1,9 @@
 import type { AddClubCategory, ClubDetails } from "../types";
 
 export const clubImages = {
-  driver: require("../../assets/my-bag/driver-callaway-rogue.png"),
-  hybrid: require("../../assets/my-bag/hybrid-callaway-rogue.png"),
-  mizunoPro: require("../../assets/my-bag/iron-mizuno-pro.png"),
+  driver: require("../../assets/my-bag/driver-callaway-rogue.jpg"),
+  hybrid: require("../../assets/my-bag/hybrid-callaway-rogue.jpg"),
+  mizunoPro: require("../../assets/my-bag/iron-mizuno-pro.jpg"),
   mizunoJpx923: require("../../assets/my-bag/iron-mizuno-jpx923.png"),
   wedge: require("../../assets/my-bag/wedge-callaway-jaws.png"),
   putter: require("../../assets/my-bag/putter-mizuno-mcraft.png"),

@@ -32,14 +32,46 @@ type ClubRowProps = {
   onPress: () => void;
 };
 
-function ClubThumbnail({ source }: { source: BagClub["image"] }) {
+const CLUB_THUMBNAIL_SIZE = 32;
+
+type ThumbnailCrop = {
+  left: number;
+  scale: number;
+  top: number;
+};
+
+const clubThumbnailCrops: Record<string, ThumbnailCrop> = {
+  driver: {
+    scale: 1.5283,
+    left: -0.2874,
+    top: -0.2642,
+  },
+  "2-iron": {
+    scale: 1.4423,
+    left: -0.2692,
+    top: -0.1923,
+  },
+};
+
+function ClubThumbnail({ clubId, source }: { clubId: string; source: BagClub["image"] }) {
+  const crop = clubThumbnailCrops[clubId];
+  const imageStyle = crop
+    ? {
+        height: CLUB_THUMBNAIL_SIZE * crop.scale,
+        left: CLUB_THUMBNAIL_SIZE * crop.left,
+        position: "absolute" as const,
+        top: CLUB_THUMBNAIL_SIZE * crop.top,
+        width: CLUB_THUMBNAIL_SIZE * crop.scale,
+      }
+    : styles.thumbnailImage;
+
   return (
     <View style={styles.thumbnail}>
       <Image
         accessibilityIgnoresInvertColors
         resizeMode="cover"
         source={source}
-        style={styles.thumbnailImage}
+        style={imageStyle}
       />
     </View>
   );
@@ -56,7 +88,7 @@ function ClubRow({ club, isLast = false, onPress }: ClubRowProps) {
         pressed && styles.rowPressed,
       ]}
     >
-      <ClubThumbnail source={club.image} />
+      <ClubThumbnail clubId={club.id} source={club.image} />
       <View style={styles.rowText}>
         <Text style={styles.rowTitle}>{club.title}</Text>
         <Text style={styles.rowModel}>{club.model}</Text>
@@ -163,8 +195,6 @@ export function MyBagScreen({ onBack, onAddClub, onOpenClubDetails }: MyBagScree
     </View>
   );
 }
-
-const CLUB_THUMBNAIL_SIZE = 32;
 
 const styles = StyleSheet.create({
   root: {
