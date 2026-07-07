@@ -14,4 +14,5 @@ export type AppRoute =
   | "my-bag"
   | "club-details"
   | "add-club"
-  | "round";
+  | "round"
+  | "coaching";
