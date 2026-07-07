@@ -40,6 +40,7 @@ const SECTION_GAP = 40;
 type HomeScreenProps = {
   onOpenProfile?: () => void;
   onOpenPreferences?: () => void;
+  onOpenCoaching?: () => void;
   onOpenMyBag?: () => void;
   onStartRound?: (config: RoundConfig) => void;
 };
@@ -58,6 +59,7 @@ function ActionTileIconImage({ source }: { source: ImageSourcePropType }) {
 export function HomeScreen({
   onOpenProfile,
   onOpenPreferences,
+  onOpenCoaching,
   onOpenMyBag,
   onStartRound,
 }: HomeScreenProps) {
@@ -189,7 +191,7 @@ export function HomeScreen({
                 showChevron={false}
                 subtitle={homeData.quickActions[2].subtitle}
                 title={homeData.quickActions[2].title}
-                onPress={() => Alert.alert(homeData.quickActions[2].title, "Not connected yet.")}
+                onPress={() => onOpenCoaching?.()}
               />
               <ActionTile
                 fillWidth

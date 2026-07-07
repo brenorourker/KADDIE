@@ -11,6 +11,7 @@ import { LogInScreen } from "../screens/LogInScreen";
 import { MyBagScreen } from "../screens/MyBagScreen";
 import { OnboardingFlow } from "./OnboardingFlow";
 import { PreferencesScreen } from "../screens/PreferencesScreen";
+import { CoachingShell } from "../screens/coaching/CoachingShell";
 import { ProfileScreen } from "../screens/ProfileScreen";
 import { ResetPasswordScreen } from "../screens/ResetPasswordScreen";
 import { type RoundConfig } from "../screens/roundConfig";
@@ -92,6 +93,10 @@ function AppShellContent() {
     );
   }
 
+  if (route === "coaching") {
+    return <CoachingShell onBack={() => setRoute("main")} />;
+  }
+
   if (route === "preferences") {
     return (
       <PreferencesScreen
@@ -122,6 +127,7 @@ function AppShellContent() {
   if (route === "main") {
     return (
       <HomeScreen
+        onOpenCoaching={() => setRoute("coaching")}
         onOpenMyBag={() => setRoute("my-bag")}
         onOpenPreferences={() => setRoute("preferences")}
         onOpenProfile={() => openProfile("main")}
