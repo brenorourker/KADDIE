@@ -16,6 +16,7 @@ import {
   Icon,
   iconSize,
   Input,
+  Modal,
   NumberStepper,
   radii,
   spacing,
@@ -36,7 +37,7 @@ export function ClubDetailsScreen({
   onBack,
   onDone,
 }: ClubDetailsScreenProps) {
-  const { clubDetails, updateClubDetails } = usePersona();
+  const { bagData, clubDetails, removeClubFromBag, updateClubDetails } = usePersona();
   const savedDetails = getClubDetails(clubDetails, clubId);
   const insets = useSafeAreaInsets();
   const bottomPadding = Math.max(insets.bottom + spacing.xl, spacing["2xl"] + spacing.lg);
@@ -44,6 +45,19 @@ export function ClubDetailsScreen({
   const [make, setMake] = useState(savedDetails.make);
   const [name, setName] = useState(savedDetails.name);
   const [distance, setDistance] = useState(savedDetails.distance);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+
+  const clubTitle = useMemo(() => {
+    for (const section of bagData.sections) {
+      const club = section.clubs.find((item) => item.id === clubId);
+
+      if (club) {
+        return club.title;
+      }
+    }
+
+    return "this club";
+  }, [bagData.sections, clubId]);
 
   const isDirty = useMemo(
     () =>
@@ -59,6 +73,12 @@ export function ClubDetailsScreen({
     }
 
     updateClubDetails(clubId, { make, name, distance });
+    onDone();
+  };
+
+  const handleDeleteConfirm = () => {
+    removeClubFromBag(clubId);
+    setDeleteModalVisible(false);
     onDone();
   };
 
@@ -126,7 +146,7 @@ export function ClubDetailsScreen({
           />
           <Pressable
             accessibilityRole="button"
-            onPress={() => Alert.alert("Delete club", "Not connected yet.")}
+            onPress={() => setDeleteModalVisible(true)}
             style={({ pressed }) => [
               styles.deleteButton,
               pressed && styles.deleteButtonPressed,
@@ -136,6 +156,20 @@ export function ClubDetailsScreen({
           </Pressable>
         </View>
       </ScrollView>
+
+      <Modal
+        body={`Are you sure you want to delete ${clubTitle} from your bag? This can't be undone.`}
+        cancelLabel="Cancel"
+        confirmLabel="Delete club"
+        icon={
+          <Icon color={colors.action.destructive} name="close" size={iconSize.lg} />
+        }
+        title="Delete club?"
+        visible={deleteModalVisible}
+        onCancelPress={() => setDeleteModalVisible(false)}
+        onConfirmPress={handleDeleteConfirm}
+        onRequestClose={() => setDeleteModalVisible(false)}
+      />
     </View>
   );
 }

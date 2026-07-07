@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { Button, colors, radii, spacing, typography } from "@kaddie/ui";
+import { Button, Checkbox, colors, radii, spacing, typography } from "@kaddie/ui";
 import type { AppRoute } from "./routes";
 import { usePersona } from "../personas/PersonaProvider";
 
@@ -63,7 +63,11 @@ export function AppHome({ onLaunch, onOpenPlayground }: AppHomeProps) {
         onPress={() => setStartFromLogin((value) => !value)}
         style={styles.loginOverrideRow}
       >
-        <View style={[styles.checkbox, startFromLogin && styles.checkboxChecked]} />
+        <Checkbox
+          accessibilityLabel="Start from login"
+          checked={startFromLogin}
+          onPress={() => setStartFromLogin((value) => !value)}
+        />
         <Text style={styles.loginOverrideLabel}>Start from login</Text>
       </Pressable>
 
@@ -129,17 +133,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     gap: spacing.sm,
-  },
-  checkbox: {
-    borderColor: colors.border.strong,
-    borderRadius: radii.control,
-    borderWidth: 1.5,
-    height: 20,
-    width: 20,
-  },
-  checkboxChecked: {
-    backgroundColor: colors.action.primary,
-    borderColor: colors.action.primary,
   },
   loginOverrideLabel: {
     ...typography.bodySmall,

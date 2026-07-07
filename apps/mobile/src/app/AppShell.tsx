@@ -6,12 +6,14 @@ import { ClubDetailsScreen } from "../screens/ClubDetailsScreen";
 import { CreateAccountScreen } from "../screens/CreateAccountScreen";
 import { ForgotPasswordScreen } from "../screens/ForgotPasswordScreen";
 import { HomeScreen } from "../screens/HomeScreen";
+import { InRoundShell } from "../screens/in-round/InRoundShell";
 import { LogInScreen } from "../screens/LogInScreen";
 import { MyBagScreen } from "../screens/MyBagScreen";
 import { OnboardingFlow } from "./OnboardingFlow";
 import { PreferencesScreen } from "../screens/PreferencesScreen";
 import { ProfileScreen } from "../screens/ProfileScreen";
 import { ResetPasswordScreen } from "../screens/ResetPasswordScreen";
+import { type RoundConfig } from "../screens/roundConfig";
 import { VerifyEmailScreen } from "../screens/VerifyEmailScreen";
 import { AppHome } from "./AppHome";
 import { resolveInitialRoute } from "./resolveInitialRoute";
@@ -35,6 +37,16 @@ function AppShellContent() {
     null,
   );
   const [selectedClubId, setSelectedClubId] = useState("driver");
+  const [activeRoundConfig, setActiveRoundConfig] = useState<RoundConfig>(
+    () => activePersona.data.round,
+  );
+
+  const launchRoute = (nextRoute: AppRoute) => {
+    if (nextRoute === "round") {
+      setActiveRoundConfig(activePersona.data.round);
+    }
+    setRoute(nextRoute);
+  };
 
   const openProfile = (returnRoute: AppRoute) => {
     setProfileReturnRoute(returnRoute);
@@ -98,12 +110,25 @@ function AppShellContent() {
     );
   }
 
+  if (route === "round") {
+    return (
+      <InRoundShell
+        roundConfig={activeRoundConfig}
+        onEndRound={() => setRoute("main")}
+      />
+    );
+  }
+
   if (route === "main") {
     return (
       <HomeScreen
         onOpenMyBag={() => setRoute("my-bag")}
         onOpenPreferences={() => setRoute("preferences")}
         onOpenProfile={() => openProfile("main")}
+        onStartRound={(config) => {
+          setActiveRoundConfig(config);
+          setRoute("round");
+        }}
       />
     );
   }
@@ -174,7 +199,7 @@ function AppShellContent() {
 
   return (
     <AppHome
-      onLaunch={setRoute}
+      onLaunch={launchRoute}
       onOpenPlayground={() => setRoute("playground")}
     />
   );

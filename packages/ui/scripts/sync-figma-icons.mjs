@@ -52,6 +52,9 @@ const FIGMA_ICONS = {
   microphone:
     "https://www.figma.com/api/mcp/asset/cdcfe4a9-b701-445c-b0d5-2eacece3f373",
   text: "https://www.figma.com/api/mcp/asset/5b444c6a-732b-4dd3-bb96-27c1788dca90",
+  pin: "https://www.figma.com/api/mcp/asset/8e046cd4-4e3c-44ed-bf4a-ab27287f53a4",
+  scorecard:
+    "https://www.figma.com/api/mcp/asset/02b17045-0775-4986-9008-3e7b366fcf47",
 };
 
 async function download(url) {

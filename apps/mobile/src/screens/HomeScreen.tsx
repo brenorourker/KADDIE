@@ -41,6 +41,7 @@ type HomeScreenProps = {
   onOpenProfile?: () => void;
   onOpenPreferences?: () => void;
   onOpenMyBag?: () => void;
+  onStartRound?: (config: RoundConfig) => void;
 };
 
 function ActionTileIconImage({ source }: { source: ImageSourcePropType }) {
@@ -58,6 +59,7 @@ export function HomeScreen({
   onOpenProfile,
   onOpenPreferences,
   onOpenMyBag,
+  onStartRound,
 }: HomeScreenProps) {
   const { activePersona, bagClubCount } = usePersona();
   const homeData = activePersona.data.home;
@@ -137,7 +139,7 @@ export function HomeScreen({
                   size={iconSize.md}
                 />
               }
-              onPress={() => Alert.alert("Start a round", "Not connected yet.")}
+              onPress={() => onStartRound?.(roundConfig)}
             />
             <Button
               label="Configure"

@@ -14,6 +14,7 @@ import {
   countSelectedClubs,
   createInitialClubSelection,
   getClubDetails,
+  resolveClubId,
 } from "./utils";
 
 type ClubSelection = Record<string, boolean>;
@@ -31,6 +32,7 @@ type PersonaContextValue = {
     clubId: string,
     updates: Pick<ClubDetails, "make" | "name" | "distance">,
   ) => void;
+  removeClubFromBag: (clubId: string) => void;
   bagClubCount: number;
   bagData: BagPersonaData;
 };
@@ -96,6 +98,32 @@ export function PersonaProvider({ children }: PersonaProviderProps) {
     [activePersona.data.clubDetails],
   );
 
+  const removeClubFromBag = useCallback((clubId: string) => {
+    const clubIds = [clubId, resolveClubId(clubId)];
+
+    setClubSelection((current) => {
+      const next = { ...current };
+
+      for (const id of clubIds) {
+        if (id in next) {
+          next[id] = false;
+        }
+      }
+
+      return next;
+    });
+
+    setClubDetailsOverrides((current) => {
+      const next = { ...current };
+
+      for (const id of clubIds) {
+        delete next[id];
+      }
+
+      return next;
+    });
+  }, []);
+
   const bagData = useMemo(
     () =>
       buildBagDataFromSelection(
@@ -122,6 +150,7 @@ export function PersonaProvider({ children }: PersonaProviderProps) {
       setClubSelection,
       clubDetails,
       updateClubDetails,
+      removeClubFromBag,
       bagClubCount,
       bagData,
     }),
@@ -133,6 +162,7 @@ export function PersonaProvider({ children }: PersonaProviderProps) {
       clubDetails,
       clubSelection,
       updateClubDetails,
+      removeClubFromBag,
     ],
   );
 
