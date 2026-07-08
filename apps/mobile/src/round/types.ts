@@ -20,6 +20,9 @@ export type MapDistanceMarker = {
   label: string;
   position: MapPoint;
   variant: DistancePillVariant;
+  /** Pixel nudge applied after layout (negative y moves up). */
+  offsetX?: number;
+  offsetY?: number;
 };
 
 export type LieOption =
@@ -52,6 +55,8 @@ export type HoleData = {
   mapImage: ImageSourcePropType;
   mapImageOffset: { x: number; y: number; scale: number };
   player: MapPoint;
+  /** Pixel nudge for GPS marker and line origin (negative y moves up). */
+  playerOffset?: { x?: number; y?: number };
   green: MapPoint;
   defaultTarget: MapPoint;
   markers: MapDistanceMarker[];

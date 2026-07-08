@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 2,
     elevation: 2,
+    zIndex: 8,
   },
   label: {
     fontFamily: fontFamily.poppinsMedium,

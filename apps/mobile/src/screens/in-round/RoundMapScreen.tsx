@@ -1,11 +1,14 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { StyleSheet, View, useWindowDimensions, type LayoutChangeEvent } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CaddieFab } from "../../components/in-round/CaddieFab";
 import { HoleHeader } from "../../components/in-round/HoleHeader";
 import { RoundBottomSheet } from "../../components/in-round/RoundBottomSheet";
 import { RoundMapCanvas } from "../../components/in-round/RoundMapCanvas";
-import { useAnimatedSheetHeight } from "../../round/hooks/useAnimatedSheetHeight";
+import {
+  SHEET_COLLAPSED_HEIGHT,
+  useAnimatedSheetHeight,
+} from "../../round/hooks/useAnimatedSheetHeight";
 import { useRoundMap } from "../../round/RoundMapProvider";
 import { inRoundColors } from "../../round/inRoundTheme";
 
@@ -16,6 +19,19 @@ export function RoundMapScreen() {
   const { animatedHeight, expandProgress, fabBottom } =
     useAnimatedSheetHeight(sheetExpanded);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const [bottomSheetHeight, setBottomSheetHeight] = useState(
+    SHEET_COLLAPSED_HEIGHT,
+  );
+
+  useEffect(() => {
+    const listenerId = animatedHeight.addListener(({ value }) => {
+      setBottomSheetHeight(value);
+    });
+
+    return () => {
+      animatedHeight.removeListener(listenerId);
+    };
+  }, [animatedHeight]);
 
   const mapCanvasSize = useMemo(() => {
     if (canvasSize.width > 0 && canvasSize.height > 0) {
@@ -40,13 +56,16 @@ export function RoundMapScreen() {
   }, []);
 
   return (
-    <View style={styles.root}>
-      <View style={[styles.header, { paddingTop: insets.top }]}>
+    <View style={[styles.root, { marginTop: -insets.top }]}>
+      <View style={styles.header}>
         <HoleHeader />
       </View>
 
       <View style={styles.canvasHost} onLayout={onCanvasHostLayout}>
-        <RoundMapCanvas size={mapCanvasSize} />
+        <RoundMapCanvas
+          bottomSheetHeight={bottomSheetHeight}
+          size={mapCanvasSize}
+        />
 
         <RoundBottomSheet
           animatedHeight={animatedHeight}

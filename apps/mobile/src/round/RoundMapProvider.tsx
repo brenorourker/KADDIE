@@ -28,7 +28,7 @@ type RoundMapContextValue = {
   goToNextHole: () => void;
   toggleSheetExpanded: () => void;
   setSheetExpanded: (expanded: boolean) => void;
-  enterTargetMode: () => void;
+  enterTargetMode: (point: MapPoint) => void;
   exitTargetMode: () => void;
   setTarget: (point: MapPoint) => void;
   setLie: (lie: LieOption) => void;
@@ -68,17 +68,15 @@ export function RoundMapProvider({ config, children }: RoundMapProviderProps) {
   }, [currentHoleIndex]);
 
   const goToPreviousHole = useCallback(() => {
-    setCurrentHoleIndex((index) => {
-      const next = Math.max(0, index - 1);
-      return next;
-    });
+    setCurrentHoleIndex((index) =>
+      index === 0 ? elmgreenHoles.length - 1 : index - 1,
+    );
   }, []);
 
   const goToNextHole = useCallback(() => {
-    setCurrentHoleIndex((index) => {
-      const next = Math.min(elmgreenHoles.length - 1, index + 1);
-      return next;
-    });
+    setCurrentHoleIndex((index) =>
+      index === elmgreenHoles.length - 1 ? 0 : index + 1,
+    );
   }, []);
 
   const displayDistances = useMemo(() => {
@@ -127,8 +125,8 @@ export function RoundMapProvider({ config, children }: RoundMapProviderProps) {
       goToNextHole,
       toggleSheetExpanded: () => setSheetExpanded((expanded) => !expanded),
       setSheetExpanded,
-      enterTargetMode: () => {
-        setTargetState(currentHole.defaultTarget);
+      enterTargetMode: (point) => {
+        setTargetState(point);
         setTargetMode(true);
       },
       exitTargetMode: () => setTargetMode(false),

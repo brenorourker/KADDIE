@@ -7,7 +7,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
-import { controlSize, radii } from "@kaddie/ui";
+import { controlSize } from "@kaddie/ui";
 
 type LiquidGlassFabProps = {
   accessibilityLabel: string;
@@ -15,6 +15,9 @@ type LiquidGlassFabProps = {
   onPress: () => void;
   style?: StyleProp<ViewStyle>;
 };
+
+const FAB_SIZE = controlSize.lg;
+const FAB_RADIUS = FAB_SIZE / 2;
 
 export function LiquidGlassFab({
   accessibilityLabel,
@@ -40,8 +43,10 @@ export function LiquidGlassFab({
 
 const styles = StyleSheet.create({
   pressable: {
-    width: controlSize.lg,
-    height: controlSize.lg,
+    width: FAB_SIZE,
+    height: FAB_SIZE,
+    borderRadius: FAB_RADIUS,
+    overflow: "hidden",
   },
   pressed: {
     opacity: 0.88,
@@ -49,7 +54,7 @@ const styles = StyleSheet.create({
   },
   glass: {
     flex: 1,
-    borderRadius: radii.lg,
+    borderRadius: FAB_RADIUS,
     overflow: "hidden",
     backgroundColor: "rgba(255, 255, 255, 0.12)",
     shadowColor: "#000000",
@@ -72,13 +77,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: "48%",
-    borderTopLeftRadius: radii.lg,
-    borderTopRightRadius: radii.lg,
+    borderTopLeftRadius: FAB_RADIUS,
+    borderTopRightRadius: FAB_RADIUS,
     backgroundColor: "rgba(255, 255, 255, 0.14)",
   },
   rim: {
     ...StyleSheet.absoluteFillObject,
-    borderRadius: radii.lg,
+    borderRadius: FAB_RADIUS,
     borderWidth: 1,
     borderTopColor: "rgba(255, 255, 255, 0.42)",
     borderLeftColor: "rgba(255, 255, 255, 0.28)",

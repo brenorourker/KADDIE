@@ -18,6 +18,13 @@ export function yardsBetween(
   return Math.round((normalized / referenceNormalized) * referenceYards);
 }
 
+export function clampMapPoint(point: MapPoint): MapPoint {
+  return {
+    x: Math.min(1, Math.max(0, point.x)),
+    y: Math.min(1, Math.max(0, point.y)),
+  };
+}
+
 export function getTargetModeDistances(
   player: MapPoint,
   target: MapPoint,
@@ -41,10 +48,10 @@ export function getTargetModeMarkers(
   player: MapPoint,
   target: MapPoint,
   green: MapPoint,
+  holeMiddleYards: number,
 ) {
   const toTarget = yardsBetween(player, target, 89, 0.21);
   const targetToGreen = yardsBetween(target, green, 89, 0.21);
-  const total = yardsBetween(player, green);
 
   return [
     {
@@ -58,7 +65,7 @@ export function getTargetModeMarkers(
     },
     {
       id: "target-seg-2",
-      label: `${targetToGreen || 123} yds`,
+      label: `${targetToGreen || 89} yds`,
       position: {
         x: (target.x + green.x) / 2,
         y: (target.y + green.y) / 2,
@@ -66,12 +73,9 @@ export function getTargetModeMarkers(
       variant: "dark" as const,
     },
     {
-      id: "target-total",
-      label: `${total || 178} yds`,
-      position: {
-        x: (player.x + green.x) / 2 - 0.04,
-        y: (player.y + green.y) / 2 - 0.04,
-      },
+      id: "hole-target",
+      label: `${holeMiddleYards} yds`,
+      position: green,
       variant: "primary" as const,
     },
   ];

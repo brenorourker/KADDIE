@@ -5,12 +5,18 @@ import {
   Pressable,
   StyleSheet,
   View,
+  type GestureResponderEvent,
   type ImageSourcePropType,
   type LayoutChangeEvent,
 } from "react-native";
-import Svg, { Circle, Line } from "react-native-svg";
+import Svg, { Line } from "react-native-svg";
 import { useRoundMap } from "../../round/RoundMapProvider";
-import { getTargetModeMarkers } from "../../round/services/distances";
+import { getGpsCenterY, inRoundLayout } from "../../round/inRoundTheme";
+import { SHEET_COLLAPSED_HEIGHT } from "../../round/hooks/useAnimatedSheetHeight";
+import {
+  clampMapPoint,
+  getTargetModeMarkers,
+} from "../../round/services/distances";
 import type { MapPoint } from "../../round/types";
 import { DistancePill } from "./DistancePill";
 import { WindBadge } from "./WindBadge";
@@ -19,6 +25,7 @@ type MapSize = { width: number; height: number };
 
 type RoundMapCanvasProps = {
   size?: MapSize;
+  bottomSheetHeight?: number;
 };
 
 function toPixels(point: MapPoint, size: MapSize) {
@@ -50,46 +57,80 @@ function getMapImageAspectRatio(
   return fallback;
 }
 
-function clamp01(value: number) {
-  return Math.min(1, Math.max(0, value));
+function resolveTapCoordinates(
+  event: GestureResponderEvent,
+  mapSize: MapSize,
+): MapPoint | null {
+  if (mapSize.width === 0 || mapSize.height === 0) return null;
+
+  const native = event.nativeEvent as typeof event.nativeEvent & {
+    locationX?: number;
+    locationY?: number;
+    offsetX?: number;
+    offsetY?: number;
+  };
+
+  const x = native.locationX ?? native.offsetX;
+  const y = native.locationY ?? native.offsetY;
+
+  if (x == null || y == null || Number.isNaN(x) || Number.isNaN(y)) {
+    return null;
+  }
+
+  return {
+    x: x / mapSize.width,
+    y: y / mapSize.height,
+  };
 }
 
-function GpsMarker({ point, size }: { point: MapPoint; size: MapSize }) {
-  const { x, y } = toPixels(point, size);
+function getHoleTargetMarker(hole: { markers: Array<{ id: string; offsetX?: number; offsetY?: number }> }) {
+  return hole.markers.find((marker) => marker.id === "hole-target");
+}
+
+/** Bottom-center of the hole-target pill — keeps the dashed line attached when nudged. */
+function getHoleTargetLineAnchor(
+  green: MapPoint,
+  marker: { offsetX?: number; offsetY?: number } | undefined,
+  mapSize: MapSize,
+) {
+  const { x, y } = toPixels(green, mapSize);
+  const offsetX = marker?.offsetX ?? 0;
+  const offsetY = marker?.offsetY ?? 0;
+
+  return {
+    x: x + offsetX,
+    y: y - 10 + offsetY + 18,
+  };
+}
+
+function getPlayerAnchor(
+  player: MapPoint,
+  offset: { x?: number; y?: number } | undefined,
+  mapSize: MapSize,
+  bottomSheetHeight: number,
+) {
+  const { x } = toPixels(player, mapSize);
+  const radius = inRoundLayout.gpsMarkerSize / 2;
+
+  return {
+    x: x + (offset?.x ?? 0),
+    y: getGpsCenterY(mapSize.height, bottomSheetHeight),
+  };
+}
+
+function GpsMarker({ anchor }: { anchor: { x: number; y: number } }) {
+  const size = inRoundLayout.gpsMarkerSize;
+  const radius = size / 2;
 
   return (
     <View
-      pointerEvents="none"
       style={[
         styles.gpsOuter,
-        { left: x - 13, top: y - 13 },
+        { left: anchor.x - radius, top: anchor.y - radius },
       ]}
     >
       <View style={styles.gpsInner} />
     </View>
-  );
-}
-
-function TargetRing({
-  point,
-  size,
-  onPress,
-}: {
-  point: MapPoint;
-  size: MapSize;
-  onPress?: () => void;
-}) {
-  const { x, y } = toPixels(point, size);
-
-  return (
-    <Pressable
-      accessibilityLabel="Set aim target"
-      accessibilityRole="button"
-      onPress={onPress}
-      style={[styles.targetRing, { left: x - 20, top: y - 20 }]}
-    >
-      <View style={styles.targetRingInner} />
-    </Pressable>
   );
 }
 
@@ -106,8 +147,14 @@ function DraggableTarget({
 }) {
   const originRef = useRef(point);
   const pixelStartRef = useRef(toPixels(point, size));
+  const onMoveRef = useRef(onMove);
+  const onConfirmRef = useRef(onConfirm);
 
   originRef.current = point;
+  onMoveRef.current = onMove;
+  onConfirmRef.current = onConfirm;
+
+  const mountedAtRef = useRef(Date.now());
 
   const panResponder = useRef(
     PanResponder.create({
@@ -117,20 +164,26 @@ function DraggableTarget({
         pixelStartRef.current = toPixels(originRef.current, size);
       },
       onPanResponderMove: (_, gesture) => {
-        onMove({
-          x: clamp01((pixelStartRef.current.x + gesture.dx) / size.width),
-          y: clamp01((pixelStartRef.current.y + gesture.dy) / size.height),
-        });
+        onMoveRef.current(
+          clampMapPoint({
+            x: (pixelStartRef.current.x + gesture.dx) / size.width,
+            y: (pixelStartRef.current.y + gesture.dy) / size.height,
+          }),
+        );
       },
       onPanResponderRelease: (_, gesture) => {
         if (Math.abs(gesture.dx) < 4 && Math.abs(gesture.dy) < 4) {
-          onConfirm();
+          if (Date.now() - mountedAtRef.current > 400) {
+            onConfirmRef.current();
+          }
           return;
         }
-        onMove({
-          x: clamp01((pixelStartRef.current.x + gesture.dx) / size.width),
-          y: clamp01((pixelStartRef.current.y + gesture.dy) / size.height),
-        });
+        onMoveRef.current(
+          clampMapPoint({
+            x: (pixelStartRef.current.x + gesture.dx) / size.width,
+            y: (pixelStartRef.current.y + gesture.dy) / size.height,
+          }),
+        );
       },
     }),
   ).current;
@@ -147,20 +200,10 @@ function DraggableTarget({
   );
 }
 
-function GreenMarker({ point, size }: { point: MapPoint; size: MapSize }) {
-  const { x, y } = toPixels(point, size);
-
-  return (
-    <View
-      pointerEvents="none"
-      style={[styles.greenMarker, { left: x - 12, top: y - 12 }]}
-    >
-      <View style={styles.greenMarkerInner} />
-    </View>
-  );
-}
-
-export function RoundMapCanvas({ size }: RoundMapCanvasProps) {
+export function RoundMapCanvas({
+  size,
+  bottomSheetHeight = SHEET_COLLAPSED_HEIGHT,
+}: RoundMapCanvasProps) {
   const {
     currentHole,
     targetMode,
@@ -190,30 +233,95 @@ export function RoundMapCanvas({ size }: RoundMapCanvasProps) {
     return { width: 0, height: 0 };
   }, [layoutSize, size]);
 
+  const holeTargetMarker = getHoleTargetMarker(currentHole);
+
+  const playerAnchor = useMemo(
+    () =>
+      getPlayerAnchor(
+        currentHole.player,
+        currentHole.playerOffset,
+        mapSize,
+        bottomSheetHeight,
+      ),
+    [
+      bottomSheetHeight,
+      currentHole.player,
+      currentHole.playerOffset,
+      mapSize,
+    ],
+  );
+
   const markers = useMemo(() => {
-    if (targetMode) {
-      return getTargetModeMarkers(currentHole.player, target, currentHole.green);
+    const list = targetMode
+      ? getTargetModeMarkers(
+          currentHole.player,
+          target,
+          currentHole.green,
+          currentHole.distances.middle,
+        )
+      : currentHole.markers;
+
+    if (
+      holeTargetMarker?.offsetX == null &&
+      holeTargetMarker?.offsetY == null
+    ) {
+      return list;
     }
-    return currentHole.markers;
-  }, [currentHole, target, targetMode]);
+
+    return list.map((marker) =>
+      marker.id === "hole-target"
+        ? {
+            ...marker,
+            offsetX: holeTargetMarker.offsetX,
+            offsetY: holeTargetMarker.offsetY,
+          }
+        : marker,
+    );
+  }, [currentHole, holeTargetMarker, target, targetMode]);
 
   const lineSegments = useMemo(() => {
     if (mapSize.width === 0) return [];
 
+    const greenAnchor = getHoleTargetLineAnchor(
+      currentHole.green,
+      holeTargetMarker,
+      mapSize,
+    );
+
     if (targetMode) {
-      const player = toPixels(currentHole.player, mapSize);
       const aim = toPixels(target, mapSize);
-      const green = toPixels(currentHole.green, mapSize);
       return [
-        { x1: player.x, y1: player.y, x2: aim.x, y2: aim.y },
-        { x1: aim.x, y1: aim.y, x2: green.x, y2: green.y },
+        { x1: playerAnchor.x, y1: playerAnchor.y, x2: aim.x, y2: aim.y },
+        { x1: aim.x, y1: aim.y, x2: greenAnchor.x, y2: greenAnchor.y },
       ];
     }
 
-    const player = toPixels(currentHole.player, mapSize);
-    const green = toPixels(currentHole.green, mapSize);
-    return [{ x1: player.x, y1: player.y, x2: green.x, y2: green.y }];
-  }, [currentHole.green, currentHole.player, mapSize, target, targetMode]);
+    return [{ x1: playerAnchor.x, y1: playerAnchor.y, x2: greenAnchor.x, y2: greenAnchor.y }];
+  }, [
+    currentHole.green,
+    holeTargetMarker,
+    mapSize,
+    playerAnchor,
+    target,
+    targetMode,
+  ]);
+
+  const handleMapPress = useCallback(
+    (event: GestureResponderEvent) => {
+      const tap = resolveTapCoordinates(event, mapSize);
+      if (!tap) return;
+
+      const point = clampMapPoint(tap);
+
+      if (targetMode) {
+        setTarget(point);
+        return;
+      }
+
+      enterTargetMode(point);
+    },
+    [enterTargetMode, mapSize, setTarget, targetMode],
+  );
 
   const hasSize = mapSize.width > 0 && mapSize.height > 0;
 
@@ -244,61 +352,63 @@ export function RoundMapCanvas({ size }: RoundMapCanvasProps) {
 
       {hasSize ? (
         <>
-          <Svg height={mapSize.height} style={StyleSheet.absoluteFill} width={mapSize.width}>
-            {lineSegments.map((segment, index) => (
-              <Line
-                key={`line-${index}`}
-                stroke="#FFFFFF"
-                strokeDasharray="6 6"
-                strokeLinecap="round"
-                strokeWidth={2}
-                x1={segment.x1}
-                x2={segment.x2}
-                y1={segment.y1}
-                y2={segment.y2}
-              />
-            ))}
-            <Circle
-              cx={toPixels(currentHole.green, mapSize).x}
-              cy={toPixels(currentHole.green, mapSize).y}
-              fill="rgba(56, 227, 60, 0.35)"
-              r={18}
-              stroke="#38E33C"
-              strokeWidth={2}
-            />
-          </Svg>
+          <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+            <Svg height={mapSize.height} style={StyleSheet.absoluteFill} width={mapSize.width}>
+              {lineSegments.map((segment, index) => (
+                <Line
+                  key={`line-${index}`}
+                  stroke="#FFFFFF"
+                  strokeDasharray="6 6"
+                  strokeLinecap="round"
+                  strokeWidth={2}
+                  x1={segment.x1}
+                  x2={segment.x2}
+                  y1={segment.y1}
+                  y2={segment.y2}
+                />
+              ))}
+            </Svg>
+          </View>
 
-          {markers.map((marker) => {
-            const { x, y } = toPixels(marker.position, mapSize);
-            return (
-              <DistancePill
-                key={marker.id}
-                label={marker.label}
-                style={{ position: "absolute", left: x - 24, top: y - 10 }}
-                variant={marker.variant}
-              />
-            );
-          })}
+          <Pressable
+            accessibilityLabel={
+              targetMode ? "Move or clear interim aim target" : "Set interim aim target"
+            }
+            accessibilityRole="button"
+            onPress={handleMapPress}
+            style={styles.mapPressLayer}
+          />
 
-          <GpsMarker point={currentHole.player} size={mapSize} />
+          <View pointerEvents="box-none" style={styles.markerLayer}>
+            {markers.map((marker) => {
+              const { x, y } = toPixels(marker.position, mapSize);
+              return (
+                <DistancePill
+                  key={marker.id}
+                  label={marker.label}
+                  style={{
+                    position: "absolute",
+                    left: x - 24 + (marker.offsetX ?? 0),
+                    top: y - 10 + (marker.offsetY ?? 0),
+                  }}
+                  variant={marker.variant}
+                />
+              );
+            })}
+          </View>
+
+          <View pointerEvents="box-none" style={styles.gpsLayer}>
+            <GpsMarker anchor={playerAnchor} />
+          </View>
 
           {targetMode ? (
-            <>
-              <DraggableTarget
-                point={target}
-                size={mapSize}
-                onConfirm={exitTargetMode}
-                onMove={setTarget}
-              />
-              <GreenMarker point={currentHole.green} size={mapSize} />
-            </>
-          ) : (
-            <TargetRing
-              point={currentHole.defaultTarget}
+            <DraggableTarget
+              point={target}
               size={mapSize}
-              onPress={enterTargetMode}
+              onConfirm={exitTargetMode}
+              onMove={setTarget}
             />
-          )}
+          ) : null}
         </>
       ) : null}
 
@@ -318,39 +428,35 @@ const styles = StyleSheet.create({
   mapImage: {
     position: "absolute",
   },
+  mapPressLayer: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 4,
+    cursor: "pointer",
+  },
+  markerLayer: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 8,
+  },
+  gpsLayer: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 9,
+  },
   gpsOuter: {
     position: "absolute",
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: "#38E33C",
+    width: inRoundLayout.gpsMarkerSize,
+    height: inRoundLayout.gpsMarkerSize,
+    borderRadius: inRoundLayout.gpsMarkerSize / 2,
+    backgroundColor: "rgba(0, 0, 0, 0.25)",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 2,
     borderColor: "#FFFFFF",
   },
   gpsInner: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#FFFFFF",
-  },
-  targetRing: {
-    position: "absolute",
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: "#FFFFFF",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
-  },
-  targetRingInner: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#FFFFFF",
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#38E33C",
   },
   draggableTarget: {
     position: "absolute",
@@ -361,30 +467,13 @@ const styles = StyleSheet.create({
     borderColor: "#FFFFFF",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
     zIndex: 5,
   },
   draggableTargetInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: "#0F172A",
-  },
-  greenMarker: {
-    position: "absolute",
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#38E33C",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "#FFFFFF",
-  },
-  greenMarkerInner: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
     backgroundColor: "#FFFFFF",
   },
 });

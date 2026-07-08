@@ -1,54 +1,66 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Icon, colors, fontFamily, iconSize, spacing, typography } from "@kaddie/ui";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Icon, fontFamily, iconSize, spacing, typography } from "@kaddie/ui";
 import { useRoundMap } from "../../round/RoundMapProvider";
-import { inRoundColors } from "../../round/inRoundTheme";
+import { getInRoundHeaderLayout, inRoundColors } from "../../round/inRoundTheme";
 
 export function HoleHeader() {
-  const { currentHole, currentHoleIndex, holes, goToPreviousHole, goToNextHole } =
-    useRoundMap();
+  const insets = useSafeAreaInsets();
+  const headerLayout = getInRoundHeaderLayout(insets.top);
+  const { currentHole, holes, goToPreviousHole, goToNextHole } = useRoundMap();
 
-  const canGoBack = currentHoleIndex > 0;
-  const canGoForward = currentHoleIndex < holes.length - 1;
+  const canGoBack = holes.length > 1;
+  const canGoForward = holes.length > 1;
 
   return (
-    <View style={styles.container}>
-      <Pressable
-        accessibilityLabel="Previous hole"
-        accessibilityRole="button"
-        disabled={!canGoBack}
-        hitSlop={8}
-        onPress={goToPreviousHole}
-        style={[styles.navButton, !canGoBack && styles.navButtonDisabled]}
-      >
-        <Icon
-          color={inRoundColors.textInverse}
-          name="chevron-left"
-          size={iconSize.lg}
-        />
-      </Pressable>
+    <View
+      style={[
+        styles.container,
+        {
+          paddingTop: headerLayout.paddingTop,
+          height: headerLayout.height,
+        },
+      ]}
+    >
+      <View style={[styles.body, { height: headerLayout.bodyHeight }]}>
+        <Pressable
+          accessibilityLabel="Previous hole"
+          accessibilityRole="button"
+          disabled={!canGoBack}
+          hitSlop={8}
+          onPress={goToPreviousHole}
+          style={[styles.navButton, !canGoBack && styles.navButtonDisabled]}
+        >
+          <Icon
+            color={inRoundColors.textInverse}
+            name="chevron-left"
+            size={iconSize.lg}
+          />
+        </Pressable>
 
-      <View style={styles.center}>
-        <Text style={styles.holeLabel}>HOLE {currentHole.number}</Text>
-        <Text style={styles.meta}>
-          Par: {currentHole.par}      Yds: {currentHole.yardage}      Hcp:{" "}
-          {currentHole.strokeIndex}
-        </Text>
+        <View style={styles.center}>
+          <Text style={styles.holeLabel}>HOLE {currentHole.number}</Text>
+          <Text style={styles.meta}>
+            Par: {currentHole.par}      Yds: {currentHole.yardage}      Hcp:{" "}
+            {currentHole.strokeIndex}
+          </Text>
+        </View>
+
+        <Pressable
+          accessibilityLabel="Next hole"
+          accessibilityRole="button"
+          disabled={!canGoForward}
+          hitSlop={8}
+          onPress={goToNextHole}
+          style={[styles.navButton, !canGoForward && styles.navButtonDisabled]}
+        >
+          <Icon
+            color={inRoundColors.textInverse}
+            name="chevron-right"
+            size={iconSize.lg}
+          />
+        </Pressable>
       </View>
-
-      <Pressable
-        accessibilityLabel="Next hole"
-        accessibilityRole="button"
-        disabled={!canGoForward}
-        hitSlop={8}
-        onPress={goToNextHole}
-        style={[styles.navButton, !canGoForward && styles.navButtonDisabled]}
-      >
-        <Icon
-          color={inRoundColors.textInverse}
-          name="chevron-right"
-          size={iconSize.lg}
-        />
-      </Pressable>
     </View>
   );
 }
@@ -56,16 +68,18 @@ export function HoleHeader() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: inRoundColors.background,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: spacing.sm,
-    paddingBottom: spacing.md,
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 4,
+  },
+  body: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: spacing.sm,
+    paddingBottom: 12,
   },
   navButton: {
     width: 40,
