@@ -36,11 +36,9 @@ export type InputProps = Omit<TextInputProps, "style" | "editable"> & {
 const sizeConfig = {
   md: {
     containerHeight: controlSize.md,
-    fieldPaddingVertical: 0,
   },
   lg: {
     containerHeight: controlSize.lg,
-    fieldPaddingVertical: spacing.sm,
   },
 } as const;
 
@@ -83,6 +81,11 @@ export function Input({
 
   const fieldBorderWidth = isFocused && !disabled && !isError ? 2 : 1;
   const sizeStyles = sizeConfig[size];
+  const textLineHeight = typography.bodyDefault.lineHeight;
+  const fieldTextPaddingVertical = Math.max(
+    0,
+    (sizeStyles.containerHeight - fieldBorderWidth * 2 - textLineHeight) / 2,
+  );
 
   return (
     <View style={[styles.container, containerStyle]}>
@@ -128,7 +131,8 @@ export function Input({
             trailingActionLabel ? styles.fieldWithTrailing : null,
             {
               color: disabled ? colors.text.disabled : colors.text.primary,
-              paddingVertical: sizeStyles.fieldPaddingVertical,
+              lineHeight: textLineHeight,
+              paddingVertical: fieldTextPaddingVertical,
             },
           ]}
           onFocus={(event) => {
@@ -203,6 +207,8 @@ const styles = StyleSheet.create({
     flex: 1,
     outlineStyle: "none",
     paddingHorizontal: 0,
+    includeFontPadding: false,
+    textAlignVertical: "center",
   },
   fieldWithTrailing: {
     paddingRight: 0,

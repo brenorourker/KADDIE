@@ -22,8 +22,10 @@ import {
   spacing,
   typography,
 } from "@kaddie/ui";
+import { AddShotTypeModal } from "../components/AddShotTypeModal";
 import { makeOptions } from "../personas/data/shared";
 import { usePersona } from "../personas/PersonaProvider";
+import type { ClubShotType } from "../personas/types";
 import { getClubDetails } from "../personas/utils";
 
 type ClubDetailsScreenProps = {
@@ -31,6 +33,18 @@ type ClubDetailsScreenProps = {
   onBack: () => void;
   onDone: () => void;
 };
+
+function shotTypesEqual(a: ClubShotType[], b: ClubShotType[]) {
+  if (a.length !== b.length) {
+    return false;
+  }
+  return a.every(
+    (shot, index) =>
+      shot.id === b[index]?.id &&
+      shot.label === b[index]?.label &&
+      shot.distance === b[index]?.distance,
+  );
+}
 
 export function ClubDetailsScreen({
   clubId,
@@ -45,6 +59,10 @@ export function ClubDetailsScreen({
   const [make, setMake] = useState(savedDetails.make);
   const [name, setName] = useState(savedDetails.name);
   const [distance, setDistance] = useState(savedDetails.distance);
+  const [shotTypes, setShotTypes] = useState<ClubShotType[]>(
+    () => savedDetails.shotTypes ?? [],
+  );
+  const [addShotVisible, setAddShotVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const clubTitle = useMemo(() => {
@@ -63,8 +81,18 @@ export function ClubDetailsScreen({
     () =>
       make !== savedDetails.make ||
       name !== savedDetails.name ||
-      distance !== savedDetails.distance,
-    [distance, make, name, savedDetails.distance, savedDetails.make, savedDetails.name],
+      distance !== savedDetails.distance ||
+      !shotTypesEqual(shotTypes, savedDetails.shotTypes ?? []),
+    [
+      distance,
+      make,
+      name,
+      savedDetails.distance,
+      savedDetails.make,
+      savedDetails.name,
+      savedDetails.shotTypes,
+      shotTypes,
+    ],
   );
 
   const handleDone = () => {
@@ -72,7 +100,7 @@ export function ClubDetailsScreen({
       return;
     }
 
-    updateClubDetails(clubId, { make, name, distance });
+    updateClubDetails(clubId, { make, name, distance, shotTypes });
     onDone();
   };
 
@@ -80,6 +108,30 @@ export function ClubDetailsScreen({
     removeClubFromBag(clubId);
     setDeleteModalVisible(false);
     onDone();
+  };
+
+  const handleAddShotType = (shot: { label: string; distance: number }) => {
+    setShotTypes((current) => [
+      ...current,
+      {
+        id: `shot-${Date.now()}-${current.length}`,
+        label: shot.label,
+        distance: shot.distance,
+      },
+    ]);
+    setAddShotVisible(false);
+  };
+
+  const handleShotDistanceChange = (shotId: string, nextDistance: number) => {
+    setShotTypes((current) =>
+      current.map((shot) =>
+        shot.id === shotId ? { ...shot, distance: nextDistance } : shot,
+      ),
+    );
+  };
+
+  const handleRemoveShotType = (shotId: string) => {
+    setShotTypes((current) => current.filter((shot) => shot.id !== shotId));
   };
 
   return (
@@ -96,7 +148,7 @@ export function ClubDetailsScreen({
         </Pressable>
 
         <Text numberOfLines={1} style={styles.headerTitle}>
-          Club details
+          {clubTitle === "this club" ? "Club details" : clubTitle}
         </Text>
 
         <Button
@@ -124,15 +176,62 @@ export function ClubDetailsScreen({
 
         <Input containerStyle={styles.fullWidthField} label="Name" value={name} onChangeText={setName} />
 
-        <NumberStepper
-          containerStyle={styles.fullWidthField}
-          label="Distance"
-          max={400}
-          min={50}
-          step={1}
-          value={distance}
-          onValueChange={setDistance}
-        />
+        <View style={styles.distanceRow}>
+          <NumberStepper
+            containerStyle={styles.distanceField}
+            label="Standard swing"
+            max={400}
+            min={50}
+            step={1}
+            value={distance}
+            onValueChange={setDistance}
+          />
+          <Button
+            accessibilityLabel="Add shot type"
+            iconOnly
+            label="Add shot type"
+            leadingIcon={
+              <Icon
+                color={colors.action.onPrimary}
+                name="plus"
+                size={iconSize.md}
+              />
+            }
+            size="md"
+            style={styles.addShotButton}
+            onPress={() => setAddShotVisible(true)}
+          />
+        </View>
+
+        {shotTypes.map((shot) => (
+          <View key={shot.id} style={styles.distanceRow}>
+            <NumberStepper
+              containerStyle={styles.distanceField}
+              label={shot.label}
+              max={400}
+              min={10}
+              step={1}
+              value={shot.distance}
+              onValueChange={(next) => handleShotDistanceChange(shot.id, next)}
+            />
+            <Pressable
+              accessibilityLabel={`Delete ${shot.label}`}
+              accessibilityRole="button"
+              hitSlop={4}
+              onPress={() => handleRemoveShotType(shot.id)}
+              style={({ pressed }) => [
+                styles.deleteShotButton,
+                pressed && styles.deleteShotButtonPressed,
+              ]}
+            >
+              <Icon
+                color={colors.action.destructive}
+                name="close"
+                size={iconSize.md}
+              />
+            </Pressable>
+          </View>
+        ))}
 
         <View style={styles.actionsSpacer} />
 
@@ -156,6 +255,13 @@ export function ClubDetailsScreen({
           </Pressable>
         </View>
       </ScrollView>
+
+      <AddShotTypeModal
+        defaultDistance={distance}
+        visible={addShotVisible}
+        onCancel={() => setAddShotVisible(false)}
+        onConfirm={handleAddShotType}
+      />
 
       <Modal
         body={`Are you sure you want to delete ${clubTitle} from your bag? This can't be undone.`}
@@ -218,6 +324,34 @@ const styles = StyleSheet.create({
   fullWidthField: {
     maxWidth: "100%",
     width: "100%",
+  },
+  distanceRow: {
+    alignItems: "flex-end",
+    flexDirection: "row",
+    gap: spacing.sm,
+    width: "100%",
+  },
+  distanceField: {
+    flex: 1,
+    maxWidth: "100%",
+  },
+  addShotButton: {
+    borderRadius: radii.lg,
+    marginBottom: 0,
+    minWidth: controlSize.md,
+    width: controlSize.md,
+  },
+  deleteShotButton: {
+    alignItems: "center",
+    borderColor: colors.border.error,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    height: controlSize.md,
+    justifyContent: "center",
+    width: controlSize.md,
+  },
+  deleteShotButtonPressed: {
+    backgroundColor: colors.feedback.errorBg,
   },
   actionsSpacer: {
     height: spacing.xl,

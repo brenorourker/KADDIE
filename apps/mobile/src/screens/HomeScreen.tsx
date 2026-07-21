@@ -41,7 +41,12 @@ type HomeScreenProps = {
   onOpenProfile?: () => void;
   onOpenPreferences?: () => void;
   onOpenMyBag?: () => void;
+  /** True when a round was left without ending — CTA becomes Resume. */
+  canResumeRound?: boolean;
+  /** Config for the paused round (shown on the card while resumable). */
+  resumeRoundConfig?: RoundConfig;
   onStartRound?: (config: RoundConfig) => void;
+  onResumeRound?: () => void;
 };
 
 function ActionTileIconImage({ source }: { source: ImageSourcePropType }) {
@@ -59,7 +64,10 @@ export function HomeScreen({
   onOpenProfile,
   onOpenPreferences,
   onOpenMyBag,
+  canResumeRound = false,
+  resumeRoundConfig,
   onStartRound,
+  onResumeRound,
 }: HomeScreenProps) {
   const { activePersona, bagClubCount } = usePersona();
   const homeData = activePersona.data.home;
@@ -68,6 +76,8 @@ export function HomeScreen({
   const [configureVisible, setConfigureVisible] = useState(false);
   const [roundConfig, setRoundConfig] = useState<RoundConfig>(activePersona.data.round);
   const myBagClubCount = bagClubCount;
+  const cardConfig =
+    canResumeRound && resumeRoundConfig ? resumeRoundConfig : roundConfig;
 
   const handleConfigureDone = (config: RoundConfig) => {
     setRoundConfig(config);
@@ -116,20 +126,20 @@ export function HomeScreen({
 
           <View style={styles.roundDetails}>
             <Text style={styles.roundClub}>
-              {getCourseLabel(roundConfig.course)}
+              {getCourseLabel(cardConfig.course)}
               <Text style={styles.roundMetaDivider}>   |   </Text>
-              {getTeeLabel(roundConfig.tees)}
+              {getTeeLabel(cardConfig.tees)}
             </Text>
             <Text style={styles.roundMeta}>
-              {formatPlayersSummary(roundConfig.golfers)}
+              {formatPlayersSummary(cardConfig.golfers)}
               <Text style={styles.roundMetaDivider}>   |   </Text>
-              {formatRoundFormatLabel(roundConfig.format)}
+              {formatRoundFormatLabel(cardConfig.format)}
             </Text>
           </View>
 
           <View style={styles.roundActions}>
             <Button
-              label="Start a round"
+              label={canResumeRound ? "Resume round" : "Start a round"}
               size="md"
               style={styles.startRoundButton}
               trailingIcon={
@@ -139,13 +149,20 @@ export function HomeScreen({
                   size={iconSize.md}
                 />
               }
-              onPress={() => onStartRound?.(roundConfig)}
+              onPress={() => {
+                if (canResumeRound) {
+                  onResumeRound?.();
+                  return;
+                }
+                onStartRound?.(roundConfig);
+              }}
             />
             <Button
               label="Configure"
               size="md"
               style={styles.configureButton}
               variant="secondary"
+              disabled={canResumeRound}
               onPress={() => setConfigureVisible(true)}
             />
           </View>

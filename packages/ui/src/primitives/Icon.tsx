@@ -15,8 +15,6 @@ export type IconProps = {
 
 function prepareSvg(svg: string, color: string) {
   return svg
-    .replace(/<g[^>]*>/g, "")
-    .replace(/<\/g>/g, "")
     .replace(/var\(--fill-0,\s*black\)/g, color)
     .replace(/preserveAspectRatio="none"/g, 'preserveAspectRatio="xMidYMid meet"');
 }
@@ -31,7 +29,15 @@ export function Icon({
     <View
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
-      style={[{ width: size, height: size }, style]}
+      style={[
+        {
+          width: size,
+          height: size,
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        style,
+      ]}
     >
       <SvgXml
         xml={prepareSvg(iconSources[name], color)}

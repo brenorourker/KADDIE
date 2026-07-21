@@ -340,6 +340,20 @@ function combinedBBox(paths) {
 
 function pathsUseFrameCoordinates(paths, frameW, frameH, tolerance = 0.5) {
   const bbox = combinedBBox(paths);
+  const width = bbox.maxX - bbox.minX;
+  const height = bbox.maxY - bbox.minY;
+  const centerX = (bbox.minX + bbox.maxX) / 2;
+  const centerY = (bbox.minY + bbox.maxY) / 2;
+  const isSmallGlyph =
+    width < frameW - tolerance * 2 || height < frameH - tolerance * 2;
+  const isCentered =
+    Math.abs(centerX - frameW / 2) <= 2.5 &&
+    Math.abs(centerY - frameH / 2) <= 2.5;
+
+  if (isSmallGlyph && !isCentered) {
+    return false;
+  }
+
   return (
     bbox.minX >= -tolerance &&
     bbox.minY >= -tolerance &&
@@ -422,18 +436,123 @@ function formatPath({ d, evenodd }) {
   return `    <path d="${d}" fill="var(--fill-0, black)"/>`;
 }
 
-export function renderIconSvg(layout) {
-  const pathMarkup = processPaths(layout.paths).map(formatPath).join("\n");
-  const viewBox = layout.viewBox ?? `0 0 ${layout.w} ${layout.h}`;
+function renderFlatSvg(paths) {
+  const pathMarkup = paths.map(formatPath).join("\n");
+  return `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n${pathMarkup.replace(/^    /gm, "  ")}\n</svg>\n`;
+}
 
-  if (layout.w === 24 && layout.h === 24 && layout.x === 0 && layout.y === 0) {
-    return `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">\n${pathMarkup.replace(/^    /gm, "  ")}\n</svg>\n`;
+function offsetPathD(d, dx, dy) {
+  const tokens = d.match(/[a-zA-Z]|-?\d*\.?\d+(?:e[-+]?\d+)?/g) || [];
+  const result = [];
+  let i = 0;
+
+  while (i < tokens.length) {
+    const token = tokens[i++];
+    if (!/[a-zA-Z]/.test(token)) {
+      continue;
+    }
+
+    const command = token.toUpperCase();
+    result.push(token);
+
+    if (command === "Z") {
+      continue;
+    }
+
+    const count = COMMAND_LENGTHS[command];
+    if (count === undefined) {
+      continue;
+    }
+
+    if (command === "H") {
+      for (let p = 0; p < count; p++) {
+        result.push(round(parseFloat(tokens[i++]) + dx));
+      }
+      continue;
+    }
+
+    if (command === "V") {
+      for (let p = 0; p < count; p++) {
+        result.push(round(parseFloat(tokens[i++]) + dy));
+      }
+      continue;
+    }
+
+    for (let p = 0; p < count; p += 2) {
+      result.push(round(parseFloat(tokens[i++]) + dx));
+      result.push(round(parseFloat(tokens[i++]) + dy));
+    }
   }
 
+  return result.join(" ");
+}
+
+function bakeLayoutTranslation(layout, paths) {
+  const viewBox = parseViewBoxString(
+    layout.viewBox ?? `0 0 ${layout.w} ${layout.h}`,
+  );
+  const scaleX = layout.w / viewBox.w;
+  const scaleY = layout.h / viewBox.h;
+
+  if (Math.abs(scaleX - 1) > 0.001 || Math.abs(scaleY - 1) > 0.001) {
+    return null;
+  }
+
+  const dx = layout.x - viewBox.x * scaleX;
+  const dy = layout.y - viewBox.y * scaleY;
+
+  return paths.map((entry) => ({
+    ...entry,
+    d: offsetPathD(entry.d, dx, dy),
+  }));
+}
+
+/** Paths already positioned in the outer 24×24 frame (Figma crop viewBox). */
+function pathsAreInAbsoluteFrameSpace(layout, pathStrings) {
+  const viewBox = parseViewBoxString(
+    layout.viewBox ?? `0 0 ${layout.w} ${layout.h}`,
+  );
+  if (viewBox.x > 0.5 || viewBox.y > 0.5) {
+    return pathsUseFrameCoordinates(pathStrings, 24, 24);
+  }
+  return false;
+}
+
+export function renderIconSvg(layout) {
+  const processedPaths = processPaths(layout.paths);
+  const pathStrings = processedPaths.map((entry) => entry.d);
+
+  if (pathsAreInAbsoluteFrameSpace(layout, pathStrings)) {
+    return renderFlatSvg(processedPaths);
+  }
+
+  const bakedPaths = bakeLayoutTranslation(layout, processedPaths);
+  if (
+    bakedPaths &&
+    pathsUseFrameCoordinates(
+      bakedPaths.map((entry) => entry.d),
+      24,
+      24,
+    )
+  ) {
+    return renderFlatSvg(bakedPaths);
+  }
+
+  if (layout.w === 24 && layout.h === 24 && layout.x === 0 && layout.y === 0) {
+    return renderFlatSvg(processedPaths);
+  }
+
+  const viewBox = parseViewBoxString(
+    layout.viewBox ?? `0 0 ${layout.w} ${layout.h}`,
+  );
+  const scaleX = layout.w / viewBox.w;
+  const scaleY = layout.h / viewBox.h;
+  const pathMarkup = processedPaths.map(formatPath).join("\n");
+
   return `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <svg x="${layout.x}" y="${layout.y}" width="${layout.w}" height="${layout.h}" viewBox="${viewBox}">
+  <g transform="translate(${layout.x}, ${layout.y}) scale(${round(scaleX)}, ${round(scaleY)}) translate(${round(-viewBox.x)}, ${round(-viewBox.y)})">
 ${pathMarkup}
-  </svg>
+  </g>
 </svg>
 `;
 }
@@ -488,6 +607,14 @@ export function validateNormalizedSvg(name, svg) {
 
   if (/\sZ\s+M\s+M/i.test(svg)) {
     throw new Error(`${name}: corrupted compound path join`);
+  }
+
+  if (/<svg[^>]*>\s*<svg/i.test(svg)) {
+    throw new Error(`${name}: nested <svg> elements are not supported on native`);
+  }
+
+  if (/<g\s+transform=/i.test(svg)) {
+    throw new Error(`${name}: <g transform> should be baked into flat paths for native`);
   }
 }
 

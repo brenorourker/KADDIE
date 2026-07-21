@@ -10,7 +10,10 @@ export const inRoundLayout = {
   /** Status bar band in the Figma iPhone reference frame. */
   headerDesignStatusBar: 47,
   tabBarHeight: 90,
-  fabBottomOffset: 98,
+  /** Gap between FAB bottom edge and top of the tab bar. */
+  fabGapAboveTabBar: 24,
+  /** Absolute bottom offset for FABs above the tab bar (tabBarHeight + gap). */
+  fabBottomOffset: 90 + 24,
   fabHorizontalInset: 12,
   /** Gap between GPS marker bottom edge and bottom sheet top (Figma). */
   gpsGapAboveSheet: 30,

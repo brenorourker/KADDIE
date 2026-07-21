@@ -31,11 +31,20 @@ export function getClubDetails(
   const resolvedId = resolveClubId(clubId);
 
   if (clubId in clubDetails) {
-    return clubDetails[clubId];
+    const details = clubDetails[clubId];
+    return {
+      ...details,
+      shotTypes: details.shotTypes ?? [],
+    };
   }
 
   if (resolvedId in clubDetails) {
-    return { ...clubDetails[resolvedId], id: clubId };
+    const details = clubDetails[resolvedId];
+    return {
+      ...details,
+      id: clubId,
+      shotTypes: details.shotTypes ?? [],
+    };
   }
 
   return {
@@ -44,6 +53,7 @@ export function getClubDetails(
     make: "callaway",
     name: "",
     distance: 150,
+    shotTypes: [],
   };
 }
 

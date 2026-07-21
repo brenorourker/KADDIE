@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+import { StyleSheet, View } from "react-native";
 import { Playground } from "../playground";
 import { PersonaProvider, usePersona } from "../personas/PersonaProvider";
 import { AddClubScreen } from "../screens/AddClubScreen";
@@ -40,10 +41,14 @@ function AppShellContent() {
   const [activeRoundConfig, setActiveRoundConfig] = useState<RoundConfig>(
     () => activePersona.data.round,
   );
+  const [hasActiveRound, setHasActiveRound] = useState(false);
+  const [roundSessionKey, setRoundSessionKey] = useState(0);
 
   const launchRoute = (nextRoute: AppRoute) => {
     if (nextRoute === "round") {
       setActiveRoundConfig(activePersona.data.round);
+      setRoundSessionKey((key) => key + 1);
+      setHasActiveRound(true);
     }
     setRoute(nextRoute);
   };
@@ -55,21 +60,35 @@ function AppShellContent() {
 
   const goHome = () => setRoute("home");
 
-  if (route === "playground") {
-    return <Playground onClose={goHome} />;
-  }
+  const startRound = (config: RoundConfig) => {
+    setActiveRoundConfig(config);
+    setRoundSessionKey((key) => key + 1);
+    setHasActiveRound(true);
+    setRoute("round");
+  };
 
-  if (route === "add-club") {
-    return (
+  const resumeRound = () => setRoute("round");
+
+  const leaveRound = () => setRoute("main");
+
+  const endRound = () => {
+    setHasActiveRound(false);
+    setRoute("main");
+  };
+
+  let screen: ReactNode = null;
+
+  if (route === "playground") {
+    screen = <Playground onClose={goHome} />;
+  } else if (route === "add-club") {
+    screen = (
       <AddClubScreen
         onBack={() => setRoute("my-bag")}
         onDone={() => setRoute("my-bag")}
       />
     );
-  }
-
-  if (route === "club-details") {
-    return (
+  } else if (route === "club-details") {
+    screen = (
       <ClubDetailsScreen
         key={selectedClubId}
         clubId={selectedClubId}
@@ -77,10 +96,8 @@ function AppShellContent() {
         onDone={() => setRoute("my-bag")}
       />
     );
-  }
-
-  if (route === "my-bag") {
-    return (
+  } else if (route === "my-bag") {
+    screen = (
       <MyBagScreen
         onAddClub={() => setRoute("add-club")}
         onBack={() => setRoute("main")}
@@ -90,51 +107,37 @@ function AppShellContent() {
         }}
       />
     );
-  }
-
-  if (route === "preferences") {
-    return (
+  } else if (route === "preferences") {
+    screen = (
       <PreferencesScreen
         onBack={() => setRoute("main")}
         onOpenProfile={() => openProfile("preferences")}
       />
     );
-  }
-
-  if (route === "profile") {
-    return (
+  } else if (route === "profile") {
+    screen = (
       <ProfileScreen
         onBack={() => setRoute(profileReturnRoute)}
-        onLogOut={() => setRoute("login")}
-      />
-    );
-  }
-
-  if (route === "round") {
-    return (
-      <InRoundShell
-        roundConfig={activeRoundConfig}
-        onEndRound={() => setRoute("main")}
-      />
-    );
-  }
-
-  if (route === "main") {
-    return (
-      <HomeScreen
-        onOpenMyBag={() => setRoute("my-bag")}
-        onOpenPreferences={() => setRoute("preferences")}
-        onOpenProfile={() => openProfile("main")}
-        onStartRound={(config) => {
-          setActiveRoundConfig(config);
-          setRoute("round");
+        onLogOut={() => {
+          setHasActiveRound(false);
+          setRoute("login");
         }}
       />
     );
-  }
-
-  if (route === "login") {
-    return (
+  } else if (route === "main") {
+    screen = (
+      <HomeScreen
+        canResumeRound={hasActiveRound}
+        resumeRoundConfig={hasActiveRound ? activeRoundConfig : undefined}
+        onOpenMyBag={() => setRoute("my-bag")}
+        onOpenPreferences={() => setRoute("preferences")}
+        onOpenProfile={() => openProfile("main")}
+        onResumeRound={resumeRound}
+        onStartRound={startRound}
+      />
+    );
+  } else if (route === "login") {
+    screen = (
       <LogInScreen
         key={activePersona.id}
         onCreateAccount={() => setRoute("create-account")}
@@ -142,10 +145,8 @@ function AppShellContent() {
         onSignIn={() => setRoute("main")}
       />
     );
-  }
-
-  if (route === "create-account") {
-    return (
+  } else if (route === "create-account") {
+    screen = (
       <CreateAccountScreen
         onAccountCreated={(email) => {
           setPendingVerificationEmail(email);
@@ -155,20 +156,16 @@ function AppShellContent() {
         onSignIn={() => setRoute("login")}
       />
     );
-  }
-
-  if (route === "verify-email") {
-    return (
+  } else if (route === "verify-email") {
+    screen = (
       <VerifyEmailScreen
         email={pendingVerificationEmail ?? activePersona.data.auth.email}
         onBack={() => setRoute("create-account")}
         onChangeEmail={() => setRoute("create-account")}
       />
     );
-  }
-
-  if (route === "onboarding" || route === "onboarding-location") {
-    return (
+  } else if (route === "onboarding" || route === "onboarding-location") {
+    screen = (
       <OnboardingFlow
         key={activePersona.id}
         initialStep={route === "onboarding-location" ? 1 : 0}
@@ -177,30 +174,75 @@ function AppShellContent() {
         onSkip={() => setRoute("main")}
       />
     );
-  }
-
-  if (route === "forgot-password") {
-    return (
+  } else if (route === "forgot-password") {
+    screen = (
       <ForgotPasswordScreen
         onBack={() => setRoute("login")}
         onResetCodeSent={() => setRoute("reset-password")}
       />
     );
-  }
-
-  if (route === "reset-password") {
-    return (
+  } else if (route === "reset-password") {
+    screen = (
       <ResetPasswordScreen
         onBack={() => setRoute("login")}
         onReset={() => setRoute("login")}
       />
     );
+  } else if (route !== "round") {
+    screen = (
+      <AppHome
+        onLaunch={launchRoute}
+        onOpenPlayground={() => setRoute("playground")}
+      />
+    );
   }
 
   return (
-    <AppHome
-      onLaunch={launchRoute}
-      onOpenPlayground={() => setRoute("playground")}
-    />
+    <View style={styles.root}>
+      {hasActiveRound ? (
+        <View
+          pointerEvents={route === "round" ? "auto" : "none"}
+          style={[
+            styles.layer,
+            route === "round" ? styles.layerActive : styles.layerPaused,
+          ]}
+        >
+          <InRoundShell
+            key={roundSessionKey}
+            isActive={route === "round"}
+            roundConfig={activeRoundConfig}
+            onLeaveRound={leaveRound}
+            onEndRound={endRound}
+            onLogOut={() => {
+              setHasActiveRound(false);
+              setRoute("login");
+            }}
+            onUpdateRoundConfig={setActiveRoundConfig}
+          />
+        </View>
+      ) : null}
+
+      {route !== "round" && screen ? (
+        <View style={styles.layer}>{screen}</View>
+      ) : null}
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+  layer: {
+    flex: 1,
+  },
+  layerActive: {
+    zIndex: 1,
+  },
+  /** Keep the round mounted without display:none (breaks presses on web after resume). */
+  layerPaused: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0,
+    zIndex: 0,
+  },
+});

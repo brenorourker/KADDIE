@@ -30,7 +30,7 @@ type PersonaContextValue = {
   clubDetails: Record<string, ClubDetails>;
   updateClubDetails: (
     clubId: string,
-    updates: Pick<ClubDetails, "make" | "name" | "distance">,
+    updates: Partial<Pick<ClubDetails, "make" | "name" | "distance" | "shotTypes">>,
   ) => void;
   removeClubFromBag: (clubId: string) => void;
   bagClubCount: number;
@@ -76,7 +76,7 @@ export function PersonaProvider({ children }: PersonaProviderProps) {
   const updateClubDetails = useCallback(
     (
       clubId: string,
-      updates: Pick<ClubDetails, "make" | "name" | "distance">,
+      updates: Partial<Pick<ClubDetails, "make" | "name" | "distance" | "shotTypes">>,
     ) => {
       setClubDetailsOverrides((current) => {
         const mergedDetails = {

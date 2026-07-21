@@ -16,7 +16,7 @@ export function RoundMapScreen() {
   const insets = useSafeAreaInsets();
   const { sheetExpanded } = useRoundMap();
   const window = useWindowDimensions();
-  const { animatedHeight, expandProgress, fabBottom } =
+  const { animatedHeight, expandProgress, fabBottom, snapTo } =
     useAnimatedSheetHeight(sheetExpanded);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
   const [bottomSheetHeight, setBottomSheetHeight] = useState(
@@ -70,6 +70,7 @@ export function RoundMapScreen() {
         <RoundBottomSheet
           animatedHeight={animatedHeight}
           expandProgress={expandProgress}
+          snapTo={snapTo}
         />
 
         <CaddieFab animatedBottom={fabBottom} />

@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
+  Platform,
   Pressable,
   PressableProps,
   StyleSheet,
@@ -180,6 +181,12 @@ export function Button({
   };
 
   const isGhost = variant === "ghost";
+  const labelLineHeight = sizeStyles.label.lineHeight;
+  const iconSlotSize = Math.max(
+    leadingIcon ? leadingSlotSize : 0,
+    trailingIcon ? trailingSlotSize : 0,
+  );
+  const contentHeight = Math.max(iconSlotSize, labelLineHeight);
 
   const animatedBackgroundColor = isDisabled
     ? backgroundColor
@@ -232,7 +239,18 @@ export function Button({
       {loading ? (
         <ActivityIndicator color={textColor} />
       ) : (
-        <>
+        <View
+          style={[
+            styles.content,
+            {
+              gap: sizeStyles.gap,
+              height: contentHeight,
+            },
+            Platform.OS === "ios"
+              ? { transform: [{ translateY: size === "sm" ? 1 : 0.5 }] }
+              : null,
+          ]}
+        >
           {leadingIcon ? (
             <View
               style={{
@@ -246,16 +264,24 @@ export function Button({
             </View>
           ) : null}
           {!iconOnly ? (
-            <Text
-              numberOfLines={1}
-              style={[
-                sizeStyles.label,
-                styles.label,
-                { color: textColor },
-              ]}
-            >
-              {label}
-            </Text>
+            <View style={[styles.labelWrap, { height: contentHeight }]}>
+              <Text
+                numberOfLines={1}
+                style={[
+                  sizeStyles.label,
+                  styles.label,
+                  {
+                    color: textColor,
+                    lineHeight: labelLineHeight,
+                    ...(Platform.OS === "android"
+                      ? { includeFontPadding: false }
+                      : null),
+                  },
+                ]}
+              >
+                {label}
+              </Text>
+            </View>
           ) : null}
           {trailingIcon ? (
             <View
@@ -269,7 +295,7 @@ export function Button({
               {trailingIcon}
             </View>
           ) : null}
-        </>
+        </View>
       )}
     </Pressable>
   );
@@ -285,6 +311,14 @@ const styles = StyleSheet.create({
   },
   background: {
     ...StyleSheet.absoluteFillObject,
+  },
+  content: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  labelWrap: {
+    justifyContent: "center",
   },
   label: {
     flexShrink: 0,

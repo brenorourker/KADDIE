@@ -116,7 +116,10 @@ export function Badge({
     >
       <Text
         numberOfLines={1}
-        style={[styles.label, { color: badgeColors.textColor }]}
+        style={[
+          type === "count" ? styles.countLabel : styles.label,
+          { color: badgeColors.textColor },
+        ]}
       >
         {text}
       </Text>
@@ -147,5 +150,12 @@ const styles = StyleSheet.create({
   },
   label: {
     ...typography.badgeLabel,
+  },
+  countLabel: {
+    ...typography.badgeLabel,
+    height: controlSize.badgeCount,
+    lineHeight: controlSize.badgeCount,
+    textAlign: "center",
+    includeFontPadding: false,
   },
 });

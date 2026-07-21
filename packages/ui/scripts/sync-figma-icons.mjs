@@ -55,6 +55,10 @@ const FIGMA_ICONS = {
   pin: "https://www.figma.com/api/mcp/asset/8e046cd4-4e3c-44ed-bf4a-ab27287f53a4",
   scorecard:
     "https://www.figma.com/api/mcp/asset/02b17045-0775-4986-9008-3e7b366fcf47",
+  // In-round menu (node 1827:2119) — preferences gear + exit
+  preferences:
+    "https://www.figma.com/api/mcp/asset/ab4fcb4b-e495-4965-9b73-5b45600fce42",
+  exit: "https://www.figma.com/api/mcp/asset/66158790-4eb0-4b77-b715-aff1b4729c27",
 };
 
 async function download(url) {

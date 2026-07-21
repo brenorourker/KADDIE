@@ -239,6 +239,7 @@ const styles = StyleSheet.create({
   segmentPill: {
     height: controlSize.sm,
     borderRadius: radii.full,
+    paddingHorizontal: spacing.sm,
   },
   segmentFilled: {
     height: "100%",
@@ -256,5 +257,6 @@ const styles = StyleSheet.create({
   label: {
     ...typography.labelDefault,
     letterSpacing: 0.028,
+    flexShrink: 0,
   },
 });

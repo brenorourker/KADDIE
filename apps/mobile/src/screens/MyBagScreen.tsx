@@ -1,4 +1,5 @@
 import {
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -8,6 +9,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
+  Badge,
   Button,
   colors,
   controlSize,
@@ -127,6 +129,41 @@ function ClubGroup({
   );
 }
 
+function ImportDistancesCard() {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Import club distances. Coming soon."
+      onPress={() =>
+        Alert.alert(
+          "Coming soon",
+          "Third-party imports aren’t ready yet. You’ll be able to sync your distances from apps like Arccos, Shot Scope, and Garmin.",
+        )
+      }
+      style={({ pressed }) => [
+        styles.importCard,
+        pressed && styles.rowPressed,
+      ]}
+    >
+      <View style={styles.importIconWrap}>
+        <Icon color={colors.text.secondary} name="preferences" size={iconSize.md} />
+      </View>
+
+      <View style={styles.rowText}>
+        <View style={styles.importTitleRow}>
+          <Text style={styles.rowTitle}>Import club distances</Text>
+          <Badge color="info" label="Coming soon" type="status" />
+        </View>
+        <Text style={styles.rowModel}>
+          Link Arccos, Shot Scope, or Garmin to fill in your bag automatically.
+        </Text>
+      </View>
+
+      <Icon color={colors.text.primary} name="chevron-right" size={iconSize.md} />
+    </Pressable>
+  );
+}
+
 function BagSectionList({
   section,
   onClubPress,
@@ -191,6 +228,8 @@ export function MyBagScreen({ onBack, onAddClub, onOpenClubDetails }: MyBagScree
             onClubPress={handleClubPress}
           />
         ))}
+
+        <ImportDistancesCard />
       </ScrollView>
     </View>
   );
@@ -281,5 +320,31 @@ const styles = StyleSheet.create({
   rowModel: {
     ...typography.bodySmall,
     color: colors.text.secondary,
+  },
+  importCard: {
+    alignItems: "center",
+    backgroundColor: colors.background.surface,
+    borderColor: colors.border.default,
+    borderRadius: radii.lg,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: spacing.md,
+    overflow: "hidden",
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+  },
+  importIconWrap: {
+    alignItems: "center",
+    backgroundColor: colors.feedback.infoBg,
+    borderRadius: radii.full,
+    height: CLUB_THUMBNAIL_SIZE,
+    justifyContent: "center",
+    width: CLUB_THUMBNAIL_SIZE,
+  },
+  importTitleRow: {
+    alignItems: "center",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.xs,
   },
 });

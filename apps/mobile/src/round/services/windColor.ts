@@ -29,3 +29,23 @@ export const DEMO_WIND_SPEEDS = [8, 17, 25, 38, 52, 65] as const;
 export function demoWindKphForHole(holeNumber: number): number {
   return DEMO_WIND_SPEEDS[(holeNumber - 1) % DEMO_WIND_SPEEDS.length];
 }
+
+/** 8-point compass — degrees clockwise from north (wind blows toward). */
+export const DEMO_WIND_BEARINGS = [
+  { label: "N", deg: 0 },
+  { label: "NE", deg: 45 },
+  { label: "E", deg: 90 },
+  { label: "SE", deg: 135 },
+  { label: "S", deg: 180 },
+  { label: "SW", deg: 225 },
+  { label: "W", deg: 270 },
+  { label: "NW", deg: 315 },
+] as const;
+
+export function demoWindBearingDegForHole(holeNumber: number): number {
+  return DEMO_WIND_BEARINGS[(holeNumber - 1) % DEMO_WIND_BEARINGS.length].deg;
+}
+
+export function demoWindBearingLabelForHole(holeNumber: number): string {
+  return DEMO_WIND_BEARINGS[(holeNumber - 1) % DEMO_WIND_BEARINGS.length].label;
+}

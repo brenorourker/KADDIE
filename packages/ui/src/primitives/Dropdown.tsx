@@ -11,6 +11,7 @@ import {
 import {
   colors,
   controlSize,
+  iconSize,
   radii,
   spacing,
   typography,
@@ -201,10 +202,12 @@ export function Dropdown({
           {isOpen ? (
             <ChevronUp
               color={disabled ? colors.text.disabled : colors.text.primary}
+              size={iconSize.md}
             />
           ) : (
             <ChevronDown
               color={disabled ? colors.text.disabled : colors.text.primary}
+              size={iconSize.md}
             />
           )}
         </Pressable>
@@ -289,7 +292,7 @@ const styles = StyleSheet.create({
     color: colors.text.disabled,
   },
   field: {
-    minHeight: controlSize.md,
+    height: controlSize.md,
     paddingHorizontal: spacing.md,
     borderRadius: radii.sm,
     flexDirection: "row",
@@ -299,6 +302,8 @@ const styles = StyleSheet.create({
   fieldText: {
     ...typography.bodyDefault,
     flex: 1,
+    lineHeight: controlSize.md,
+    includeFontPadding: false,
   },
   fieldTextValue: {
     color: colors.text.primary,

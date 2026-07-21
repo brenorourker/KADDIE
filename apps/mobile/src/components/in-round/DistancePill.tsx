@@ -16,6 +16,7 @@ const variantStyles: Record<
   secondary: { backgroundColor: "#ECCBA4", color: "#000000" },
   hazard: { backgroundColor: "#DC2626", color: "#FFFFFF" },
   dark: { backgroundColor: "#0F172A", color: "#FFFFFF" },
+  information: { backgroundColor: "#0F172A", color: "#FFFFFF" },
 };
 
 export function DistancePill({ label, variant = "primary", style }: DistancePillProps) {

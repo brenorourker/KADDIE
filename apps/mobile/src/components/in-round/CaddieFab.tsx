@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Animated, StyleSheet, View } from "react-native";
 import { Icon, Modal, iconSize } from "@kaddie/ui";
+import { useVoiceMode } from "../../round/hooks/useVoiceMode";
+import { useRoundMap } from "../../round/RoundMapProvider";
+import { getVoiceModeResponse } from "../../round/services/voiceModeResponses";
 import { inRoundColors, inRoundLayout } from "../../round/inRoundTheme";
 import { LiquidGlassFab } from "./LiquidGlassFab";
 import { SparkleIcon } from "./SparkleIcon";
+import { VoiceModeOverlay } from "./voice/VoiceModeOverlay";
 
 type CaddieFabProps = {
   bottomInset?: number;
@@ -17,8 +21,29 @@ export function CaddieFab({
   animatedBottom,
 }: CaddieFabProps) {
   const [assistantVisible, setAssistantVisible] = useState(false);
+  const {
+    currentHole,
+    displayDistances,
+    clubRecommendation,
+  } = useRoundMap();
+
+  const voiceMode = useVoiceMode({
+    getResponse: useCallback(
+      (index) =>
+        getVoiceModeResponse(
+          {
+            hole: currentHole,
+            distances: displayDistances,
+            clubRecommendation,
+          },
+          index,
+        ),
+      [clubRecommendation, currentHole, displayDistances],
+    ),
+  });
+
   const staticBottom =
-    bottomOffset ?? inRoundLayout.fabBottomOffset + bottomInset;
+    bottomOffset ?? inRoundLayout.fabBottomOffset;
 
   const Container = animatedBottom ? Animated.View : View;
   const containerStyle = animatedBottom
@@ -37,11 +62,20 @@ export function CaddieFab({
 
         <LiquidGlassFab
           accessibilityLabel="Open voice assistant"
-          onPress={() => setAssistantVisible(true)}
+          onPress={voiceMode.open}
         >
           <Icon color={inRoundColors.textInverse} name="microphone" size={iconSize.lg} />
         </LiquidGlassFab>
       </Container>
+
+      <VoiceModeOverlay
+        response={voiceMode.response}
+        state={voiceMode.state}
+        visible={voiceMode.visible}
+        onClose={voiceMode.close}
+        onMicPress={voiceMode.toggleMic}
+        onSubmitText={voiceMode.submitText}
+      />
 
       <Modal
         body="Your AI caddie assistant will be available here soon."

@@ -79,12 +79,21 @@ export type PreferencesPersonaData = {
   };
 };
 
+export type ClubShotType = {
+  id: string;
+  label: string;
+  distance: number;
+};
+
 export type ClubDetails = {
   id: string;
   intro: string;
   make: string;
   name: string;
+  /** Standard full-swing carry distance (yards). */
   distance: number;
+  /** Extra shot shapes / partials for richer club picking. */
+  shotTypes?: ClubShotType[];
 };
 
 export type AddClubOption = {

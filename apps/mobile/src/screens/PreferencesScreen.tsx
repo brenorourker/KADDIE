@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import {
   Alert,
   Pressable,
@@ -11,125 +11,31 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   AppBar,
   Avatar,
-  Badge,
   colors,
   Icon,
   iconSize,
   radii,
   spacing,
-  Switch,
   ToggleButton,
   typography,
 } from "@kaddie/ui";
 import { usePersona } from "../personas/PersonaProvider";
+import {
+  PreferenceSectionScreen,
+  type PreferenceSectionId,
+} from "./preferences";
+import {
+  preferenceScreenStyles,
+  SettingsGroup,
+  SettingsRow,
+  SettingsSection,
+  SettingsSwitchRow,
+} from "./preferences/settingsChrome";
 
 type PreferencesScreenProps = {
   onBack: () => void;
   onOpenProfile: () => void;
 };
-
-type SettingsSectionProps = {
-  label: string;
-};
-
-type SettingsGroupProps = {
-  children: ReactNode;
-};
-
-type SettingsRowProps = {
-  title: string;
-  supportingText?: string;
-  value?: string;
-  badgeCount?: number;
-  showChevron?: boolean;
-  isLast?: boolean;
-  onPress?: () => void;
-  trailing?: ReactNode;
-};
-
-function SettingsSection({ label }: SettingsSectionProps) {
-  return <Text style={styles.sectionLabel}>{label}</Text>;
-}
-
-function SettingsGroup({ children }: SettingsGroupProps) {
-  return <View style={styles.group}>{children}</View>;
-}
-
-function SettingsRow({
-  title,
-  supportingText,
-  value,
-  badgeCount,
-  showChevron = true,
-  isLast = false,
-  onPress,
-  trailing,
-}: SettingsRowProps) {
-  const isInteractive = Boolean(onPress);
-  const content = (
-    <>
-      <View style={styles.rowText}>
-        <Text style={styles.rowTitle}>{title}</Text>
-        {supportingText ? (
-          <Text style={styles.rowSupporting}>{supportingText}</Text>
-        ) : null}
-      </View>
-      {value ? <Text style={styles.rowValue}>{value}</Text> : null}
-      {badgeCount !== undefined ? (
-        <Badge color="error" count={badgeCount} type="count" />
-      ) : null}
-      {trailing}
-      {showChevron && !trailing ? (
-        <Icon color={colors.text.primary} name="chevron-right" size={iconSize.md} />
-      ) : null}
-    </>
-  );
-
-  if (!isInteractive) {
-    return (
-      <View style={[styles.row, !isLast && styles.rowBorder]}>
-        {content}
-      </View>
-    );
-  }
-
-  return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.row,
-        !isLast && styles.rowBorder,
-        pressed && styles.rowPressed,
-      ]}
-    >
-      {content}
-    </Pressable>
-  );
-}
-
-function SettingsSwitchRow({
-  title,
-  value,
-  onValueChange,
-  isLast = false,
-}: {
-  title: string;
-  value: boolean;
-  onValueChange: (next: boolean) => void;
-  isLast?: boolean;
-}) {
-  return (
-    <View style={[styles.row, !isLast && styles.rowBorder]}>
-      <Text style={[styles.rowTitle, styles.rowTitleFlex]}>{title}</Text>
-      <Switch
-        accessibilityLabel={title}
-        onValueChange={onValueChange}
-        value={value}
-      />
-    </View>
-  );
-}
 
 export function PreferencesScreen({ onBack, onOpenProfile }: PreferencesScreenProps) {
   const { activePersona } = usePersona();
@@ -140,18 +46,33 @@ export function PreferencesScreen({ onBack, onOpenProfile }: PreferencesScreenPr
   const [windIndex, setWindIndex] = useState(0);
   const [adjustForWeather, setAdjustForWeather] = useState(true);
   const [autoUpdateClubDistances, setAutoUpdateClubDistances] = useState(true);
+  const [activeSection, setActiveSection] =
+    useState<PreferenceSectionId | null>(null);
 
   const showComingSoon = (label: string) => {
     Alert.alert(label, "Not connected yet.");
   };
 
+  if (activeSection) {
+    return (
+      <PreferenceSectionScreen
+        sectionId={activeSection}
+        onBack={() => setActiveSection(null)}
+        onOpenSection={setActiveSection}
+      />
+    );
+  }
+
   return (
-    <View style={styles.root}>
+    <View style={preferenceScreenStyles.root}>
       <AppBar title="Preferences" onLeadingPress={onBack} />
 
       <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: bottomPadding }]}
-        style={styles.scroll}
+        contentContainerStyle={[
+          preferenceScreenStyles.scrollContent,
+          { paddingBottom: bottomPadding },
+        ]}
+        style={preferenceScreenStyles.scroll}
       >
         <Pressable
           accessibilityRole="button"
@@ -211,17 +132,17 @@ export function PreferencesScreen({ onBack, onOpenProfile }: PreferencesScreenPr
           <SettingsRow
             title="Language"
             value={preferencesData.myKaddie.language}
-            onPress={() => showComingSoon("Language")}
+            onPress={() => setActiveSection("language")}
           />
           <SettingsRow
             title="Personality"
             value={preferencesData.myKaddie.personality}
-            onPress={() => showComingSoon("Personality")}
+            onPress={() => setActiveSection("personality")}
           />
           <SettingsRow
             isLast
             title="Parameters"
-            onPress={() => showComingSoon("Parameters")}
+            onPress={() => setActiveSection("parameters")}
           />
         </SettingsGroup>
 
@@ -230,22 +151,17 @@ export function PreferencesScreen({ onBack, onOpenProfile }: PreferencesScreenPr
           <SettingsRow
             title="Subscription"
             value={preferencesData.account.subscription}
-            onPress={() => showComingSoon("Subscription")}
+            onPress={() => setActiveSection("subscription")}
           />
           <SettingsRow
             badgeCount={preferencesData.account.notificationCount}
             title="Notifications"
-            onPress={() => showComingSoon("Notifications")}
-          />
-          <SettingsRow
-            title="Privacy & security"
-            onPress={() => showComingSoon("Privacy & security")}
+            onPress={() => setActiveSection("notifications")}
           />
           <SettingsRow
             isLast
-            supportingText={preferencesData.account.linkedAccount}
-            title="Linked accounts"
-            onPress={() => showComingSoon("Linked accounts")}
+            title="Privacy & security"
+            onPress={() => setActiveSection("privacy")}
           />
         </SettingsGroup>
 
@@ -253,17 +169,17 @@ export function PreferencesScreen({ onBack, onOpenProfile }: PreferencesScreenPr
         <SettingsGroup>
           <SettingsRow
             title="Help center"
-            onPress={() => showComingSoon("Help center")}
+            onPress={() => setActiveSection("help")}
           />
           <SettingsRow
             title="Contact support"
-            onPress={() => showComingSoon("Contact support")}
+            onPress={() => setActiveSection("contact")}
           />
           <SettingsRow
             isLast
             title="About"
             value={preferencesData.support.version}
-            onPress={() => showComingSoon("About")}
+            onPress={() => setActiveSection("about")}
           />
         </SettingsGroup>
       </ScrollView>
@@ -271,22 +187,9 @@ export function PreferencesScreen({ onBack, onOpenProfile }: PreferencesScreenPr
   );
 }
 
-const UNITS_TOGGLE_WIDTH = 143;
+const UNITS_TOGGLE_WIDTH = 162;
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background.muted,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    gap: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-  },
   profileCard: {
     alignItems: "center",
     backgroundColor: colors.background.surface,
@@ -310,18 +213,6 @@ const styles = StyleSheet.create({
     ...typography.bodySmall,
     color: colors.text.secondary,
   },
-  sectionLabel: {
-    ...typography.caption,
-    color: colors.text.tertiary,
-    textTransform: "uppercase",
-  },
-  group: {
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.default,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
   row: {
     alignItems: "center",
     flexDirection: "row",
@@ -339,11 +230,6 @@ const styles = StyleSheet.create({
   rowPressed: {
     backgroundColor: colors.background.muted,
   },
-  rowText: {
-    flex: 1,
-    gap: spacing.xxs,
-    minWidth: 0,
-  },
   rowTitle: {
     ...typography.bodyDefault,
     color: colors.text.primary,
@@ -351,14 +237,6 @@ const styles = StyleSheet.create({
   rowTitleFlex: {
     flex: 1,
     minWidth: 0,
-  },
-  rowSupporting: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  rowValue: {
-    ...typography.bodyDefault,
-    color: colors.text.secondary,
   },
   unitsToggle: {
     width: UNITS_TOGGLE_WIDTH,

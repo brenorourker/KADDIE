@@ -126,11 +126,16 @@ export function Accordion({
         ]}
       >
         <View
+          collapsable={false}
           onLayout={(event) => {
-            const nextHeight = event.nativeEvent.layout.height;
-            if (nextHeight !== contentHeight) {
-              setContentHeight(nextHeight);
+            const nextHeight = Math.round(event.nativeEvent.layout.height);
+            if (nextHeight <= 0 || !isExpanded) {
+              return;
             }
+
+            setContentHeight((current) =>
+              current === nextHeight ? current : Math.max(current, nextHeight),
+            );
           }}
           style={styles.content}
         >
