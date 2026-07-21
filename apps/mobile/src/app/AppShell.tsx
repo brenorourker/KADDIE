@@ -31,7 +31,7 @@ export function AppShell() {
 function AppShellContent() {
   const { activePersona } = usePersona();
   const [route, setRoute] = useState<AppRoute>(() =>
-    resolveInitialRoute(undefined, { devLauncher: __DEV__ }),
+    resolveInitialRoute(undefined, { devLauncher: true }),
   );
   const [profileReturnRoute, setProfileReturnRoute] = useState<AppRoute>("main");
   const [pendingVerificationEmail, setPendingVerificationEmail] = useState<string | null>(
