@@ -85,14 +85,16 @@ Each section: **goal → user steps → key logic → key files → known limits
 
 **Key logic:**
 - Top-level groups: Game settings, My Kaddie, Account, Support.
+- **App appearance** (Light / Dark / System) is live — stored via `AppearanceProvider` / AsyncStorage; themes non–in-round UI through `@kaddie/ui` `ThemeProvider`.
 - Some toggles/units are local UI state; deeper sections use [`PreferenceSectionScreen`](../apps/mobile/src/screens/preferences/PreferenceSectionScreen.tsx) + mock content.
 - Opening Preferences from in-round is an overlay so the round session stays alive.
 
 **Key files:**
 - [`apps/mobile/src/screens/PreferencesScreen.tsx`](../apps/mobile/src/screens/PreferencesScreen.tsx)
 - [`apps/mobile/src/screens/preferences/`](../apps/mobile/src/screens/preferences/)
+- [`apps/mobile/src/app/AppearanceProvider.tsx`](../apps/mobile/src/app/AppearanceProvider.tsx)
 
-**Known limits:** Many rows are mock or alert stubs. Appearance and subscription are not production-backed. Unit prefs are not yet wired into every distance display.
+**Known limits:** Many rows are mock or alert stubs. Subscription is not production-backed. Unit prefs are not yet wired into every distance display. In-round UI ignores appearance and stays on `inRoundColors`.
 
 ---
 

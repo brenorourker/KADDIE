@@ -1,5 +1,7 @@
+import { useMemo } from "react";
 import { Pressable, StyleSheet, View, ViewStyle } from "react-native";
-import { colors, controlSize, radii } from "../tokens";
+import { useColors } from "../theme/Theme";
+import { controlSize, radii, type ColorTokens } from "../tokens";
 
 export type RadioProps = {
   selected?: boolean;
@@ -16,6 +18,8 @@ export function Radio({
   accessibilityLabel,
   style,
 }: RadioProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const isDisabled = disabled;
   const isSelected = selected && !isDisabled;
 
@@ -43,37 +47,39 @@ export function Radio({
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    width: controlSize.radio,
-    height: controlSize.radio,
-    borderRadius: radii.full,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  unselected: {
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.strong,
-    borderWidth: 1.5,
-  },
-  selected: {
-    backgroundColor: colors.background.surface,
-    borderColor: colors.action.primary,
-    borderWidth: 2,
-  },
-  disabled: {
-    backgroundColor: colors.background.muted,
-    borderColor: colors.border.default,
-    borderWidth: 1,
-    opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: radii.full,
-    backgroundColor: colors.action.primary,
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    base: {
+      width: controlSize.radio,
+      height: controlSize.radio,
+      borderRadius: radii.full,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    unselected: {
+      backgroundColor: colors.background.surface,
+      borderColor: colors.border.strong,
+      borderWidth: 1.5,
+    },
+    selected: {
+      backgroundColor: colors.background.surface,
+      borderColor: colors.action.primary,
+      borderWidth: 2,
+    },
+    disabled: {
+      backgroundColor: colors.background.muted,
+      borderColor: colors.border.default,
+      borderWidth: 1,
+      opacity: 0.5,
+    },
+    pressed: {
+      opacity: 0.85,
+    },
+    dot: {
+      width: 10,
+      height: 10,
+      borderRadius: radii.full,
+      backgroundColor: colors.action.primary,
+    },
+  });
+}

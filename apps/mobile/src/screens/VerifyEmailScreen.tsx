@@ -6,7 +6,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
@@ -14,10 +13,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   AppBar,
   Button,
-  colors,
   radii,
   spacing,
   typography,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 
 const envelopeIllustration = require("../assets/onboarding/envelope.png");
@@ -36,6 +36,79 @@ export function VerifyEmailScreen({
   onChangeEmail,
 }: VerifyEmailScreenProps) {
   const insets = useSafeAreaInsets();
+  const styles = useThemedStyles((c: ColorTokens) => ({
+    root: {
+      flex: 1,
+      backgroundColor: c.background.muted,
+    },
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      gap: spacing.lg,
+      paddingHorizontal: spacing.xl,
+      paddingTop: spacing["2xl"],
+    },
+    illustrationWrap: {
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
+      paddingVertical: spacing.lg,
+      width: "100%" as const,
+    },
+    illustrationBadge: {
+      alignItems: "center" as const,
+      backgroundColor: c.feedback.infoBg,
+      borderRadius: radii.full,
+      height: 112,
+      justifyContent: "center" as const,
+      width: 112,
+    },
+    illustration: {
+      height: 50,
+      width: 50,
+    },
+    copy: {
+      alignItems: "center" as const,
+      gap: spacing.sm,
+      width: "100%" as const,
+    },
+    title: {
+      ...typography.bodyDefault,
+      color: c.text.primary,
+      textAlign: "center" as const,
+      width: "100%" as const,
+    },
+    subtitle: {
+      ...typography.bodyDefault,
+      color: c.text.secondary,
+      textAlign: "center" as const,
+      width: "100%" as const,
+    },
+    actions: {
+      gap: spacing.sm,
+      paddingTop: spacing.md,
+      width: "100%" as const,
+    },
+    fullWidthButton: {
+      alignSelf: "stretch" as const,
+      width: "100%" as const,
+    },
+    changeEmailRow: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      justifyContent: "center" as const,
+      width: "100%" as const,
+    },
+    changeEmailMuted: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+    },
+    changeEmailLink: {
+      ...typography.bodySmall,
+      color: c.feedback.successFg,
+    },
+  }));
   const bottomPadding = Math.max(insets.bottom + spacing.xl, spacing["2xl"] + spacing.lg);
   const [secondsLeft, setSecondsLeft] = useState(RESEND_COOLDOWN_SECONDS);
 
@@ -145,77 +218,3 @@ export function VerifyEmailScreen({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background.muted,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    gap: spacing.lg,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing["2xl"],
-  },
-  illustrationWrap: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: spacing.lg,
-    width: "100%",
-  },
-  illustrationBadge: {
-    alignItems: "center",
-    backgroundColor: colors.feedback.infoBg,
-    borderRadius: radii.full,
-    height: 112,
-    justifyContent: "center",
-    width: 112,
-  },
-  illustration: {
-    height: 50,
-    width: 50,
-  },
-  copy: {
-    alignItems: "center",
-    gap: spacing.sm,
-    width: "100%",
-  },
-  title: {
-    ...typography.bodyDefault,
-    color: colors.text.primary,
-    textAlign: "center",
-    width: "100%",
-  },
-  subtitle: {
-    ...typography.bodyDefault,
-    color: colors.text.secondary,
-    textAlign: "center",
-    width: "100%",
-  },
-  actions: {
-    gap: spacing.sm,
-    paddingTop: spacing.md,
-    width: "100%",
-  },
-  fullWidthButton: {
-    alignSelf: "stretch",
-    width: "100%",
-  },
-  changeEmailRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    width: "100%",
-  },
-  changeEmailMuted: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  changeEmailLink: {
-    ...typography.bodySmall,
-    color: colors.feedback.successFg,
-  },
-});

@@ -6,7 +6,8 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { colors, controlSize, radii, spacing } from "../tokens";
+import { useColors } from "../theme/Theme";
+import { controlSize, radii, spacing } from "../tokens";
 
 export type StepperProps = {
   currentStep?: number;
@@ -15,6 +16,7 @@ export type StepperProps = {
 };
 
 function StepIndicator({ active }: { active: boolean }) {
+  const colors = useColors();
   const progress = useRef(new Animated.Value(active ? 1 : 0)).current;
   const hasMounted = useRef(false);
 

@@ -1,10 +1,11 @@
 import { StyleSheet, Text, View, ViewStyle } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 
 export type BadgeType = "dot" | "count" | "status";
@@ -31,7 +32,11 @@ const STATUS_DEFAULT_LABELS: Record<BadgeColor, string> = {
   info: "INFO",
 };
 
-function getBadgeColors(type: BadgeType, color: BadgeColor): BadgeColors {
+function getBadgeColors(
+  colors: ColorTokens,
+  type: BadgeType,
+  color: BadgeColor,
+): BadgeColors {
   if (type === "dot") {
     return {
       backgroundColor:
@@ -86,7 +91,8 @@ export function Badge({
   style,
   accessibilityLabel,
 }: BadgeProps) {
-  const badgeColors = getBadgeColors(type, color);
+  const colors = useColors();
+  const badgeColors = getBadgeColors(colors, type, color);
 
   if (type === "dot") {
     return (

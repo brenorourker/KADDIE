@@ -86,11 +86,23 @@ Derived:
 
 Hole changes reset target/lie/slope/sheet and can commit the leaving hole’s score when the shot stepper was dirty.
 
+## Appearance (theme)
+
+**File:** [`apps/mobile/src/app/AppearanceProvider.tsx`](../apps/mobile/src/app/AppearanceProvider.tsx)
+
+| State | Role |
+|-------|------|
+| `appearance` | `light` \| `dark` \| `system` (default `system`) |
+| `ready` | True after AsyncStorage hydrate |
+
+Wraps `@kaddie/ui` `ThemeProvider`. Resolved scheme drives `useColors()` for app chrome. In-round screens ignore this and use `inRoundColors`.
+
 ## Persistence boundaries
 
 | Survives | Does not survive |
 |----------|------------------|
-| In-round pause → resume (shell kept mounted) | Browser refresh / app kill |
+| Appearance preference (AsyncStorage) | — |
+| In-round pause → resume (shell kept mounted) | Browser refresh / app kill (except appearance) |
 | Club detail edits within a persona session | Persona switch (overrides cleared) |
 | Hole scores within a round session | Ending the round (`hasActiveRound = false`) |
 

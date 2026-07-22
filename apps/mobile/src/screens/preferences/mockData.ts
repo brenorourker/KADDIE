@@ -1,4 +1,5 @@
 export type PreferenceSectionId =
+  | "appearance"
   | "language"
   | "personality"
   | "parameters"
@@ -10,6 +11,7 @@ export type PreferenceSectionId =
   | "about";
 
 export const preferenceSectionTitles: Record<PreferenceSectionId, string> = {
+  appearance: "App appearance",
   language: "Language",
   personality: "Personality",
   parameters: "Parameters",

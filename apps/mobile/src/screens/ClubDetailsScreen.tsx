@@ -3,14 +3,12 @@ import {
   Alert,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Button,
-  colors,
   controlSize,
   Dropdown,
   Icon,
@@ -21,6 +19,9 @@ import {
   radii,
   spacing,
   typography,
+  useColors,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 import { AddShotTypeModal } from "../components/AddShotTypeModal";
 import { makeOptions } from "../personas/data/shared";
@@ -54,6 +55,8 @@ export function ClubDetailsScreen({
   const { bagData, clubDetails, removeClubFromBag, updateClubDetails } = usePersona();
   const savedDetails = getClubDetails(clubDetails, clubId);
   const insets = useSafeAreaInsets();
+  const colors = useColors();
+  const styles = useClubDetailsScreenStyles();
   const bottomPadding = Math.max(insets.bottom + spacing.xl, spacing["2xl"] + spacing.lg);
 
   const [make, setMake] = useState(savedDetails.make);
@@ -280,107 +283,109 @@ export function ClubDetailsScreen({
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background.muted,
-  },
-  headerBar: {
-    alignItems: "center",
-    backgroundColor: colors.background.surface,
-    borderBottomColor: colors.border.default,
-    borderBottomWidth: 1,
-    flexDirection: "row",
-    gap: spacing.sm,
-    minHeight: controlSize.appBar,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  headerIconButton: {
-    alignItems: "center",
-    height: controlSize.md,
-    justifyContent: "center",
-    width: controlSize.md,
-  },
-  headerTitle: {
-    ...typography.headingH3,
-    color: colors.text.primary,
-    flex: 1,
-    minWidth: 0,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    gap: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-  },
-  intro: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  fullWidthField: {
-    maxWidth: "100%",
-    width: "100%",
-  },
-  distanceRow: {
-    alignItems: "flex-end",
-    flexDirection: "row",
-    gap: spacing.sm,
-    width: "100%",
-  },
-  distanceField: {
-    flex: 1,
-    maxWidth: "100%",
-  },
-  addShotButton: {
-    borderRadius: radii.lg,
-    marginBottom: 0,
-    minWidth: controlSize.md,
-    width: controlSize.md,
-  },
-  deleteShotButton: {
-    alignItems: "center",
-    borderColor: colors.border.error,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    height: controlSize.md,
-    justifyContent: "center",
-    width: controlSize.md,
-  },
-  deleteShotButtonPressed: {
-    backgroundColor: colors.feedback.errorBg,
-  },
-  actionsSpacer: {
-    height: spacing.xl,
-  },
-  actionsRow: {
-    flexDirection: "row",
-    gap: spacing.md,
-    width: "100%",
-  },
-  actionButton: {
-    flex: 1,
-    minWidth: 0,
-  },
-  deleteButton: {
-    alignItems: "center",
-    borderColor: colors.border.error,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    flex: 1,
-    height: controlSize.lg,
-    justifyContent: "center",
-    minWidth: 0,
-    paddingHorizontal: spacing.lg,
-  },
-  deleteButtonPressed: {
-    backgroundColor: colors.feedback.errorBg,
-  },
-  deleteButtonLabel: {
-    ...typography.buttonMd,
-    color: colors.action.destructive,
-  },
-});
+function useClubDetailsScreenStyles() {
+  return useThemedStyles((c: ColorTokens) => ({
+    root: {
+      flex: 1,
+      backgroundColor: c.background.muted,
+    },
+    headerBar: {
+      alignItems: "center" as const,
+      backgroundColor: c.background.surface,
+      borderBottomColor: c.border.default,
+      borderBottomWidth: 1,
+      flexDirection: "row" as const,
+      gap: spacing.sm,
+      minHeight: controlSize.appBar,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+    },
+    headerIconButton: {
+      alignItems: "center" as const,
+      height: controlSize.md,
+      justifyContent: "center" as const,
+      width: controlSize.md,
+    },
+    headerTitle: {
+      ...typography.headingH3,
+      color: c.text.primary,
+      flex: 1,
+      minWidth: 0,
+    },
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      gap: spacing.lg,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.lg,
+    },
+    intro: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+    },
+    fullWidthField: {
+      maxWidth: "100%" as const,
+      width: "100%" as const,
+    },
+    distanceRow: {
+      alignItems: "flex-end" as const,
+      flexDirection: "row" as const,
+      gap: spacing.sm,
+      width: "100%" as const,
+    },
+    distanceField: {
+      flex: 1,
+      maxWidth: "100%" as const,
+    },
+    addShotButton: {
+      borderRadius: radii.lg,
+      marginBottom: 0,
+      minWidth: controlSize.md,
+      width: controlSize.md,
+    },
+    deleteShotButton: {
+      alignItems: "center" as const,
+      borderColor: c.border.error,
+      borderRadius: radii.lg,
+      borderWidth: 1,
+      height: controlSize.md,
+      justifyContent: "center" as const,
+      width: controlSize.md,
+    },
+    deleteShotButtonPressed: {
+      backgroundColor: c.feedback.errorBg,
+    },
+    actionsSpacer: {
+      height: spacing.xl,
+    },
+    actionsRow: {
+      flexDirection: "row" as const,
+      gap: spacing.md,
+      width: "100%" as const,
+    },
+    actionButton: {
+      flex: 1,
+      minWidth: 0,
+    },
+    deleteButton: {
+      alignItems: "center" as const,
+      borderColor: c.border.error,
+      borderRadius: radii.lg,
+      borderWidth: 1,
+      flex: 1,
+      height: controlSize.lg,
+      justifyContent: "center" as const,
+      minWidth: 0,
+      paddingHorizontal: spacing.lg,
+    },
+    deleteButtonPressed: {
+      backgroundColor: c.feedback.errorBg,
+    },
+    deleteButtonLabel: {
+      ...typography.buttonMd,
+      color: c.action.destructive,
+    },
+  }));
+}

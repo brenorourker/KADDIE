@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   Easing,
@@ -6,7 +6,8 @@ import {
   StyleSheet,
   ViewStyle,
 } from "react-native";
-import { colors, controlSize, radii } from "../tokens";
+import { useColors } from "../theme/Theme";
+import { controlSize, radii, type ColorTokens } from "../tokens";
 
 export type SwitchProps = {
   value?: boolean;
@@ -29,6 +30,8 @@ export function Switch({
   accessibilityLabel,
   style,
 }: SwitchProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [internalValue, setInternalValue] = useState(defaultValue);
   const isOn = value ?? internalValue;
   const progress = useRef(new Animated.Value(isOn ? 1 : 0)).current;
@@ -99,34 +102,36 @@ export function Switch({
   );
 }
 
-const styles = StyleSheet.create({
-  track: {
-    width: controlSize.switchWidth,
-    height: controlSize.switchHeight,
-    borderRadius: radii.full,
-    padding: thumbInset,
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  trackFill: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: radii.full,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-  thumb: {
-    width: controlSize.switchThumb,
-    height: controlSize.switchThumb,
-    borderRadius: radii.full,
-    backgroundColor: colors.background.surface,
-    shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
-    elevation: 2,
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    track: {
+      width: controlSize.switchWidth,
+      height: controlSize.switchHeight,
+      borderRadius: radii.full,
+      padding: thumbInset,
+      justifyContent: "center",
+      overflow: "hidden",
+    },
+    trackFill: {
+      ...StyleSheet.absoluteFillObject,
+      borderRadius: radii.full,
+    },
+    disabled: {
+      opacity: 0.5,
+    },
+    pressed: {
+      opacity: 0.85,
+    },
+    thumb: {
+      width: controlSize.switchThumb,
+      height: controlSize.switchThumb,
+      borderRadius: radii.full,
+      backgroundColor: colors.background.surface,
+      shadowColor: "#000000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.2,
+      shadowRadius: 1.5,
+      elevation: 2,
+    },
+  });
+}

@@ -1,6 +1,7 @@
 export * from "./tokens";
 export * from "./tokens/typography-catalog";
 export * from "./tokens/colors-catalog";
+export * from "./theme/Theme";
 export * from "./primitives/Button";
 export * from "./primitives/Input";
 export * from "./primitives/Dropdown";

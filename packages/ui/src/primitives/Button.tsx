@@ -12,13 +12,14 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   iconSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive";
@@ -78,42 +79,46 @@ type VariantColors = {
   borderColorDisabled?: string;
 };
 
-const variantColors: Record<ButtonVariant, VariantColors> = {
-  primary: {
-    background: colors.action.primary,
-    backgroundPressed: colors.action.primaryPressed,
-    backgroundDisabled: colors.action.disabled,
-    text: colors.action.onPrimary,
-    textDisabled: colors.action.onDisabled,
-    borderWidth: 0,
-  },
-  secondary: {
-    background: colors.background.surface,
-    backgroundPressed: colors.background.muted,
-    backgroundDisabled: colors.background.muted,
-    text: colors.action.onSecondary,
-    textDisabled: colors.text.tertiary,
-    borderColor: colors.border.strong,
-    borderWidth: 1,
-    borderColorDisabled: "transparent",
-  },
-  ghost: {
-    background: "transparent",
-    backgroundPressed: colors.action.ghostPressed,
-    backgroundDisabled: colors.action.disabled,
-    text: colors.action.onGhost,
-    textDisabled: colors.action.onDisabled,
-    borderWidth: 0,
-  },
-  destructive: {
-    background: colors.action.destructive,
-    backgroundPressed: colors.action.destructivePressed,
-    backgroundDisabled: colors.action.disabled,
-    text: colors.action.onDestructive,
-    textDisabled: colors.action.onDisabled,
-    borderWidth: 0,
-  },
-};
+function getVariantColors(
+  colors: ColorTokens,
+): Record<ButtonVariant, VariantColors> {
+  return {
+    primary: {
+      background: colors.action.primary,
+      backgroundPressed: colors.action.primaryPressed,
+      backgroundDisabled: colors.action.disabled,
+      text: colors.action.onPrimary,
+      textDisabled: colors.action.onDisabled,
+      borderWidth: 0,
+    },
+    secondary: {
+      background: colors.background.surface,
+      backgroundPressed: colors.background.muted,
+      backgroundDisabled: colors.background.muted,
+      text: colors.action.onSecondary,
+      textDisabled: colors.text.tertiary,
+      borderColor: colors.border.strong,
+      borderWidth: 1,
+      borderColorDisabled: "transparent",
+    },
+    ghost: {
+      background: "transparent",
+      backgroundPressed: colors.action.ghostPressed,
+      backgroundDisabled: colors.action.disabled,
+      text: colors.action.onGhost,
+      textDisabled: colors.action.onDisabled,
+      borderWidth: 0,
+    },
+    destructive: {
+      background: colors.action.destructive,
+      backgroundPressed: colors.action.destructivePressed,
+      backgroundDisabled: colors.action.disabled,
+      text: colors.action.onDestructive,
+      textDisabled: colors.action.onDisabled,
+      borderWidth: 0,
+    },
+  };
+}
 
 export function Button({
   label,
@@ -131,11 +136,12 @@ export function Button({
   onPressOut,
   ...pressableProps
 }: ButtonProps) {
+  const colors = useColors();
   const isDisabled = disabled || loading;
   const sizeStyles = sizeConfig[size];
   const leadingSlotSize = leadingIconSize ?? sizeStyles.icon;
   const trailingSlotSize = trailingIconSize ?? sizeStyles.icon;
-  const palette = variantColors[variant];
+  const palette = getVariantColors(colors)[variant];
   const pressProgress = useRef(new Animated.Value(0)).current;
 
   const backgroundColor = isDisabled

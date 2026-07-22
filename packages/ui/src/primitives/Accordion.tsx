@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   Easing,
@@ -9,12 +9,13 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   iconSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 import { Icon } from "./Icon";
 
@@ -39,6 +40,8 @@ export function Accordion({
   disabled = false,
   style,
 }: AccordionProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
   const [contentHeight, setContentHeight] = useState(0);
   const isExpanded = expanded ?? internalExpanded;
@@ -146,48 +149,50 @@ export function Accordion({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.default,
-    borderWidth: 1,
-    borderRadius: radii.lg,
-    overflow: "hidden",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  title: {
-    ...typography.bodyDefault,
-    flex: 1,
-    color: colors.text.primary,
-  },
-  contentAnimated: {
-    overflow: "hidden",
-  },
-  contentVisible: {
-    opacity: 1,
-  },
-  contentHidden: {
-    height: 0,
-    opacity: 0,
-  },
-  content: {
-    borderTopColor: colors.border.default,
-    borderTopWidth: 1,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  placeholder: {
-    ...typography.bodySmall,
-    color: colors.text.disabled,
-    textAlign: "center",
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    container: {
+      backgroundColor: colors.background.surface,
+      borderColor: colors.border.default,
+      borderWidth: 1,
+      borderRadius: radii.lg,
+      overflow: "hidden",
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.md,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+    },
+    title: {
+      ...typography.bodyDefault,
+      flex: 1,
+      color: colors.text.primary,
+    },
+    contentAnimated: {
+      overflow: "hidden",
+    },
+    contentVisible: {
+      opacity: 1,
+    },
+    contentHidden: {
+      height: 0,
+      opacity: 0,
+    },
+    content: {
+      borderTopColor: colors.border.default,
+      borderTopWidth: 1,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+    },
+    placeholder: {
+      ...typography.bodySmall,
+      color: colors.text.disabled,
+      textAlign: "center",
+    },
+    pressed: {
+      opacity: 0.85,
+    },
+  });
+}

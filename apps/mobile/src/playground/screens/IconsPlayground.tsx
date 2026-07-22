@@ -1,8 +1,18 @@
-import { Icon, iconNames, colors, radii, spacing, typography } from "@kaddie/ui";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  Icon,
+  iconNames,
+  radii,
+  spacing,
+  typography,
+  useThemedStyles,
+  type ColorTokens,
+} from "@kaddie/ui";
+import { Text, View } from "react-native";
 import { PlaygroundScreen } from "../PlaygroundLayout";
 
 export function IconsPlayground({ onBack }: { onBack: () => void }) {
+  const styles = useIconsPlaygroundStyles();
+
   return (
     <PlaygroundScreen title="Icons" onBack={onBack}>
       <View style={styles.section}>
@@ -22,40 +32,42 @@ export function IconsPlayground({ onBack }: { onBack: () => void }) {
   );
 }
 
-const styles = StyleSheet.create({
-  section: {
-    gap: spacing.sm,
-    padding: spacing.md,
-    borderRadius: radii.md,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.borderLegacy,
-  },
-  sectionLabel: {
-    ...typography.buttonMd,
-    color: colors.textMuted,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.sm,
-  },
-  cell: {
-    width: 88,
-    alignItems: "center",
-    gap: spacing.xxs,
-  },
-  iconWrap: {
-    width: 48,
-    height: 48,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: radii.sm,
-    backgroundColor: colors.surfaceMuted,
-  },
-  iconLabel: {
-    ...typography.caption,
-    color: colors.text.tertiary,
-    textAlign: "center",
-  },
-});
+function useIconsPlaygroundStyles() {
+  return useThemedStyles((c: ColorTokens) => ({
+    section: {
+      gap: spacing.sm,
+      padding: spacing.md,
+      borderRadius: radii.md,
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: c.borderLegacy,
+    },
+    sectionLabel: {
+      ...typography.buttonMd,
+      color: c.textMuted,
+    },
+    grid: {
+      flexDirection: "row" as const,
+      flexWrap: "wrap" as const,
+      gap: spacing.sm,
+    },
+    cell: {
+      width: 88,
+      alignItems: "center" as const,
+      gap: spacing.xxs,
+    },
+    iconWrap: {
+      width: 48,
+      height: 48,
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
+      borderRadius: radii.sm,
+      backgroundColor: c.surfaceMuted,
+    },
+    iconLabel: {
+      ...typography.caption,
+      color: c.text.tertiary,
+      textAlign: "center" as const,
+    },
+  }));
+}

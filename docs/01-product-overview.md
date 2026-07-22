@@ -30,7 +30,7 @@ Set up bag & distances → Start a round → See plays-like yardage & club advic
 |------|--------|
 | Design system (`@kaddie/ui`) | Live — tokens, primitives, playground |
 | Auth & onboarding screens | UI flows; no real backend |
-| Home, profile, preferences | Mostly interactive UI with persona mock data |
+| Home, profile, preferences | Mostly interactive UI with persona mock data; Light / Dark / System appearance |
 | My bag / club details | Live — distances + custom shot types |
 | In-round map / scorecard / menu | Live demo on Elmgreen mock course |
 | Wind visualization | Live overlay scaled by hole wind |

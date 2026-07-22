@@ -1,12 +1,13 @@
 import {
-  colors,
   colorsCatalog,
   fontFamily,
   radii,
   spacing,
   typography,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { PlaygroundScreen } from "../PlaygroundLayout";
 
 function isLightHex(hex: string): boolean {
@@ -19,7 +20,9 @@ function isLightHex(hex: string): boolean {
 }
 
 function ColorSwatch({ value }: { value: string }) {
+  const styles = useColorsPlaygroundStyles();
   const light = isLightHex(value);
+
   return (
     <View
       style={[
@@ -32,6 +35,8 @@ function ColorSwatch({ value }: { value: string }) {
 }
 
 export function ColorsPlayground({ onBack }: { onBack: () => void }) {
+  const styles = useColorsPlaygroundStyles();
+
   return (
     <PlaygroundScreen title="Colors" onBack={onBack}>
       <View style={styles.intro}>
@@ -78,106 +83,108 @@ export function ColorsPlayground({ onBack }: { onBack: () => void }) {
   );
 }
 
-const styles = StyleSheet.create({
-  intro: {
-    gap: spacing.sm,
-    padding: spacing.md,
-    borderRadius: radii.lg,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.borderLegacy,
-  },
-  eyebrow: {
-    fontFamily: fontFamily.poppinsSemiBold,
-    fontSize: 11,
-    lineHeight: 16,
-    fontWeight: "600",
-    letterSpacing: 0.165,
-    color: colors.text.tertiary,
-    textTransform: "uppercase",
-  },
-  introTitle: {
-    fontFamily: fontFamily.poppinsBold,
-    fontSize: 28,
-    lineHeight: 36,
-    fontWeight: "700",
-    letterSpacing: -0.28,
-    color: colors.text.primary,
-  },
-  introBody: {
-    ...typography.bodyLarge,
-    color: colors.text.secondary,
-  },
-  groups: {
-    gap: spacing.xl,
-  },
-  group: {
-    gap: spacing.md,
-  },
-  groupHeader: {
-    gap: spacing.xxs,
-  },
-  groupName: {
-    fontFamily: fontFamily.poppinsSemiBold,
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: "600",
-    color: colors.text.primary,
-  },
-  groupDescription: {
-    ...typography.bodySmall,
-    color: colors.text.tertiary,
-  },
-  list: {
-    gap: spacing.sm,
-  },
-  card: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
-    padding: spacing.md,
-    borderRadius: radii.lg,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.borderLegacy,
-  },
-  swatch: {
-    width: 48,
-    height: 48,
-    borderRadius: radii.sm,
-  },
-  swatchBorder: {
-    borderWidth: 1,
-    borderColor: colors.border.default,
-  },
-  meta: {
-    flex: 1,
-    gap: spacing.xxxs,
-  },
-  tokenName: {
-    fontFamily: fontFamily.poppinsSemiBold,
-    fontSize: 13,
-    lineHeight: 20,
-    fontWeight: "600",
-    color: colors.text.primary,
-  },
-  hex: {
-    fontFamily: fontFamily.poppinsRegular,
-    fontSize: 12,
-    lineHeight: 18,
-    color: colors.text.secondary,
-  },
-  usedBy: {
-    fontFamily: fontFamily.poppinsRegular,
-    fontSize: 11,
-    lineHeight: 16,
-    color: colors.text.tertiary,
-  },
-  unused: {
-    fontFamily: fontFamily.poppinsRegular,
-    fontSize: 11,
-    lineHeight: 16,
-    fontStyle: "italic",
-    color: colors.text.tertiary,
-  },
-});
+function useColorsPlaygroundStyles() {
+  return useThemedStyles((c: ColorTokens) => ({
+    intro: {
+      gap: spacing.sm,
+      padding: spacing.md,
+      borderRadius: radii.lg,
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: c.borderLegacy,
+    },
+    eyebrow: {
+      fontFamily: fontFamily.poppinsSemiBold,
+      fontSize: 11,
+      lineHeight: 16,
+      fontWeight: "600" as const,
+      letterSpacing: 0.165,
+      color: c.text.tertiary,
+      textTransform: "uppercase" as const,
+    },
+    introTitle: {
+      fontFamily: fontFamily.poppinsBold,
+      fontSize: 28,
+      lineHeight: 36,
+      fontWeight: "700" as const,
+      letterSpacing: -0.28,
+      color: c.text.primary,
+    },
+    introBody: {
+      ...typography.bodyLarge,
+      color: c.text.secondary,
+    },
+    groups: {
+      gap: spacing.xl,
+    },
+    group: {
+      gap: spacing.md,
+    },
+    groupHeader: {
+      gap: spacing.xxs,
+    },
+    groupName: {
+      fontFamily: fontFamily.poppinsSemiBold,
+      fontSize: 16,
+      lineHeight: 24,
+      fontWeight: "600" as const,
+      color: c.text.primary,
+    },
+    groupDescription: {
+      ...typography.bodySmall,
+      color: c.text.tertiary,
+    },
+    list: {
+      gap: spacing.sm,
+    },
+    card: {
+      flexDirection: "row" as const,
+      alignItems: "center" as const,
+      gap: spacing.md,
+      padding: spacing.md,
+      borderRadius: radii.lg,
+      backgroundColor: c.surface,
+      borderWidth: 1,
+      borderColor: c.borderLegacy,
+    },
+    swatch: {
+      width: 48,
+      height: 48,
+      borderRadius: radii.sm,
+    },
+    swatchBorder: {
+      borderWidth: 1,
+      borderColor: c.border.default,
+    },
+    meta: {
+      flex: 1,
+      gap: spacing.xxxs,
+    },
+    tokenName: {
+      fontFamily: fontFamily.poppinsSemiBold,
+      fontSize: 13,
+      lineHeight: 20,
+      fontWeight: "600" as const,
+      color: c.text.primary,
+    },
+    hex: {
+      fontFamily: fontFamily.poppinsRegular,
+      fontSize: 12,
+      lineHeight: 18,
+      color: c.text.secondary,
+    },
+    usedBy: {
+      fontFamily: fontFamily.poppinsRegular,
+      fontSize: 11,
+      lineHeight: 16,
+      color: c.text.tertiary,
+    },
+    unused: {
+      fontFamily: fontFamily.poppinsRegular,
+      fontSize: 11,
+      lineHeight: 16,
+      fontStyle: "italic" as const,
+      color: c.text.tertiary,
+    },
+  }));
+}

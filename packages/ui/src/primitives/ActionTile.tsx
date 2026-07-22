@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import {
   Animated,
   Easing,
@@ -10,13 +10,14 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   iconSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 import { Icon } from "./Icon";
 
@@ -34,6 +35,9 @@ export type ActionTileProps = Omit<PressableProps, "children" | "style"> & {
 };
 
 function ActionTileIcon({ icon }: { icon?: ReactNode }) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.iconContainer}>
       {icon ?? <Icon name="plus" size={iconSize.md} color={colors.text.primary} />}
@@ -54,6 +58,8 @@ export function ActionTile({
   onPressOut,
   ...pressableProps
 }: ActionTileProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const isHorizontal = layout === "horizontal";
   const pressProgress = useRef(new Animated.Value(0)).current;
 
@@ -138,73 +144,75 @@ export function ActionTile({
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border.default,
-    overflow: "hidden",
-    position: "relative",
-  },
-  background: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: radii.lg,
-  },
-  content: {
-    gap: spacing.md,
-    padding: spacing.lg,
-  },
-  contentVertical: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-  },
-  contentHorizontal: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  vertical: {
-    width: "100%",
-    maxWidth: controlSize.actionTileVerticalWidth,
-  },
-  verticalFill: {
-    flex: 1,
-    minWidth: 0,
-    alignSelf: "stretch",
-  },
-  horizontal: {
-    width: "100%",
-    maxWidth: controlSize.actionTileHorizontalWidth,
-  },
-  iconContainer: {
-    width: controlSize.actionTileIcon,
-    height: controlSize.actionTileIcon,
-    borderRadius: radii.sm,
-    backgroundColor: colors.background.muted,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  textBlock: {
-    alignItems: "flex-start",
-  },
-  textBlockVertical: {
-    gap: spacing.xxxs,
-    width: "100%",
-  },
-  textBlockHorizontal: {
-    flex: 1,
-    gap: spacing.xxs,
-    minWidth: 0,
-  },
-  title: {
-    ...typography.titleDefault,
-    color: colors.text.primary,
-  },
-  subtitle: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  disabled: {
-    opacity: 0.6,
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    base: {
+      borderRadius: radii.lg,
+      borderWidth: 1,
+      borderColor: colors.border.default,
+      overflow: "hidden",
+      position: "relative",
+    },
+    background: {
+      ...StyleSheet.absoluteFillObject,
+      borderRadius: radii.lg,
+    },
+    content: {
+      gap: spacing.md,
+      padding: spacing.lg,
+    },
+    contentVertical: {
+      flexDirection: "column",
+      alignItems: "flex-start",
+    },
+    contentHorizontal: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    vertical: {
+      width: "100%",
+      maxWidth: controlSize.actionTileVerticalWidth,
+    },
+    verticalFill: {
+      flex: 1,
+      minWidth: 0,
+      alignSelf: "stretch",
+    },
+    horizontal: {
+      width: "100%",
+      maxWidth: controlSize.actionTileHorizontalWidth,
+    },
+    iconContainer: {
+      width: controlSize.actionTileIcon,
+      height: controlSize.actionTileIcon,
+      borderRadius: radii.sm,
+      backgroundColor: colors.background.muted,
+      alignItems: "center",
+      justifyContent: "center",
+      overflow: "hidden",
+    },
+    textBlock: {
+      alignItems: "flex-start",
+    },
+    textBlockVertical: {
+      gap: spacing.xxxs,
+      width: "100%",
+    },
+    textBlockHorizontal: {
+      flex: 1,
+      gap: spacing.xxs,
+      minWidth: 0,
+    },
+    title: {
+      ...typography.titleDefault,
+      color: colors.text.primary,
+    },
+    subtitle: {
+      ...typography.bodySmall,
+      color: colors.text.secondary,
+    },
+    disabled: {
+      opacity: 0.6,
+    },
+  });
+}

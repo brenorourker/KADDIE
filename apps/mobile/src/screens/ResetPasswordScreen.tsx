@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import {
   Alert,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
@@ -10,13 +9,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   AppBar,
   Button,
-  colors,
   Icon,
   iconSize,
   Input,
   radii,
   spacing,
   typography,
+  useColors,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 
 type ResetPasswordScreenProps = {
@@ -89,6 +90,7 @@ type PasswordStrengthMeterProps = {
 
 function PasswordStrengthMeter({ password }: PasswordStrengthMeterProps) {
   const { filledBars, hint } = getPasswordStrength(password);
+  const styles = useResetPasswordStyles();
 
   if (!password) {
     return null;
@@ -120,6 +122,8 @@ type PasswordRequirementsListProps = {
 
 function PasswordRequirementsList({ password }: PasswordRequirementsListProps) {
   const requirements = getPasswordRequirements(password);
+  const colors = useColors();
+  const styles = useResetPasswordStyles();
 
   return (
     <View style={styles.requirementsList}>
@@ -150,6 +154,7 @@ function PasswordRequirementsList({ password }: PasswordRequirementsListProps) {
 
 export function ResetPasswordScreen({ onBack, onReset }: ResetPasswordScreenProps) {
   const insets = useSafeAreaInsets();
+  const styles = useResetPasswordStyles();
   const bottomPadding = Math.max(insets.bottom + spacing.xl, spacing["2xl"] + spacing.lg);
   const [password, setPassword] = useState("password123");
   const [confirmPassword, setConfirmPassword] = useState("password123");
@@ -259,89 +264,91 @@ export function ResetPasswordScreen({ onBack, onReset }: ResetPasswordScreenProp
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background.muted,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    gap: spacing.lg,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
-  },
-  copy: {
-    gap: spacing.xxs,
-    width: "100%",
-  },
-  title: {
-    ...typography.bodyDefault,
-    color: colors.text.primary,
-  },
-  subtitle: {
-    ...typography.bodyDefault,
-    color: colors.text.secondary,
-  },
-  form: {
-    gap: spacing.md,
-    width: "100%",
-  },
-  passwordField: {
-    gap: spacing.xxs,
-    width: "100%",
-  },
-  strengthSection: {
-    gap: spacing.xxs,
-    width: "100%",
-  },
-  strengthBars: {
-    flexDirection: "row",
-    gap: spacing.xxs,
-    width: "100%",
-  },
-  strengthBar: {
-    borderRadius: radii.full,
-    flex: 1,
-    height: 4,
-  },
-  strengthBarActive: {
-    backgroundColor: colors.action.primary,
-  },
-  strengthBarInactive: {
-    backgroundColor: colors.border.default,
-  },
-  strengthHint: {
-    ...typography.caption,
-    color: colors.text.tertiary,
-  },
-  requirementsList: {
-    gap: spacing.xxs,
-    paddingTop: spacing.sm,
-    width: "100%",
-  },
-  requirementRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: spacing.sm,
-  },
-  requirementLabel: {
-    ...typography.caption,
-  },
-  requirementLabelMet: {
-    color: colors.text.primary,
-  },
-  requirementLabelUnmet: {
-    color: colors.text.tertiary,
-  },
-  fullWidthField: {
-    maxWidth: "100%",
-    width: "100%",
-  },
-  fullWidthButton: {
-    alignSelf: "stretch",
-    width: "100%",
-  },
-});
+function useResetPasswordStyles() {
+  return useThemedStyles((c: ColorTokens) => ({
+    root: {
+      flex: 1,
+      backgroundColor: c.background.muted,
+    },
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      gap: spacing.lg,
+      paddingHorizontal: spacing.xl,
+      paddingTop: spacing.lg,
+    },
+    copy: {
+      gap: spacing.xxs,
+      width: "100%" as const,
+    },
+    title: {
+      ...typography.bodyDefault,
+      color: c.text.primary,
+    },
+    subtitle: {
+      ...typography.bodyDefault,
+      color: c.text.secondary,
+    },
+    form: {
+      gap: spacing.md,
+      width: "100%" as const,
+    },
+    passwordField: {
+      gap: spacing.xxs,
+      width: "100%" as const,
+    },
+    strengthSection: {
+      gap: spacing.xxs,
+      width: "100%" as const,
+    },
+    strengthBars: {
+      flexDirection: "row" as const,
+      gap: spacing.xxs,
+      width: "100%" as const,
+    },
+    strengthBar: {
+      borderRadius: radii.full,
+      flex: 1,
+      height: 4,
+    },
+    strengthBarActive: {
+      backgroundColor: c.action.primary,
+    },
+    strengthBarInactive: {
+      backgroundColor: c.border.default,
+    },
+    strengthHint: {
+      ...typography.caption,
+      color: c.text.tertiary,
+    },
+    requirementsList: {
+      gap: spacing.xxs,
+      paddingTop: spacing.sm,
+      width: "100%" as const,
+    },
+    requirementRow: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      gap: spacing.sm,
+    },
+    requirementLabel: {
+      ...typography.caption,
+    },
+    requirementLabelMet: {
+      color: c.text.primary,
+    },
+    requirementLabelUnmet: {
+      color: c.text.tertiary,
+    },
+    fullWidthField: {
+      maxWidth: "100%" as const,
+      width: "100%" as const,
+    },
+    fullWidthButton: {
+      alignSelf: "stretch" as const,
+      width: "100%" as const,
+    },
+  }));
+}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -7,12 +7,13 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 import { Icon } from "./Icon";
 
@@ -46,6 +47,8 @@ export function NumberStepper({
   previewFocused = false,
   containerStyle,
 }: NumberStepperProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [focused, setFocused] = useState(false);
   const [editingText, setEditingText] = useState<string | null>(null);
   const [internalValue, setInternalValue] = useState(defaultValue);
@@ -242,54 +245,56 @@ export function NumberStepper({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing.xxs,
-    width: "100%",
-    maxWidth: 320,
-  },
-  label: {
-    ...typography.labelDefault,
-    color: colors.text.primary,
-  },
-  labelDisabled: {
-    color: colors.text.disabled,
-  },
-  field: {
-    height: controlSize.md,
-    borderRadius: radii.sm,
-    flexDirection: "row",
-    alignItems: "center",
-    overflow: "hidden",
-  },
-  stepButton: {
-    width: controlSize.md,
-    height: controlSize.md,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  stepButtonPressed: {
-    backgroundColor: colors.background.muted,
-  },
-  valueInput: {
-    ...typography.bodyDefault,
-    flex: 1,
-    minWidth: 0,
-    outlineStyle: "none",
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 0,
-    textAlign: "center",
-  },
-  message: {
-    ...typography.caption,
-  },
-  messageHelper: {
-    color: colors.text.tertiary,
-  },
-  messageError: {
-    color: colors.feedback.error,
-  },
-  messageDisabled: {
-    color: colors.text.disabled,
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    container: {
+      gap: spacing.xxs,
+      width: "100%",
+      maxWidth: 320,
+    },
+    label: {
+      ...typography.labelDefault,
+      color: colors.text.primary,
+    },
+    labelDisabled: {
+      color: colors.text.disabled,
+    },
+    field: {
+      height: controlSize.md,
+      borderRadius: radii.sm,
+      flexDirection: "row",
+      alignItems: "center",
+      overflow: "hidden",
+    },
+    stepButton: {
+      width: controlSize.md,
+      height: controlSize.md,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    stepButtonPressed: {
+      backgroundColor: colors.background.muted,
+    },
+    valueInput: {
+      ...typography.bodyDefault,
+      flex: 1,
+      minWidth: 0,
+      outlineStyle: "none",
+      paddingHorizontal: spacing.xs,
+      paddingVertical: 0,
+      textAlign: "center",
+    },
+    message: {
+      ...typography.caption,
+    },
+    messageHelper: {
+      color: colors.text.tertiary,
+    },
+    messageError: {
+      color: colors.feedback.error,
+    },
+    messageDisabled: {
+      color: colors.text.disabled,
+    },
+  });
+}

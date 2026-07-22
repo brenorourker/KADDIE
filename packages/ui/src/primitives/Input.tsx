@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -9,12 +9,13 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 
 export type InputSize = "md" | "lg";
@@ -61,6 +62,8 @@ export function Input({
   onChangeText,
   ...textInputProps
 }: InputProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [focused, setFocused] = useState(false);
   const [internalValue, setInternalValue] = useState(defaultValue ?? "");
   const currentValue = value ?? internalValue;
@@ -182,57 +185,59 @@ export function Input({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing.xxs,
-    width: "100%",
-    maxWidth: 320,
-  },
-  label: {
-    ...typography.labelDefault,
-    color: colors.text.secondary,
-  },
-  labelDisabled: {
-    color: colors.text.disabled,
-  },
-  fieldContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: radii.sm,
-    paddingHorizontal: spacing.md,
-    gap: spacing.sm,
-  },
-  field: {
-    ...typography.bodyDefault,
-    flex: 1,
-    outlineStyle: "none",
-    paddingHorizontal: 0,
-    includeFontPadding: false,
-    textAlignVertical: "center",
-  },
-  fieldWithTrailing: {
-    paddingRight: 0,
-  },
-  trailingAction: {
-    paddingVertical: spacing.xs,
-  },
-  trailingActionLabel: {
-    ...typography.bodyDefault,
-    color: colors.text.tertiary,
-  },
-  trailingActionLabelDisabled: {
-    color: colors.text.disabled,
-  },
-  message: {
-    ...typography.caption,
-  },
-  messageHelper: {
-    color: colors.text.tertiary,
-  },
-  messageError: {
-    color: colors.feedback.error,
-  },
-  messageDisabled: {
-    color: colors.text.disabled,
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    container: {
+      gap: spacing.xxs,
+      width: "100%",
+      maxWidth: 320,
+    },
+    label: {
+      ...typography.labelDefault,
+      color: colors.text.secondary,
+    },
+    labelDisabled: {
+      color: colors.text.disabled,
+    },
+    fieldContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderRadius: radii.sm,
+      paddingHorizontal: spacing.md,
+      gap: spacing.sm,
+    },
+    field: {
+      ...typography.bodyDefault,
+      flex: 1,
+      outlineStyle: "none",
+      paddingHorizontal: 0,
+      includeFontPadding: false,
+      textAlignVertical: "center",
+    },
+    fieldWithTrailing: {
+      paddingRight: 0,
+    },
+    trailingAction: {
+      paddingVertical: spacing.xs,
+    },
+    trailingActionLabel: {
+      ...typography.bodyDefault,
+      color: colors.text.tertiary,
+    },
+    trailingActionLabelDisabled: {
+      color: colors.text.disabled,
+    },
+    message: {
+      ...typography.caption,
+    },
+    messageHelper: {
+      color: colors.text.tertiary,
+    },
+    messageError: {
+      color: colors.feedback.error,
+    },
+    messageDisabled: {
+      color: colors.text.disabled,
+    },
+  });
+}

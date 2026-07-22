@@ -3,7 +3,6 @@ import {
   Alert,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
@@ -11,10 +10,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   AppBar,
   Button,
-  colors,
   Input,
   spacing,
   typography,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 
 type ForgotPasswordScreenProps = {
@@ -27,6 +27,50 @@ export function ForgotPasswordScreen({
   onResetCodeSent,
 }: ForgotPasswordScreenProps) {
   const insets = useSafeAreaInsets();
+  const styles = useThemedStyles((c: ColorTokens) => ({
+    root: {
+      flex: 1,
+      backgroundColor: c.background.muted,
+    },
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      gap: spacing.lg,
+      paddingHorizontal: spacing.xl,
+      paddingTop: spacing.lg,
+    },
+    copy: {
+      gap: spacing.xxs,
+      width: "100%" as const,
+    },
+    title: {
+      ...typography.bodyDefault,
+      color: c.text.primary,
+    },
+    subtitle: {
+      ...typography.bodyDefault,
+      color: c.text.secondary,
+    },
+    fullWidthField: {
+      maxWidth: "100%" as const,
+      width: "100%" as const,
+    },
+    fullWidthButton: {
+      alignSelf: "stretch" as const,
+      width: "100%" as const,
+    },
+    backToSignIn: {
+      alignItems: "center" as const,
+      width: "100%" as const,
+    },
+    backToSignInLabel: {
+      ...typography.bodySmall,
+      color: c.feedback.successFg,
+      textAlign: "center" as const,
+    },
+  }));
   const bottomPadding = Math.max(insets.bottom + spacing.xl, spacing["2xl"] + spacing.lg);
   const [email, setEmail] = useState("brenorourker@gmail.com");
 
@@ -86,48 +130,3 @@ export function ForgotPasswordScreen({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background.muted,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    gap: spacing.lg,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
-  },
-  copy: {
-    gap: spacing.xxs,
-    width: "100%",
-  },
-  title: {
-    ...typography.bodyDefault,
-    color: colors.text.primary,
-  },
-  subtitle: {
-    ...typography.bodyDefault,
-    color: colors.text.secondary,
-  },
-  fullWidthField: {
-    maxWidth: "100%",
-    width: "100%",
-  },
-  fullWidthButton: {
-    alignSelf: "stretch",
-    width: "100%",
-  },
-  backToSignIn: {
-    alignItems: "center",
-    width: "100%",
-  },
-  backToSignInLabel: {
-    ...typography.bodySmall,
-    color: colors.feedback.successFg,
-    textAlign: "center",
-  },
-});

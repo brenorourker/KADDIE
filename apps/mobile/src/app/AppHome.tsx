@@ -2,11 +2,18 @@ import { useState } from "react";
 import {
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
-import { Button, Checkbox, colors, radii, spacing, typography } from "@kaddie/ui";
+import {
+  Button,
+  Checkbox,
+  radii,
+  spacing,
+  typography,
+  useThemedStyles,
+  type ColorTokens,
+} from "@kaddie/ui";
 import type { AppRoute } from "./routes";
 import { usePersona } from "../personas/PersonaProvider";
 
@@ -18,6 +25,7 @@ type AppHomeProps = {
 export function AppHome({ onLaunch, onOpenPlayground }: AppHomeProps) {
   const { personas, activePersonaId, setActivePersonaId, activePersona } =
     usePersona();
+  const styles = useAppHomeStyles();
   const [startFromLogin, setStartFromLogin] = useState(false);
 
   const handleLaunch = () => {
@@ -79,66 +87,68 @@ export function AppHome({ onLaunch, onOpenPlayground }: AppHomeProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.surfaceMuted,
-  },
-  scrollContent: {
-    gap: spacing.lg,
-    padding: spacing.md,
-    paddingBottom: spacing["2xl"],
-  },
-  header: {
-    gap: spacing.xs,
-    paddingTop: spacing.sm,
-  },
-  title: {
-    ...typography.headingH1,
-    color: colors.text.primary,
-  },
-  subtitle: {
-    ...typography.bodyDefault,
-    color: colors.text.secondary,
-  },
-  personaList: {
-    gap: spacing.sm,
-  },
-  personaCard: {
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.default,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    gap: spacing.xxs,
-    padding: spacing.md,
-  },
-  personaCardSelected: {
-    borderColor: colors.border.focus,
-    borderWidth: 2,
-  },
-  personaLabel: {
-    ...typography.labelDefault,
-    color: colors.text.primary,
-  },
-  personaDescription: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  personaMeta: {
-    ...typography.caption,
-    color: colors.text.tertiary,
-    textTransform: "capitalize",
-  },
-  loginOverrideRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: spacing.sm,
-  },
-  loginOverrideLabel: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  actions: {
-    gap: spacing.sm,
-  },
-});
+function useAppHomeStyles() {
+  return useThemedStyles((c: ColorTokens) => ({
+    container: {
+      flex: 1,
+      backgroundColor: c.background.muted,
+    },
+    scrollContent: {
+      gap: spacing.lg,
+      padding: spacing.md,
+      paddingBottom: spacing["2xl"],
+    },
+    header: {
+      gap: spacing.xs,
+      paddingTop: spacing.sm,
+    },
+    title: {
+      ...typography.headingH1,
+      color: c.text.primary,
+    },
+    subtitle: {
+      ...typography.bodyDefault,
+      color: c.text.secondary,
+    },
+    personaList: {
+      gap: spacing.sm,
+    },
+    personaCard: {
+      backgroundColor: c.background.surface,
+      borderColor: c.border.default,
+      borderRadius: radii.lg,
+      borderWidth: 1,
+      gap: spacing.xxs,
+      padding: spacing.md,
+    },
+    personaCardSelected: {
+      borderColor: c.border.focus,
+      borderWidth: 2,
+    },
+    personaLabel: {
+      ...typography.labelDefault,
+      color: c.text.primary,
+    },
+    personaDescription: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+    },
+    personaMeta: {
+      ...typography.caption,
+      color: c.text.tertiary,
+      textTransform: "capitalize" as const,
+    },
+    loginOverrideRow: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      gap: spacing.sm,
+    },
+    loginOverrideLabel: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+    },
+    actions: {
+      gap: spacing.sm,
+    },
+  }));
+}

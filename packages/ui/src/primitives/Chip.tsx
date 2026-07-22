@@ -5,12 +5,13 @@ import {
   Text,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 
 export type ChipVariant = "filled" | "outlined";
@@ -31,6 +32,7 @@ type ChipColors = {
 };
 
 function getChipColors(
+  colors: ColorTokens,
   variant: ChipVariant,
   selected: boolean,
   disabled: boolean,
@@ -80,7 +82,8 @@ export function Chip({
   style,
   ...pressableProps
 }: ChipProps) {
-  const chipColors = getChipColors(variant, selected, disabled);
+  const colors = useColors();
+  const chipColors = getChipColors(colors, variant, selected, disabled);
 
   return (
     <Pressable

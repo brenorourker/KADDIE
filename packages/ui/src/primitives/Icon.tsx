@@ -1,7 +1,8 @@
 import { View, ViewStyle } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { IconName, iconSources } from "../assets/icons/registry";
-import { colors, iconSize } from "../tokens";
+import { useColors } from "../theme/Theme";
+import { iconSize } from "../tokens";
 
 export type { IconName } from "../assets/icons/registry";
 export { iconNames } from "../assets/icons/registry";
@@ -22,9 +23,12 @@ function prepareSvg(svg: string, color: string) {
 export function Icon({
   name,
   size = iconSize.md,
-  color = colors.text.primary,
+  color,
   style,
 }: IconProps) {
+  const colors = useColors();
+  const resolvedColor = color ?? colors.text.primary;
+
   return (
     <View
       accessibilityElementsHidden
@@ -40,7 +44,7 @@ export function Icon({
       ]}
     >
       <SvgXml
-        xml={prepareSvg(iconSources[name], color)}
+        xml={prepareSvg(iconSources[name], resolvedColor)}
         width={size}
         height={size}
       />

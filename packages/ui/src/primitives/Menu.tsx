@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
   Animated,
   Easing,
@@ -8,12 +8,13 @@ import {
   Text,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 import { CheckIcon } from "./icons";
 
@@ -51,6 +52,8 @@ export function Menu({
   style,
   maxHeight = getMenuMaxHeight(DEFAULT_VISIBLE_OPTION_COUNT),
 }: MenuProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const progress = useRef(new Animated.Value(visible ? 1 : 0)).current;
   const hasMounted = useRef(false);
 
@@ -127,43 +130,45 @@ export function Menu({
   );
 }
 
-const styles = StyleSheet.create({
-  menu: {
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.default,
-    borderWidth: 1,
-    borderRadius: radii.sm,
-    overflow: "hidden",
-    paddingVertical: spacing.xxs,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  menuOverlay: {
-    left: 0,
-    marginTop: spacing.xxs,
-    position: "absolute",
-    right: 0,
-    top: "100%",
-    width: "100%",
-    zIndex: 100,
-    elevation: 8,
-  },
-  option: {
-    minHeight: controlSize.md,
-    paddingHorizontal: spacing.md,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xs,
-  },
-  optionPressed: {
-    backgroundColor: colors.background.muted,
-  },
-  optionText: {
-    ...typography.bodyDefault,
-    color: colors.text.primary,
-    flex: 1,
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    menu: {
+      backgroundColor: colors.background.surface,
+      borderColor: colors.border.default,
+      borderWidth: 1,
+      borderRadius: radii.sm,
+      overflow: "hidden",
+      paddingVertical: spacing.xxs,
+      shadowColor: "#0F172A",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      elevation: 2,
+    },
+    menuOverlay: {
+      left: 0,
+      marginTop: spacing.xxs,
+      position: "absolute",
+      right: 0,
+      top: "100%",
+      width: "100%",
+      zIndex: 100,
+      elevation: 8,
+    },
+    option: {
+      minHeight: controlSize.md,
+      paddingHorizontal: spacing.md,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.xs,
+    },
+    optionPressed: {
+      backgroundColor: colors.background.muted,
+    },
+    optionText: {
+      ...typography.bodyDefault,
+      color: colors.text.primary,
+      flex: 1,
+    },
+  });
+}

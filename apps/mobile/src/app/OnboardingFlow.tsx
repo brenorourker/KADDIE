@@ -3,14 +3,12 @@ import {
   Animated,
   Easing,
   Pressable,
-  StyleSheet,
   Text,
   useWindowDimensions,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
-  colors,
   controlSize,
   Icon,
   iconSize,
@@ -18,6 +16,9 @@ import {
   spacing,
   Stepper,
   typography,
+  useColors,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 import { OnboardingLocationScreen } from "../screens/OnboardingLocationScreen";
 import { OnboardingMicrophoneScreen } from "../screens/OnboardingMicrophoneScreen";
@@ -42,6 +43,8 @@ export function OnboardingFlow({
 }: OnboardingFlowProps) {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
+  const colors = useColors();
+  const styles = useOnboardingFlowStyles();
   const [step, setStep] = useState(initialStep);
   const slideAnim = useRef(new Animated.Value(initialStep)).current;
 
@@ -143,54 +146,56 @@ export function OnboardingFlow({
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background.muted,
-  },
-  headerBar: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    minHeight: controlSize.appBar,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm,
-  },
-  headerSpacer: {
-    minHeight: controlSize.md,
-    minWidth: controlSize.md,
-  },
-  backButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: controlSize.md,
-    paddingHorizontal: spacing.xs,
-  },
-  backLabel: {
-    ...typography.labelDefault,
-    color: colors.text.secondary,
-  },
-  closeButton: {
-    alignItems: "center",
-    borderRadius: radii.lg,
-    height: controlSize.md,
-    justifyContent: "center",
-    width: controlSize.md,
-  },
-  stepperWrap: {
-    alignItems: "center",
-    paddingBottom: spacing.sm,
-    paddingTop: spacing.xs,
-  },
-  pagerViewport: {
-    flex: 1,
-    overflow: "hidden",
-  },
-  pagerTrack: {
-    flex: 1,
-    flexDirection: "row",
-  },
-  pagerPage: {
-    flex: 1,
-  },
-});
+function useOnboardingFlowStyles() {
+  return useThemedStyles((c: ColorTokens) => ({
+    root: {
+      flex: 1,
+      backgroundColor: c.background.muted,
+    },
+    headerBar: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      justifyContent: "space-between" as const,
+      minHeight: controlSize.appBar,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: spacing.sm,
+    },
+    headerSpacer: {
+      minHeight: controlSize.md,
+      minWidth: controlSize.md,
+    },
+    backButton: {
+      alignItems: "center" as const,
+      justifyContent: "center" as const,
+      minHeight: controlSize.md,
+      paddingHorizontal: spacing.xs,
+    },
+    backLabel: {
+      ...typography.labelDefault,
+      color: c.text.secondary,
+    },
+    closeButton: {
+      alignItems: "center" as const,
+      borderRadius: radii.lg,
+      height: controlSize.md,
+      justifyContent: "center" as const,
+      width: controlSize.md,
+    },
+    stepperWrap: {
+      alignItems: "center" as const,
+      paddingBottom: spacing.sm,
+      paddingTop: spacing.xs,
+    },
+    pagerViewport: {
+      flex: 1,
+      overflow: "hidden" as const,
+    },
+    pagerTrack: {
+      flex: 1,
+      flexDirection: "row" as const,
+    },
+    pagerPage: {
+      flex: 1,
+    },
+  }));
+}

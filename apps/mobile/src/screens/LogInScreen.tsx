@@ -4,18 +4,18 @@ import {
   Image,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Button,
-  colors,
   Input,
   radii,
   spacing,
   typography,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 import { AppleLogoIcon } from "../components/AppleLogoIcon";
 import { usePersona } from "../personas/PersonaProvider";
@@ -36,6 +36,94 @@ export function LogInScreen({
   const { activePersona } = usePersona();
   const authData = activePersona.data.auth;
   const insets = useSafeAreaInsets();
+  const styles = useThemedStyles((c: ColorTokens) => ({
+    root: {
+      flex: 1,
+      backgroundColor: c.background.muted,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      gap: spacing.lg,
+      paddingHorizontal: spacing["2xl"],
+      paddingTop: spacing.lg,
+    },
+    logoBadge: {
+      alignItems: "center" as const,
+      backgroundColor: c.action.primary,
+      borderRadius: radii.xl,
+      height: 72,
+      justifyContent: "center" as const,
+      shadowColor: "#0F172A",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.06,
+      shadowRadius: 6,
+      width: 72,
+    },
+    logoLetter: {
+      fontFamily: "Poppins_700Bold",
+      fontSize: 40,
+      lineHeight: 48,
+      color: c.text.primary,
+    },
+    heading: {
+      ...typography.headingH1,
+      color: c.text.primary,
+    },
+    subheading: {
+      ...typography.bodyDefault,
+      color: c.text.secondary,
+    },
+    fullWidthField: {
+      maxWidth: "100%" as const,
+      width: "100%" as const,
+    },
+    forgotPassword: {
+      alignSelf: "flex-end" as const,
+    },
+    linkText: {
+      ...typography.labelDefault,
+      color: c.feedback.successFg,
+    },
+    fullWidthButton: {
+      alignSelf: "stretch" as const,
+      width: "100%" as const,
+    },
+    dividerRow: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      gap: spacing.md,
+    },
+    dividerLine: {
+      backgroundColor: c.border.default,
+      flex: 1,
+      height: 1,
+    },
+    dividerLabel: {
+      ...typography.caption,
+      color: c.text.secondary,
+    },
+    googleIcon: {
+      height: 24,
+      width: 24,
+    },
+    footerSpacer: {
+      flexGrow: 1,
+      minHeight: spacing.xl,
+    },
+    footerRow: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      justifyContent: "center" as const,
+    },
+    footerMuted: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+    },
+    footerLinkLabel: {
+      ...typography.bodySmall,
+      color: c.feedback.successFg,
+    },
+  }));
   const bottomPadding = Math.max(insets.bottom + spacing.xl, spacing["2xl"] + spacing.lg);
   const [email, setEmail] = useState(authData.email);
   const [password, setPassword] = useState(authData.password);
@@ -157,92 +245,3 @@ export function LogInScreen({
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background.muted,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    gap: spacing.lg,
-    paddingHorizontal: spacing["2xl"],
-    paddingTop: spacing.lg,
-  },
-  logoBadge: {
-    alignItems: "center",
-    backgroundColor: colors.action.primary,
-    borderRadius: radii.xl,
-    height: 72,
-    justifyContent: "center",
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
-    width: 72,
-  },
-  logoLetter: {
-    fontFamily: "Poppins_700Bold",
-    fontSize: 40,
-    lineHeight: 48,
-    color: colors.text.primary,
-  },
-  heading: {
-    ...typography.headingH1,
-    color: colors.text.primary,
-  },
-  subheading: {
-    ...typography.bodyDefault,
-    color: colors.text.secondary,
-  },
-  fullWidthField: {
-    maxWidth: "100%",
-    width: "100%",
-  },
-  forgotPassword: {
-    alignSelf: "flex-end",
-  },
-  linkText: {
-    ...typography.labelDefault,
-    color: colors.feedback.successFg,
-  },
-  fullWidthButton: {
-    alignSelf: "stretch",
-    width: "100%",
-  },
-  dividerRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: spacing.md,
-  },
-  dividerLine: {
-    backgroundColor: colors.border.default,
-    flex: 1,
-    height: 1,
-  },
-  dividerLabel: {
-    ...typography.caption,
-    color: colors.text.secondary,
-  },
-  googleIcon: {
-    height: 24,
-    width: 24,
-  },
-  footerSpacer: {
-    flexGrow: 1,
-    minHeight: spacing.xl,
-  },
-  footerRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  footerMuted: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  footerLinkLabel: {
-    ...typography.bodySmall,
-    color: colors.feedback.successFg,
-  },
-});

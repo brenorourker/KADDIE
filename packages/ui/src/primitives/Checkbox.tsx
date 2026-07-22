@@ -1,5 +1,7 @@
+import { useMemo } from "react";
 import { Pressable, StyleSheet, View, ViewStyle } from "react-native";
-import { colors, controlSize, radii } from "../tokens";
+import { useColors } from "../theme/Theme";
+import { controlSize, radii, type ColorTokens } from "../tokens";
 
 export type CheckboxProps = {
   checked?: boolean;
@@ -18,6 +20,8 @@ export function Checkbox({
   accessibilityLabel,
   style,
 }: CheckboxProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const isDisabled = disabled;
   const isActive = !isDisabled && (checked || indeterminate);
 
@@ -54,42 +58,44 @@ export function Checkbox({
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    width: controlSize.checkbox,
-    height: controlSize.checkbox,
-    borderRadius: radii.control,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  unchecked: {
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.strong,
-    borderWidth: 1.5,
-  },
-  active: {
-    backgroundColor: colors.action.primary,
-    borderWidth: 0,
-  },
-  disabled: {
-    backgroundColor: colors.background.muted,
-    borderColor: colors.border.default,
-    borderWidth: 1,
-    opacity: 0.5,
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-  checkedMark: {
-    width: 10,
-    height: 10,
-    borderRadius: radii.xs,
-    backgroundColor: colors.action.onPrimary,
-  },
-  indeterminateMark: {
-    width: 10,
-    height: 2,
-    borderRadius: radii.full,
-    backgroundColor: colors.action.onPrimary,
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    base: {
+      width: controlSize.checkbox,
+      height: controlSize.checkbox,
+      borderRadius: radii.control,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    unchecked: {
+      backgroundColor: colors.background.surface,
+      borderColor: colors.border.strong,
+      borderWidth: 1.5,
+    },
+    active: {
+      backgroundColor: colors.action.primary,
+      borderWidth: 0,
+    },
+    disabled: {
+      backgroundColor: colors.background.muted,
+      borderColor: colors.border.default,
+      borderWidth: 1,
+      opacity: 0.5,
+    },
+    pressed: {
+      opacity: 0.85,
+    },
+    checkedMark: {
+      width: 10,
+      height: 10,
+      borderRadius: radii.xs,
+      backgroundColor: colors.action.onPrimary,
+    },
+    indeterminateMark: {
+      width: 10,
+      height: 2,
+      borderRadius: radii.full,
+      backgroundColor: colors.action.onPrimary,
+    },
+  });
+}

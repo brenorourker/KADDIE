@@ -8,13 +8,14 @@ import {
 } from "react-native";
 import {
   Button,
-  colors,
   controlSize,
   Input,
   NumberStepper,
   radii,
   spacing,
   typography,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 
 type AddShotTypeModalProps = {
@@ -24,18 +25,21 @@ type AddShotTypeModalProps = {
   onConfirm: (shotType: { label: string; distance: number }) => void;
 };
 
+const DEFAULT_SHOT_TYPE_LABEL = "Half-swing";
+
 export function AddShotTypeModal({
   visible,
   defaultDistance,
   onCancel,
   onConfirm,
 }: AddShotTypeModalProps) {
-  const [label, setLabel] = useState("");
+  const styles = useAddShotTypeModalStyles();
+  const [label, setLabel] = useState(DEFAULT_SHOT_TYPE_LABEL);
   const [distance, setDistance] = useState(defaultDistance);
 
   useEffect(() => {
     if (visible) {
-      setLabel("");
+      setLabel(DEFAULT_SHOT_TYPE_LABEL);
       setDistance(defaultDistance);
     }
   }, [visible, defaultDistance]);
@@ -66,7 +70,7 @@ export function AddShotTypeModal({
               <Input
                 containerStyle={styles.field}
                 label="Shot type"
-                placeholder="Half-swing"
+                placeholder="e.g. Punch shot"
                 value={label}
                 onChangeText={setLabel}
               />
@@ -107,59 +111,61 @@ export function AddShotTypeModal({
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: spacing.md,
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.75)",
-  },
-  centered: {
-    width: "100%",
-    maxWidth: controlSize.modalWidth,
-    zIndex: 1,
-  },
-  card: {
-    alignItems: "center",
-    backgroundColor: colors.background.surface,
-    borderRadius: radii.xl,
-    gap: spacing.md,
-    overflow: "visible",
-    padding: spacing.xl,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 16 },
-    shadowOpacity: 0.14,
-    shadowRadius: 16,
-    elevation: 8,
-    width: "100%",
-  },
-  title: {
-    ...typography.headingH3,
-    color: colors.text.primary,
-    textAlign: "center",
-    width: "100%",
-  },
-  form: {
-    gap: spacing.md,
-    width: "100%",
-  },
-  field: {
-    maxWidth: "100%",
-    width: "100%",
-  },
-  actions: {
-    flexDirection: "row",
-    gap: spacing.sm,
-    marginTop: spacing.lg,
-    width: "100%",
-  },
-  actionButton: {
-    borderRadius: radii.lg,
-    flex: 1,
-    minWidth: 0,
-  },
-});
+function useAddShotTypeModalStyles() {
+  return useThemedStyles((c: ColorTokens) => ({
+    overlay: {
+      flex: 1,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
+      paddingHorizontal: spacing.md,
+    },
+    backdrop: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: "rgba(0, 0, 0, 0.75)",
+    },
+    centered: {
+      width: "100%" as const,
+      maxWidth: controlSize.modalWidth,
+      zIndex: 1,
+    },
+    card: {
+      alignItems: "center" as const,
+      backgroundColor: c.background.surface,
+      borderRadius: radii.xl,
+      gap: spacing.md,
+      overflow: "visible" as const,
+      padding: spacing.xl,
+      shadowColor: "#0F172A",
+      shadowOffset: { width: 0, height: 16 },
+      shadowOpacity: 0.14,
+      shadowRadius: 16,
+      elevation: 8,
+      width: "100%" as const,
+    },
+    title: {
+      ...typography.headingH3,
+      color: c.text.primary,
+      textAlign: "center" as const,
+      width: "100%" as const,
+    },
+    form: {
+      gap: spacing.md,
+      width: "100%" as const,
+    },
+    field: {
+      maxWidth: "100%" as const,
+      width: "100%" as const,
+    },
+    actions: {
+      flexDirection: "row" as const,
+      gap: spacing.sm,
+      marginTop: spacing.lg,
+      width: "100%" as const,
+    },
+    actionButton: {
+      borderRadius: radii.lg,
+      flex: 1,
+      minWidth: 0,
+    },
+  }));
+}

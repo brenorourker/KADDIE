@@ -10,13 +10,14 @@ import {
 } from "react-native";
 import { Icon } from "./Icon";
 import { Menu, MenuOption } from "./Menu";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   iconSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 
 export type SnackbarVariant = "info" | "success" | "warning" | "error";
@@ -41,24 +42,28 @@ type VariantColors = {
   foregroundColor: string;
 };
 
-const variantColors: Record<SnackbarVariant, VariantColors> = {
-  info: {
-    backgroundColor: colors.feedback.infoBg,
-    foregroundColor: colors.feedback.infoFg,
-  },
-  success: {
-    backgroundColor: colors.feedback.successBg,
-    foregroundColor: colors.feedback.successFg,
-  },
-  warning: {
-    backgroundColor: colors.feedback.warningBg,
-    foregroundColor: colors.feedback.warningFg,
-  },
-  error: {
-    backgroundColor: colors.feedback.errorBg,
-    foregroundColor: colors.feedback.error,
-  },
-};
+function getVariantColors(
+  colors: ColorTokens,
+): Record<SnackbarVariant, VariantColors> {
+  return {
+    info: {
+      backgroundColor: colors.feedback.infoBg,
+      foregroundColor: colors.feedback.infoFg,
+    },
+    success: {
+      backgroundColor: colors.feedback.successBg,
+      foregroundColor: colors.feedback.successFg,
+    },
+    warning: {
+      backgroundColor: colors.feedback.warningBg,
+      foregroundColor: colors.feedback.warningFg,
+    },
+    error: {
+      backgroundColor: colors.feedback.errorBg,
+      foregroundColor: colors.feedback.error,
+    },
+  };
+}
 
 export function Snackbar({
   message,
@@ -72,8 +77,9 @@ export function Snackbar({
   onPress,
   ...pressableProps
 }: SnackbarProps) {
+  const colors = useColors();
   const [internalMenuOpen, setInternalMenuOpen] = useState(false);
-  const palette = variantColors[variant];
+  const palette = getVariantColors(colors)[variant];
   const hasMenu = Boolean(menuOptions?.length);
   const isMenuOpen = menuOpen ?? internalMenuOpen;
 

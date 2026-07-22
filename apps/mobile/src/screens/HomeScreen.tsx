@@ -5,7 +5,6 @@ import {
   ImageSourcePropType,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
@@ -14,13 +13,15 @@ import {
   ActionTile,
   Avatar,
   Button,
-  colors,
   controlSize,
   Icon,
   iconSize,
   radii,
   spacing,
   typography,
+  useColors,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 import { ConfigureRoundModal } from "../components/ConfigureRoundModal";
 import { golfCourseImage } from "../personas/data/shared";
@@ -50,6 +51,7 @@ type HomeScreenProps = {
 };
 
 function ActionTileIconImage({ source }: { source: ImageSourcePropType }) {
+  const styles = useHomeScreenStyles();
   return (
     <Image
       accessibilityIgnoresInvertColors
@@ -72,6 +74,8 @@ export function HomeScreen({
   const { activePersona, bagClubCount } = usePersona();
   const homeData = activePersona.data.home;
   const insets = useSafeAreaInsets();
+  const colors = useColors();
+  const styles = useHomeScreenStyles();
   const bottomPadding = Math.max(insets.bottom + spacing.xl, spacing["2xl"] + spacing.lg);
   const [configureVisible, setConfigureVisible] = useState(false);
   const [roundConfig, setRoundConfig] = useState<RoundConfig>(activePersona.data.round);
@@ -232,123 +236,125 @@ export function HomeScreen({
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background.muted,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  header: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    minHeight: 80,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  greetingBlock: {
-    gap: spacing.xxs,
-  },
-  greetingLabel: {
-    ...typography.caption,
-    color: colors.text.tertiary,
-    textTransform: "uppercase",
-  },
-  greetingName: {
-    ...typography.headingH2,
-    color: colors.text.primary,
-  },
-  handicap: {
-    ...typography.titleDefault,
-    color: colors.text.primary,
-  },
-  content: {
-    gap: SECTION_GAP,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.xxs,
-  },
-  roundCard: {
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.default,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    overflow: "hidden",
-    width: "100%",
-  },
-  roundMedia: {
-    backgroundColor: colors.background.muted,
-    height: controlSize.mediaCardImageHeight,
-    width: "100%",
-  },
-  roundImage: {
-    height: "100%",
-    width: "100%",
-  },
-  roundDetails: {
-    gap: spacing.xxs,
-    paddingBottom: spacing.sm,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-  },
-  roundClub: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  roundMeta: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  roundMetaDivider: {
-    color: colors.text.secondary,
-  },
-  roundActions: {
-    flexDirection: "row",
-    gap: spacing.sm,
-    paddingBottom: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.sm,
-    width: "100%",
-  },
-  startRoundButton: {
-    flex: 3,
-    minWidth: 0,
-  },
-  configureButton: {
-    flex: 2,
-    minWidth: 0,
-  },
-  quickActionsSection: {
-    gap: spacing.md,
-    width: "100%",
-  },
-  quickActionsHeader: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  sectionLabel: {
-    ...typography.caption,
-    color: colors.text.tertiary,
-    textTransform: "uppercase",
-  },
-  seeAllLink: {
-    ...typography.caption,
-    color: colors.feedback.successFg,
-    textTransform: "uppercase",
-  },
-  quickActionsGrid: {
-    gap: spacing.md,
-    width: "100%",
-  },
-  quickActionsRow: {
-    flexDirection: "row",
-    gap: spacing.md,
-    width: "100%",
-  },
-  actionIconImage: {
-    height: 28,
-    width: 28,
-  },
-});
+function useHomeScreenStyles() {
+  return useThemedStyles((c: ColorTokens) => ({
+    root: {
+      flex: 1,
+      backgroundColor: c.background.muted,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+    header: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      justifyContent: "space-between" as const,
+      minHeight: 80,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+    },
+    greetingBlock: {
+      gap: spacing.xxs,
+    },
+    greetingLabel: {
+      ...typography.caption,
+      color: c.text.tertiary,
+      textTransform: "uppercase" as const,
+    },
+    greetingName: {
+      ...typography.headingH2,
+      color: c.text.primary,
+    },
+    handicap: {
+      ...typography.titleDefault,
+      color: c.text.primary,
+    },
+    content: {
+      gap: SECTION_GAP,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.xxs,
+    },
+    roundCard: {
+      backgroundColor: c.background.surface,
+      borderColor: c.border.default,
+      borderRadius: radii.lg,
+      borderWidth: 1,
+      overflow: "hidden" as const,
+      width: "100%" as const,
+    },
+    roundMedia: {
+      backgroundColor: c.background.muted,
+      height: controlSize.mediaCardImageHeight,
+      width: "100%" as const,
+    },
+    roundImage: {
+      height: "100%" as const,
+      width: "100%" as const,
+    },
+    roundDetails: {
+      gap: spacing.xxs,
+      paddingBottom: spacing.sm,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.lg,
+    },
+    roundClub: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+    },
+    roundMeta: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+    },
+    roundMetaDivider: {
+      color: c.text.secondary,
+    },
+    roundActions: {
+      flexDirection: "row" as const,
+      gap: spacing.sm,
+      paddingBottom: spacing.lg,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.sm,
+      width: "100%" as const,
+    },
+    startRoundButton: {
+      flex: 3,
+      minWidth: 0,
+    },
+    configureButton: {
+      flex: 2,
+      minWidth: 0,
+    },
+    quickActionsSection: {
+      gap: spacing.md,
+      width: "100%" as const,
+    },
+    quickActionsHeader: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      justifyContent: "space-between" as const,
+    },
+    sectionLabel: {
+      ...typography.caption,
+      color: c.text.tertiary,
+      textTransform: "uppercase" as const,
+    },
+    seeAllLink: {
+      ...typography.caption,
+      color: c.feedback.successFg,
+      textTransform: "uppercase" as const,
+    },
+    quickActionsGrid: {
+      gap: spacing.md,
+      width: "100%" as const,
+    },
+    quickActionsRow: {
+      flexDirection: "row" as const,
+      gap: spacing.md,
+      width: "100%" as const,
+    },
+    actionIconImage: {
+      height: 28,
+      width: 28,
+    },
+  }));
+}

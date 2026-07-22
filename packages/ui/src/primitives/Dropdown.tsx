@@ -8,13 +8,14 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   iconSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 import { ChevronDown, ChevronUp } from "./icons";
 import { Menu, getMenuMaxHeight } from "./Menu";
@@ -63,6 +64,8 @@ export function Dropdown({
   visibleOptionCount = 4,
   containerStyle,
 }: DropdownProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [internalOpen, setInternalOpen] = useState(false);
   const [internalValue, setInternalValue] = useState(defaultValue ?? "");
   const [menuAnchor, setMenuAnchor] = useState<MenuAnchor | null>(null);
@@ -268,69 +271,71 @@ export function Dropdown({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing.xxs,
-    width: "100%",
-    maxWidth: 320,
-    zIndex: 1,
-  },
-  containerOpen: {
-    overflow: "visible",
-    zIndex: 50,
-  },
-  fieldWrap: {
-    overflow: "visible",
-    position: "relative",
-    zIndex: 1,
-  },
-  label: {
-    ...typography.labelDefault,
-    color: colors.text.primary,
-  },
-  labelDisabled: {
-    color: colors.text.disabled,
-  },
-  field: {
-    height: controlSize.md,
-    paddingHorizontal: spacing.md,
-    borderRadius: radii.sm,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.xs,
-  },
-  fieldText: {
-    ...typography.bodyDefault,
-    flex: 1,
-    lineHeight: controlSize.md,
-    includeFontPadding: false,
-  },
-  fieldTextValue: {
-    color: colors.text.primary,
-  },
-  fieldTextPlaceholder: {
-    color: colors.text.tertiary,
-  },
-  fieldTextDisabled: {
-    color: colors.text.disabled,
-  },
-  message: {
-    ...typography.caption,
-  },
-  messageHelper: {
-    color: colors.text.tertiary,
-  },
-  messageError: {
-    color: colors.feedback.error,
-  },
-  messageDisabled: {
-    color: colors.text.disabled,
-  },
-  modalBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  modalMenuContainer: {
-    position: "absolute",
-    zIndex: 1,
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    container: {
+      gap: spacing.xxs,
+      width: "100%",
+      maxWidth: 320,
+      zIndex: 1,
+    },
+    containerOpen: {
+      overflow: "visible",
+      zIndex: 50,
+    },
+    fieldWrap: {
+      overflow: "visible",
+      position: "relative",
+      zIndex: 1,
+    },
+    label: {
+      ...typography.labelDefault,
+      color: colors.text.primary,
+    },
+    labelDisabled: {
+      color: colors.text.disabled,
+    },
+    field: {
+      height: controlSize.md,
+      paddingHorizontal: spacing.md,
+      borderRadius: radii.sm,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.xs,
+    },
+    fieldText: {
+      ...typography.bodyDefault,
+      flex: 1,
+      lineHeight: controlSize.md,
+      includeFontPadding: false,
+    },
+    fieldTextValue: {
+      color: colors.text.primary,
+    },
+    fieldTextPlaceholder: {
+      color: colors.text.tertiary,
+    },
+    fieldTextDisabled: {
+      color: colors.text.disabled,
+    },
+    message: {
+      ...typography.caption,
+    },
+    messageHelper: {
+      color: colors.text.tertiary,
+    },
+    messageError: {
+      color: colors.feedback.error,
+    },
+    messageDisabled: {
+      color: colors.text.disabled,
+    },
+    modalBackdrop: {
+      ...StyleSheet.absoluteFillObject,
+    },
+    modalMenuContainer: {
+      position: "absolute",
+      zIndex: 1,
+    },
+  });
+}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,12 +7,13 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 
 export type TextFieldProps = Omit<TextInputProps, "style" | "editable"> & {
@@ -40,6 +41,8 @@ export function TextField({
   onChangeText,
   ...textInputProps
 }: TextFieldProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [focused, setFocused] = useState(false);
   const [internalValue, setInternalValue] = useState(defaultValue ?? "");
   const currentValue = value ?? internalValue;
@@ -119,37 +122,39 @@ export function TextField({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    gap: spacing.xxs,
-    width: "100%",
-    maxWidth: 320,
-  },
-  label: {
-    ...typography.labelDefault,
-    color: colors.text.primary,
-  },
-  labelDisabled: {
-    color: colors.text.disabled,
-  },
-  field: {
-    ...typography.bodyDefault,
-    minHeight: controlSize.textField,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radii.sm,
-    outlineStyle: "none",
-  },
-  message: {
-    ...typography.caption,
-  },
-  messageHelper: {
-    color: colors.text.tertiary,
-  },
-  messageError: {
-    color: colors.feedback.error,
-  },
-  messageDisabled: {
-    color: colors.text.disabled,
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    container: {
+      gap: spacing.xxs,
+      width: "100%",
+      maxWidth: 320,
+    },
+    label: {
+      ...typography.labelDefault,
+      color: colors.text.primary,
+    },
+    labelDisabled: {
+      color: colors.text.disabled,
+    },
+    field: {
+      ...typography.bodyDefault,
+      minHeight: controlSize.textField,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+      borderRadius: radii.sm,
+      outlineStyle: "none",
+    },
+    message: {
+      ...typography.caption,
+    },
+    messageHelper: {
+      color: colors.text.tertiary,
+    },
+    messageError: {
+      color: colors.feedback.error,
+    },
+    messageDisabled: {
+      color: colors.text.disabled,
+    },
+  });
+}

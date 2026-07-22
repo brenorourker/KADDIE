@@ -1,26 +1,29 @@
 import { type ReactNode } from "react";
 import {
   Pressable,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
 import {
   Badge,
-  colors,
   Icon,
   iconSize,
   radii,
   spacing,
   Switch,
   typography,
+  useColors,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 
 export function SettingsSection({ label }: { label: string }) {
+  const styles = useSettingsChromeStyles();
   return <Text style={styles.sectionLabel}>{label}</Text>;
 }
 
 export function SettingsGroup({ children }: { children: ReactNode }) {
+  const styles = useSettingsChromeStyles();
   return <View style={styles.group}>{children}</View>;
 }
 
@@ -45,6 +48,8 @@ export function SettingsRow({
   onPress?: () => void;
   trailing?: ReactNode;
 }) {
+  const colors = useColors();
+  const styles = useSettingsChromeStyles();
   const isInteractive = Boolean(onPress);
   const content = (
     <>
@@ -102,6 +107,7 @@ export function SettingsSwitchRow({
   onValueChange: (next: boolean) => void;
   isLast?: boolean;
 }) {
+  const styles = useSettingsChromeStyles();
   return (
     <View style={[styles.row, !isLast && styles.rowBorder]}>
       <View style={styles.rowText}>
@@ -120,71 +126,76 @@ export function SettingsSwitchRow({
 }
 
 export function SettingsBodyText({ children }: { children: string }) {
+  const styles = useSettingsChromeStyles();
   return <Text style={styles.bodyText}>{children}</Text>;
 }
 
-export const preferenceScreenStyles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background.muted,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    gap: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-  },
-});
+export function usePreferenceScreenStyles() {
+  return useThemedStyles((colors: ColorTokens) => ({
+    root: {
+      flex: 1,
+      backgroundColor: colors.background.muted,
+    },
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      gap: spacing.lg,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.lg,
+    },
+  }));
+}
 
-const styles = StyleSheet.create({
-  sectionLabel: {
-    ...typography.caption,
-    color: colors.text.tertiary,
-    textTransform: "uppercase",
-  },
-  group: {
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.default,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-  row: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: spacing.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  rowBorder: {
-    borderBottomColor: colors.border.default,
-    borderBottomWidth: 1,
-  },
-  rowPressed: {
-    backgroundColor: colors.background.muted,
-  },
-  rowText: {
-    flex: 1,
-    gap: spacing.xxs,
-    minWidth: 0,
-  },
-  rowTitle: {
-    ...typography.bodyDefault,
-    color: colors.text.primary,
-  },
-  rowSupporting: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  rowValue: {
-    ...typography.bodyDefault,
-    color: colors.text.secondary,
-  },
-  bodyText: {
-    ...typography.bodyDefault,
-    color: colors.text.secondary,
-  },
-});
+function useSettingsChromeStyles() {
+  return useThemedStyles((colors: ColorTokens) => ({
+    sectionLabel: {
+      ...typography.caption,
+      color: colors.text.tertiary,
+      textTransform: "uppercase" as const,
+    },
+    group: {
+      backgroundColor: colors.background.surface,
+      borderColor: colors.border.default,
+      borderRadius: radii.lg,
+      borderWidth: 1,
+      overflow: "hidden" as const,
+    },
+    row: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      gap: spacing.md,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+    },
+    rowBorder: {
+      borderBottomColor: colors.border.default,
+      borderBottomWidth: 1,
+    },
+    rowPressed: {
+      backgroundColor: colors.background.muted,
+    },
+    rowText: {
+      flex: 1,
+      gap: spacing.xxs,
+      minWidth: 0,
+    },
+    rowTitle: {
+      ...typography.bodyDefault,
+      color: colors.text.primary,
+    },
+    rowSupporting: {
+      ...typography.bodySmall,
+      color: colors.text.secondary,
+    },
+    rowValue: {
+      ...typography.bodyDefault,
+      color: colors.text.secondary,
+    },
+    bodyText: {
+      ...typography.bodyDefault,
+      color: colors.text.secondary,
+    },
+  }));
+}

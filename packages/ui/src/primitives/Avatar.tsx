@@ -1,4 +1,5 @@
 import type { ImageSourcePropType } from "react-native";
+import { useMemo } from "react";
 import {
   Image,
   StyleSheet,
@@ -6,10 +7,8 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import {
-  colors,
-  fontFamily,
-} from "../tokens";
+import { useColors } from "../theme/Theme";
+import { fontFamily, type ColorTokens } from "../tokens";
 
 export type AvatarSize = "sm" | "md" | "lg" | "xl";
 
@@ -57,6 +56,8 @@ export function Avatar({
   accessibilityLabel,
   style,
 }: AvatarProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const config = sizeConfig[size];
   const isImage = Boolean(source);
 
@@ -111,21 +112,23 @@ export function Avatar({
   );
 }
 
-const styles = StyleSheet.create({
-  base: {
-    overflow: "hidden",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  initials: {
-    backgroundColor: colors.feedback.successBg,
-  },
-  initialsText: {
-    fontFamily: fontFamily.poppinsSemiBold,
-    fontWeight: "600",
-    color: colors.feedback.successFg,
-  },
-  image: {
-    backgroundColor: colors.background.muted,
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    base: {
+      overflow: "hidden",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    initials: {
+      backgroundColor: colors.feedback.successBg,
+    },
+    initialsText: {
+      fontFamily: fontFamily.poppinsSemiBold,
+      fontWeight: "600",
+      color: colors.feedback.successFg,
+    },
+    image: {
+      backgroundColor: colors.background.muted,
+    },
+  });
+}

@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import {
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
@@ -11,11 +10,12 @@ import {
   AppBar,
   Button,
   Checkbox,
-  colors,
   Input,
   radii,
   spacing,
   typography,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 
 type CreateAccountScreenProps = {
@@ -56,6 +56,7 @@ type PasswordStrengthMeterProps = {
 
 function PasswordStrengthMeter({ password }: PasswordStrengthMeterProps) {
   const { filledBars, label } = getPasswordStrength(password);
+  const styles = useCreateAccountStyles();
 
   if (!password) {
     return null;
@@ -91,6 +92,7 @@ export function CreateAccountScreen({
   onAccountCreated,
 }: CreateAccountScreenProps) {
   const insets = useSafeAreaInsets();
+  const styles = useCreateAccountStyles();
   const bottomPadding = Math.max(insets.bottom + spacing.xl, spacing["2xl"] + spacing.lg);
   const [email, setEmail] = useState("brenorourker@gmail.com");
   const [password, setPassword] = useState("password1234");
@@ -187,105 +189,107 @@ export function CreateAccountScreen({
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background.muted,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    gap: spacing.lg,
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.lg,
-  },
-  copy: {
-    gap: spacing.xxs,
-    width: "100%",
-  },
-  title: {
-    ...typography.bodyDefault,
-    color: colors.text.primary,
-  },
-  subtitle: {
-    ...typography.bodyDefault,
-    color: colors.text.secondary,
-  },
-  form: {
-    gap: spacing.md,
-    width: "100%",
-  },
-  passwordField: {
-    gap: spacing.xxs,
-    width: "100%",
-  },
-  strengthSection: {
-    gap: spacing.xxs,
-    width: "100%",
-  },
-  strengthBars: {
-    flexDirection: "row",
-    gap: spacing.xxs,
-    width: "100%",
-  },
-  strengthBar: {
-    borderRadius: radii.full,
-    flex: 1,
-    height: 4,
-  },
-  strengthBarActive: {
-    backgroundColor: colors.action.primary,
-  },
-  strengthBarInactive: {
-    backgroundColor: colors.border.default,
-  },
-  strengthLabels: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  strengthLabel: {
-    ...typography.caption,
-    color: colors.text.primary,
-  },
-  strengthRequirements: {
-    ...typography.caption,
-    color: colors.text.tertiary,
-  },
-  termsRow: {
-    alignItems: "flex-start",
-    flexDirection: "row",
-    gap: spacing.sm,
-    paddingTop: spacing.sm,
-    width: "100%",
-  },
-  termsText: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-    flex: 1,
-  },
-  fullWidthField: {
-    maxWidth: "100%",
-    width: "100%",
-  },
-  fullWidthButton: {
-    alignSelf: "stretch",
-    width: "100%",
-  },
-  footerRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-  footerMuted: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  footerLinkLabel: {
-    ...typography.bodySmall,
-    color: colors.feedback.successFg,
-  },
-});
+function useCreateAccountStyles() {
+  return useThemedStyles((c: ColorTokens) => ({
+    root: {
+      flex: 1,
+      backgroundColor: c.background.muted,
+    },
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      gap: spacing.lg,
+      paddingHorizontal: spacing.xl,
+      paddingTop: spacing.lg,
+    },
+    copy: {
+      gap: spacing.xxs,
+      width: "100%" as const,
+    },
+    title: {
+      ...typography.bodyDefault,
+      color: c.text.primary,
+    },
+    subtitle: {
+      ...typography.bodyDefault,
+      color: c.text.secondary,
+    },
+    form: {
+      gap: spacing.md,
+      width: "100%" as const,
+    },
+    passwordField: {
+      gap: spacing.xxs,
+      width: "100%" as const,
+    },
+    strengthSection: {
+      gap: spacing.xxs,
+      width: "100%" as const,
+    },
+    strengthBars: {
+      flexDirection: "row" as const,
+      gap: spacing.xxs,
+      width: "100%" as const,
+    },
+    strengthBar: {
+      borderRadius: radii.full,
+      flex: 1,
+      height: 4,
+    },
+    strengthBarActive: {
+      backgroundColor: c.action.primary,
+    },
+    strengthBarInactive: {
+      backgroundColor: c.border.default,
+    },
+    strengthLabels: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      justifyContent: "space-between" as const,
+      width: "100%" as const,
+    },
+    strengthLabel: {
+      ...typography.caption,
+      color: c.text.primary,
+    },
+    strengthRequirements: {
+      ...typography.caption,
+      color: c.text.tertiary,
+    },
+    termsRow: {
+      alignItems: "flex-start" as const,
+      flexDirection: "row" as const,
+      gap: spacing.sm,
+      paddingTop: spacing.sm,
+      width: "100%" as const,
+    },
+    termsText: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+      flex: 1,
+    },
+    fullWidthField: {
+      maxWidth: "100%" as const,
+      width: "100%" as const,
+    },
+    fullWidthButton: {
+      alignSelf: "stretch" as const,
+      width: "100%" as const,
+    },
+    footerRow: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      justifyContent: "center" as const,
+    },
+    footerMuted: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+    },
+    footerLinkLabel: {
+      ...typography.bodySmall,
+      color: c.feedback.successFg,
+    },
+  }));
+}

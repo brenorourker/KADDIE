@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import {
   Button,
-  colors,
   controlSize,
   Dropdown,
   Icon,
@@ -17,6 +16,9 @@ import {
   radii,
   spacing,
   typography,
+  useColors,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 import {
   courseOptions,
@@ -39,6 +41,8 @@ export function ConfigureRoundModal({
   onCancel,
   onDone,
 }: ConfigureRoundModalProps) {
+  const colors = useColors();
+  const styles = useConfigureRoundModalStyles();
   const [course, setCourse] = useState(initialValues.course);
   const [format, setFormat] = useState(initialValues.format);
   const [tees, setTees] = useState(initialValues.tees ?? defaultRoundConfig.tees);
@@ -157,81 +161,83 @@ export function ConfigureRoundModal({
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: spacing.md,
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.75)",
-  },
-  centered: {
-    width: "100%",
-    maxWidth: controlSize.modalWidth,
-    zIndex: 1,
-  },
-  card: {
-    alignItems: "center",
-    backgroundColor: colors.background.surface,
-    borderRadius: radii.xl,
-    gap: spacing.md,
-    overflow: "visible",
-    padding: spacing.xl,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 16 },
-    shadowOpacity: 0.14,
-    shadowRadius: 16,
-    elevation: 8,
-    width: "100%",
-  },
-  title: {
-    ...typography.headingH3,
-    color: colors.text.primary,
-    textAlign: "center",
-    width: "100%",
-  },
-  form: {
-    gap: spacing.md,
-    overflow: "visible",
-    position: "relative",
-    width: "100%",
-    zIndex: 2,
-  },
-  field: {
-    maxWidth: "100%",
-    width: "100%",
-  },
-  fieldLabel: {
-    color: colors.text.primary,
-  },
-  golfersRow: {
-    alignItems: "flex-end",
-    flexDirection: "row",
-    gap: spacing.sm,
-    width: "100%",
-  },
-  golfersField: {
-    flex: 1,
-    maxWidth: "100%",
-  },
-  addGolferButton: {
-    borderRadius: radii.lg,
-    marginBottom: 0,
-  },
-  actions: {
-    flexDirection: "row",
-    gap: spacing.sm,
-    marginTop: 48,
-    position: "relative",
-    width: "100%",
-    zIndex: 1,
-  },
-  actionButton: {
-    borderRadius: radii.lg,
-    flex: 1,
-    minWidth: 0,
-  },
-});
+function useConfigureRoundModalStyles() {
+  return useThemedStyles((c: ColorTokens) => ({
+    overlay: {
+      flex: 1,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
+      paddingHorizontal: spacing.md,
+    },
+    backdrop: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: "rgba(0, 0, 0, 0.75)",
+    },
+    centered: {
+      width: "100%" as const,
+      maxWidth: controlSize.modalWidth,
+      zIndex: 1,
+    },
+    card: {
+      alignItems: "center" as const,
+      backgroundColor: c.background.surface,
+      borderRadius: radii.xl,
+      gap: spacing.md,
+      overflow: "visible" as const,
+      padding: spacing.xl,
+      shadowColor: "#0F172A",
+      shadowOffset: { width: 0, height: 16 },
+      shadowOpacity: 0.14,
+      shadowRadius: 16,
+      elevation: 8,
+      width: "100%" as const,
+    },
+    title: {
+      ...typography.headingH3,
+      color: c.text.primary,
+      textAlign: "center" as const,
+      width: "100%" as const,
+    },
+    form: {
+      gap: spacing.md,
+      overflow: "visible" as const,
+      position: "relative" as const,
+      width: "100%" as const,
+      zIndex: 2,
+    },
+    field: {
+      maxWidth: "100%" as const,
+      width: "100%" as const,
+    },
+    fieldLabel: {
+      color: c.text.primary,
+    },
+    golfersRow: {
+      alignItems: "flex-end" as const,
+      flexDirection: "row" as const,
+      gap: spacing.sm,
+      width: "100%" as const,
+    },
+    golfersField: {
+      flex: 1,
+      maxWidth: "100%" as const,
+    },
+    addGolferButton: {
+      borderRadius: radii.lg,
+      marginBottom: 0,
+    },
+    actions: {
+      flexDirection: "row" as const,
+      gap: spacing.sm,
+      marginTop: 48,
+      position: "relative" as const,
+      width: "100%" as const,
+      zIndex: 1,
+    },
+    actionButton: {
+      borderRadius: radii.lg,
+      flex: 1,
+      minWidth: 0,
+    },
+  }));
+}

@@ -5,13 +5,14 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   iconSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 import { Button } from "./Button";
 import { Icon } from "./Icon";
@@ -40,32 +41,36 @@ type VariantConfig = {
   buttonVariant: "primary" | "secondary" | "destructive";
 };
 
-const variantConfig: Record<BannerCardStyle, VariantConfig> = {
-  promo: {
-    backgroundColor: colors.action.primary,
-    titleColor: colors.action.onPrimary,
-    bodyColor: colors.action.onPrimary,
-    bodyOpacity: 0.9,
-    dismissIconColor: colors.action.onPrimary,
-    buttonVariant: "secondary",
-  },
-  info: {
-    backgroundColor: colors.feedback.infoBg,
-    titleColor: colors.text.primary,
-    bodyColor: colors.text.secondary,
-    dismissIconColor: colors.text.primary,
-    buttonVariant: "primary",
-  },
-  subtle: {
-    backgroundColor: colors.background.accentSubtle,
-    borderColor: colors.border.error,
-    borderWidth: 1,
-    titleColor: colors.text.primary,
-    bodyColor: colors.text.secondary,
-    dismissIconColor: colors.text.primary,
-    buttonVariant: "destructive",
-  },
-};
+function getVariantConfig(
+  colors: ColorTokens,
+): Record<BannerCardStyle, VariantConfig> {
+  return {
+    promo: {
+      backgroundColor: colors.action.primary,
+      titleColor: colors.action.onPrimary,
+      bodyColor: colors.action.onPrimary,
+      bodyOpacity: 0.9,
+      dismissIconColor: colors.action.onPrimary,
+      buttonVariant: "secondary",
+    },
+    info: {
+      backgroundColor: colors.feedback.infoBg,
+      titleColor: colors.text.primary,
+      bodyColor: colors.text.secondary,
+      dismissIconColor: colors.text.primary,
+      buttonVariant: "primary",
+    },
+    subtle: {
+      backgroundColor: colors.background.accentSubtle,
+      borderColor: colors.border.error,
+      borderWidth: 1,
+      titleColor: colors.text.primary,
+      bodyColor: colors.text.secondary,
+      dismissIconColor: colors.text.primary,
+      buttonVariant: "destructive",
+    },
+  };
+}
 
 export function BannerCard({
   title = "Heading",
@@ -77,7 +82,8 @@ export function BannerCard({
   showDismiss = true,
   containerStyle,
 }: BannerCardProps) {
-  const config = variantConfig[style];
+  const colors = useColors();
+  const config = getVariantConfig(colors)[style];
 
   return (
     <View

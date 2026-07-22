@@ -1,4 +1,5 @@
 import type { ImageSourcePropType } from "react-native";
+import { useMemo } from "react";
 import {
   Image,
   StyleSheet,
@@ -6,12 +7,13 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 import { Button } from "./Button";
 
@@ -40,6 +42,9 @@ export function MediaCard({
   onSecondaryActionPress,
   style,
 }: MediaCardProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={[styles.card, style]}>
       <View style={styles.media}>
@@ -82,47 +87,49 @@ export function MediaCard({
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    width: "100%",
-    maxWidth: controlSize.mediaCardWidth,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border.default,
-    backgroundColor: colors.background.surface,
-    overflow: "hidden",
-  },
-  media: {
-    height: controlSize.mediaCardImageHeight,
-    width: "100%",
-    backgroundColor: colors.background.muted,
-  },
-  mediaImage: {
-    width: "100%",
-    height: "100%",
-  },
-  content: {
-    gap: spacing.xxs,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.sm,
-    paddingHorizontal: spacing.lg,
-  },
-  title: {
-    ...typography.headingH3,
-    color: colors.text.primary,
-  },
-  body: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  actions: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.lg,
-    paddingHorizontal: spacing.lg,
-  },
-  actionsTwoButtons: {
-    justifyContent: "space-between",
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    card: {
+      width: "100%",
+      maxWidth: controlSize.mediaCardWidth,
+      borderRadius: radii.lg,
+      borderWidth: 1,
+      borderColor: colors.border.default,
+      backgroundColor: colors.background.surface,
+      overflow: "hidden",
+    },
+    media: {
+      height: controlSize.mediaCardImageHeight,
+      width: "100%",
+      backgroundColor: colors.background.muted,
+    },
+    mediaImage: {
+      width: "100%",
+      height: "100%",
+    },
+    content: {
+      gap: spacing.xxs,
+      paddingTop: spacing.lg,
+      paddingBottom: spacing.sm,
+      paddingHorizontal: spacing.lg,
+    },
+    title: {
+      ...typography.headingH3,
+      color: colors.text.primary,
+    },
+    body: {
+      ...typography.bodySmall,
+      color: colors.text.secondary,
+    },
+    actions: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingTop: spacing.sm,
+      paddingBottom: spacing.lg,
+      paddingHorizontal: spacing.lg,
+    },
+    actionsTwoButtons: {
+      justifyContent: "space-between",
+    },
+  });
+}

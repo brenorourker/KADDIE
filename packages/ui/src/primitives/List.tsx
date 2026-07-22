@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import {
   Animated,
   Easing,
@@ -10,13 +10,14 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   iconSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 import { Icon } from "./Icon";
 import { Switch } from "./Switch";
@@ -35,6 +36,9 @@ export type ListItemProps = Omit<PressableProps, "children" | "style"> & {
 };
 
 function ListItemAvatar({ initials }: { initials: string }) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.avatar}>
       <Text style={styles.avatarText}>{initials}</Text>
@@ -49,6 +53,9 @@ function ListItemContent({
   title: string;
   supportingText?: string;
 }) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
   return (
     <View style={styles.content}>
       <Text style={styles.title}>{title}</Text>
@@ -70,6 +77,8 @@ function ListItemTrailingAccessory({
   onSwitchValueChange?: (value: boolean) => void;
   switchAccessibilityLabel?: string;
 }) {
+  const colors = useColors();
+
   if (trailing === "none") {
     return null;
   }
@@ -108,6 +117,8 @@ export function ListItem({
   style,
   ...pressableProps
 }: ListItemProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const isInteractive = Boolean(onPress) && trailing !== "switch";
   const pressProgress = useRef(new Animated.Value(0)).current;
 
@@ -181,56 +192,60 @@ export type ListProps = {
 };
 
 export function List({ children, style }: ListProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   return <View style={[styles.list, style]}>{children}</View>;
 }
 
-const styles = StyleSheet.create({
-  list: {
-    backgroundColor: colors.background.surface,
-    overflow: "hidden",
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    backgroundColor: colors.background.surface,
-  },
-  pressable: {
-    overflow: "hidden",
-    position: "relative",
-  },
-  background: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  content: {
-    flex: 1,
-    gap: spacing.xxxs,
-    minWidth: 0,
-  },
-  title: {
-    ...typography.titleDefault,
-    color: colors.text.primary,
-  },
-  supportingText: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  avatar: {
-    height: controlSize.listAvatar,
-    minWidth: controlSize.listAvatar,
-    paddingHorizontal: spacing.sm,
-    borderRadius: radii.full,
-    backgroundColor: colors.feedback.successBg,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarText: {
-    ...typography.avatarInitials,
-    color: colors.feedback.successFg,
-  },
-  disabled: {
-    opacity: 0.6,
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    list: {
+      backgroundColor: colors.background.surface,
+      overflow: "hidden",
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.md,
+      paddingHorizontal: spacing.xl,
+      paddingVertical: spacing.md,
+      backgroundColor: colors.background.surface,
+    },
+    pressable: {
+      overflow: "hidden",
+      position: "relative",
+    },
+    background: {
+      ...StyleSheet.absoluteFillObject,
+    },
+    content: {
+      flex: 1,
+      gap: spacing.xxxs,
+      minWidth: 0,
+    },
+    title: {
+      ...typography.titleDefault,
+      color: colors.text.primary,
+    },
+    supportingText: {
+      ...typography.bodySmall,
+      color: colors.text.secondary,
+    },
+    avatar: {
+      height: controlSize.listAvatar,
+      minWidth: controlSize.listAvatar,
+      paddingHorizontal: spacing.sm,
+      borderRadius: radii.full,
+      backgroundColor: colors.feedback.successBg,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    avatarText: {
+      ...typography.avatarInitials,
+      color: colors.feedback.successFg,
+    },
+    disabled: {
+      opacity: 0.6,
+    },
+  });
+}

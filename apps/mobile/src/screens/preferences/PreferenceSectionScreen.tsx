@@ -12,12 +12,16 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   AppBar,
   Button,
-  colors,
   Radio,
   radii,
   spacing,
   typography,
+  useColors,
+  useThemedStyles,
+  type AppearancePreference,
+  type ColorTokens,
 } from "@kaddie/ui";
+import { useAppearance } from "../../app/AppearanceProvider";
 import { usePersona } from "../../personas/PersonaProvider";
 import {
   aboutMock,
@@ -39,12 +43,12 @@ import {
   type PreferenceSectionId,
 } from "./mockData";
 import {
-  preferenceScreenStyles,
   SettingsBodyText,
   SettingsGroup,
   SettingsRow,
   SettingsSection,
   SettingsSwitchRow,
+  usePreferenceScreenStyles,
 } from "./settingsChrome";
 
 type PreferenceSectionScreenProps = {
@@ -59,6 +63,7 @@ export function PreferenceSectionScreen({
   onOpenSection,
 }: PreferenceSectionScreenProps) {
   const insets = useSafeAreaInsets();
+  const screenStyles = usePreferenceScreenStyles();
   const bottomPadding = Math.max(
     insets.bottom + spacing.xl,
     spacing["2xl"] + spacing.lg,
@@ -66,16 +71,17 @@ export function PreferenceSectionScreen({
   const title = preferenceSectionTitles[sectionId];
 
   return (
-    <View style={preferenceScreenStyles.root}>
+    <View style={screenStyles.root}>
       <AppBar title={title} onLeadingPress={onBack} />
       <ScrollView
         contentContainerStyle={[
-          preferenceScreenStyles.scrollContent,
+          screenStyles.scrollContent,
           { paddingBottom: bottomPadding },
         ]}
         keyboardShouldPersistTaps="handled"
-        style={preferenceScreenStyles.scroll}
+        style={screenStyles.scroll}
       >
+        {sectionId === "appearance" ? <AppearanceContent /> : null}
         {sectionId === "language" ? <LanguageContent /> : null}
         {sectionId === "personality" ? <PersonalityContent /> : null}
         {sectionId === "parameters" ? <ParametersContent /> : null}
@@ -89,6 +95,48 @@ export function PreferenceSectionScreen({
         {sectionId === "about" ? <AboutContent /> : null}
       </ScrollView>
     </View>
+  );
+}
+
+const appearanceOptions: ReadonlyArray<{
+  id: AppearancePreference;
+  label: string;
+  supportingText: string;
+}> = [
+  {
+    id: "system",
+    label: "System",
+    supportingText: "Match your device setting",
+  },
+  {
+    id: "light",
+    label: "Light",
+    supportingText: "Always use light appearance",
+  },
+  {
+    id: "dark",
+    label: "Dark",
+    supportingText: "Always use dark appearance",
+  },
+];
+
+function AppearanceContent() {
+  const { appearance, setAppearance } = useAppearance();
+
+  return (
+    <SettingsGroup>
+      {appearanceOptions.map((option, index) => (
+        <SettingsRow
+          key={option.id}
+          isLast={index === appearanceOptions.length - 1}
+          selected={appearance === option.id}
+          showChevron={false}
+          supportingText={option.supportingText}
+          title={option.label}
+          onPress={() => setAppearance(option.id)}
+        />
+      ))}
+    </SettingsGroup>
   );
 }
 
@@ -460,6 +508,7 @@ function HelpContent({
 }: {
   onOpenSupportTicket: () => void;
 }) {
+  const themed = useSectionExtraStyles();
   return (
     <>
       <SettingsBodyText>
@@ -488,11 +537,11 @@ function HelpContent({
             key={article.id}
             style={[
               styles.articleRow,
-              index < helpArticles.length - 1 && styles.articleBorder,
+              index < helpArticles.length - 1 && themed.articleBorder,
             ]}
           >
-            <Text style={styles.articleTitle}>{article.title}</Text>
-            <Text style={styles.articleBody}>{article.body}</Text>
+            <Text style={themed.articleTitle}>{article.title}</Text>
+            <Text style={themed.articleBody}>{article.body}</Text>
           </View>
         ))}
       </SettingsGroup>
@@ -507,6 +556,7 @@ function HelpContent({
 
 function ContactContent() {
   const { activePersona } = usePersona();
+  const themed = useSectionExtraStyles();
   const [topicIndex, setTopicIndex] = useState(0);
   const [message, setMessage] = useState(
     "Hi Kaddie team — I’m seeing an issue with yardages on hole 5 at Elmgreen. Happy to share a screen recording.",
@@ -543,11 +593,11 @@ function ContactContent() {
       </SettingsGroup>
 
       <SettingsSection label="MESSAGE" />
-      <View style={styles.messageCard}>
-        <Text style={styles.messageMeta}>From {email}</Text>
+      <View style={themed.messageCard}>
+        <Text style={themed.messageMeta}>From {email}</Text>
         <TextInput
           multiline
-          style={styles.messageInput}
+          style={[styles.messageInput, themed.messageInput]}
           textAlignVertical="top"
           value={message}
           onChangeText={setMessage}
@@ -569,14 +619,15 @@ function ContactContent() {
 
 function AboutContent() {
   const { activePersona } = usePersona();
+  const themed = useSectionExtraStyles();
   const version =
     activePersona.data.preferences.support.version || aboutMock.version;
 
   return (
     <>
       <View style={styles.aboutHero}>
-        <Text style={styles.aboutName}>{aboutMock.appName}</Text>
-        <Text style={styles.aboutTagline}>{aboutMock.tagline}</Text>
+        <Text style={themed.aboutName}>{aboutMock.appName}</Text>
+        <Text style={themed.aboutTagline}>{aboutMock.tagline}</Text>
       </View>
 
       <SettingsSection label="APP INFO" />
@@ -615,45 +666,52 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
   },
-  articleBorder: {
-    borderBottomColor: colors.border.default,
-    borderBottomWidth: 1,
-  },
-  articleTitle: {
-    ...typography.bodyDefault,
-    color: colors.text.primary,
-  },
-  articleBody: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  messageCard: {
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.default,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    gap: spacing.sm,
-    padding: spacing.lg,
-  },
-  messageMeta: {
-    ...typography.bodySmall,
-    color: colors.text.tertiary,
-  },
   messageInput: {
     ...typography.bodyDefault,
-    color: colors.text.primary,
     minHeight: 120,
     padding: 0,
   },
   aboutHero: {
     gap: spacing.xs,
   },
-  aboutName: {
-    ...typography.headingH3,
-    color: colors.text.primary,
-  },
-  aboutTagline: {
-    ...typography.bodyDefault,
-    color: colors.text.secondary,
-  },
 });
+
+function useSectionExtraStyles() {
+  return useThemedStyles((colors: ColorTokens) => ({
+    articleBorder: {
+      borderBottomColor: colors.border.default,
+      borderBottomWidth: 1,
+    },
+    articleTitle: {
+      ...typography.bodyDefault,
+      color: colors.text.primary,
+    },
+    articleBody: {
+      ...typography.bodySmall,
+      color: colors.text.secondary,
+    },
+    messageCard: {
+      backgroundColor: colors.background.surface,
+      borderColor: colors.border.default,
+      borderRadius: radii.lg,
+      borderWidth: 1,
+      gap: spacing.sm,
+      padding: spacing.lg,
+    },
+    messageMeta: {
+      ...typography.bodySmall,
+      color: colors.text.tertiary,
+    },
+    messageInput: {
+      color: colors.text.primary,
+    },
+    aboutName: {
+      ...typography.headingH3,
+      color: colors.text.primary,
+    },
+    aboutTagline: {
+      ...typography.bodyDefault,
+      color: colors.text.secondary,
+    },
+  }));
+}

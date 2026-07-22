@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useMemo } from "react";
 import {
   Modal as RNModal,
   Pressable,
@@ -7,13 +8,14 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   iconSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 import { Button } from "./Button";
 import { Icon } from "./Icon";
@@ -41,6 +43,8 @@ function ModalContent({
   onConfirmPress,
   style,
 }: Omit<ModalProps, "visible" | "onRequestClose">) {
+  const colors = useColors();
+  const styles = useMemo(() => createContentStyles(colors), [colors]);
   const iconNode =
     icon ?? (
       <Icon name="more" size={iconSize.lg} color={colors.feedback.infoFg} />
@@ -142,49 +146,54 @@ const styles = StyleSheet.create({
     maxWidth: controlSize.modalWidth,
     zIndex: 1,
   },
-  card: {
-    width: "100%",
-    minHeight: controlSize.modalMinHeight,
-    alignItems: "center",
-    gap: spacing.md,
-    padding: spacing.xl,
-    borderRadius: radii.xl,
-    backgroundColor: colors.background.surface,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 16 },
-    shadowOpacity: 0.14,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  iconContainer: {
-    width: controlSize.modalIcon,
-    height: controlSize.modalIcon,
-    borderRadius: radii.full,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.feedback.infoBg,
-    overflow: "hidden",
-  },
-  title: {
-    ...typography.headingH3,
-    color: colors.text.primary,
-    textAlign: "center",
-    width: "100%",
-  },
-  body: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-    textAlign: "center",
-    width: "100%",
-  },
-  actions: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-  },
-  actionButton: {
-    flex: 1,
-    borderRadius: radii.lg,
-  },
 });
+
+function createContentStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    card: {
+      width: "100%",
+      minHeight: controlSize.modalMinHeight,
+      alignItems: "center",
+      gap: spacing.md,
+      padding: spacing.xl,
+      borderRadius: radii.xl,
+      backgroundColor: colors.background.surface,
+      shadowColor: "#0F172A",
+      shadowOffset: { width: 0, height: 16 },
+      shadowOpacity: 0.14,
+      shadowRadius: 16,
+      elevation: 8,
+    },
+    iconContainer: {
+      width: controlSize.modalIcon,
+      height: controlSize.modalIcon,
+      borderRadius: radii.full,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.feedback.infoBg,
+      overflow: "hidden",
+    },
+    title: {
+      ...typography.headingH3,
+      color: colors.text.primary,
+      textAlign: "center",
+      width: "100%",
+    },
+    body: {
+      ...typography.bodySmall,
+      color: colors.text.secondary,
+      textAlign: "center",
+      width: "100%",
+    },
+    actions: {
+      width: "100%",
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.sm,
+    },
+    actionButton: {
+      flex: 1,
+      borderRadius: radii.lg,
+    },
+  });
+}

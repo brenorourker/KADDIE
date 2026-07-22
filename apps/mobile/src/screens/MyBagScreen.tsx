@@ -3,7 +3,6 @@ import {
   Image,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
@@ -11,13 +10,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Badge,
   Button,
-  colors,
   controlSize,
   Icon,
   iconSize,
   radii,
   spacing,
   typography,
+  useColors,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 import { usePersona } from "../personas/PersonaProvider";
 import type { BagClub, BagSection } from "../personas/types";
@@ -56,6 +57,7 @@ const clubThumbnailCrops: Record<string, ThumbnailCrop> = {
 };
 
 function ClubThumbnail({ clubId, source }: { clubId: string; source: BagClub["image"] }) {
+  const styles = useMyBagScreenStyles();
   const crop = clubThumbnailCrops[clubId];
   const imageStyle = crop
     ? {
@@ -80,6 +82,8 @@ function ClubThumbnail({ clubId, source }: { clubId: string; source: BagClub["im
 }
 
 function ClubRow({ club, isLast = false, onPress }: ClubRowProps) {
+  const colors = useColors();
+  const styles = useMyBagScreenStyles();
   return (
     <Pressable
       accessibilityRole="button"
@@ -101,6 +105,7 @@ function ClubRow({ club, isLast = false, onPress }: ClubRowProps) {
 }
 
 function ClubCard({ club, onPress }: { club: BagClub; onPress: () => void }) {
+  const styles = useMyBagScreenStyles();
   return (
     <View style={styles.card}>
       <ClubRow club={club} isLast onPress={onPress} />
@@ -115,6 +120,7 @@ function ClubGroup({
   clubs: BagClub[];
   onClubPress: (club: BagClub) => void;
 }) {
+  const styles = useMyBagScreenStyles();
   return (
     <View style={styles.card}>
       {clubs.map((club, index) => (
@@ -130,6 +136,8 @@ function ClubGroup({
 }
 
 function ImportDistancesCard() {
+  const colors = useColors();
+  const styles = useMyBagScreenStyles();
   return (
     <Pressable
       accessibilityRole="button"
@@ -182,6 +190,8 @@ function BagSectionList({
 export function MyBagScreen({ onBack, onAddClub, onOpenClubDetails }: MyBagScreenProps) {
   const { bagData, bagClubCount } = usePersona();
   const insets = useSafeAreaInsets();
+  const colors = useColors();
+  const styles = useMyBagScreenStyles();
   const bottomPadding = Math.max(insets.bottom + spacing.xl, spacing["2xl"] + spacing.lg);
 
   const handleClubPress = (club: BagClub) => {
@@ -235,116 +245,118 @@ export function MyBagScreen({ onBack, onAddClub, onOpenClubDetails }: MyBagScree
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background.muted,
-  },
-  headerBar: {
-    alignItems: "center",
-    backgroundColor: colors.background.surface,
-    borderBottomColor: colors.border.default,
-    borderBottomWidth: 1,
-    flexDirection: "row",
-    gap: spacing.sm,
-    minHeight: controlSize.appBar,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  headerIconButton: {
-    alignItems: "center",
-    height: controlSize.md,
-    justifyContent: "center",
-    width: controlSize.md,
-  },
-  headerTitle: {
-    ...typography.headingH3,
-    color: colors.text.primary,
-    flex: 1,
-    minWidth: 0,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    gap: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-  },
-  intro: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  card: {
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.default,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-  row: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: spacing.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  rowBorder: {
-    borderBottomColor: colors.border.default,
-    borderBottomWidth: 1,
-  },
-  rowPressed: {
-    backgroundColor: colors.background.muted,
-  },
-  thumbnail: {
-    backgroundColor: colors.background.surface,
-    borderRadius: radii.sm,
-    height: CLUB_THUMBNAIL_SIZE,
-    overflow: "hidden",
-    width: CLUB_THUMBNAIL_SIZE,
-  },
-  thumbnailImage: {
-    height: CLUB_THUMBNAIL_SIZE,
-    width: CLUB_THUMBNAIL_SIZE,
-  },
-  rowText: {
-    flex: 1,
-    gap: spacing.xxs,
-    minWidth: 0,
-  },
-  rowTitle: {
-    ...typography.bodyDefault,
-    color: colors.text.primary,
-  },
-  rowModel: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  importCard: {
-    alignItems: "center",
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.default,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: spacing.md,
-    overflow: "hidden",
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  importIconWrap: {
-    alignItems: "center",
-    backgroundColor: colors.feedback.infoBg,
-    borderRadius: radii.full,
-    height: CLUB_THUMBNAIL_SIZE,
-    justifyContent: "center",
-    width: CLUB_THUMBNAIL_SIZE,
-  },
-  importTitleRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: spacing.xs,
-  },
-});
+function useMyBagScreenStyles() {
+  return useThemedStyles((c: ColorTokens) => ({
+    root: {
+      flex: 1,
+      backgroundColor: c.background.muted,
+    },
+    headerBar: {
+      alignItems: "center" as const,
+      backgroundColor: c.background.surface,
+      borderBottomColor: c.border.default,
+      borderBottomWidth: 1,
+      flexDirection: "row" as const,
+      gap: spacing.sm,
+      minHeight: controlSize.appBar,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+    },
+    headerIconButton: {
+      alignItems: "center" as const,
+      height: controlSize.md,
+      justifyContent: "center" as const,
+      width: controlSize.md,
+    },
+    headerTitle: {
+      ...typography.headingH3,
+      color: c.text.primary,
+      flex: 1,
+      minWidth: 0,
+    },
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      gap: spacing.lg,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.lg,
+    },
+    intro: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+    },
+    card: {
+      backgroundColor: c.background.surface,
+      borderColor: c.border.default,
+      borderRadius: radii.lg,
+      borderWidth: 1,
+      overflow: "hidden" as const,
+    },
+    row: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      gap: spacing.md,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+    },
+    rowBorder: {
+      borderBottomColor: c.border.default,
+      borderBottomWidth: 1,
+    },
+    rowPressed: {
+      backgroundColor: c.background.muted,
+    },
+    thumbnail: {
+      backgroundColor: c.background.surface,
+      borderRadius: radii.sm,
+      height: CLUB_THUMBNAIL_SIZE,
+      overflow: "hidden" as const,
+      width: CLUB_THUMBNAIL_SIZE,
+    },
+    thumbnailImage: {
+      height: CLUB_THUMBNAIL_SIZE,
+      width: CLUB_THUMBNAIL_SIZE,
+    },
+    rowText: {
+      flex: 1,
+      gap: spacing.xxs,
+      minWidth: 0,
+    },
+    rowTitle: {
+      ...typography.bodyDefault,
+      color: c.text.primary,
+    },
+    rowModel: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+    },
+    importCard: {
+      alignItems: "center" as const,
+      backgroundColor: c.background.surface,
+      borderColor: c.border.default,
+      borderRadius: radii.lg,
+      borderWidth: 1,
+      flexDirection: "row" as const,
+      gap: spacing.md,
+      overflow: "hidden" as const,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+    },
+    importIconWrap: {
+      alignItems: "center" as const,
+      backgroundColor: c.feedback.infoBg,
+      borderRadius: radii.full,
+      height: CLUB_THUMBNAIL_SIZE,
+      justifyContent: "center" as const,
+      width: CLUB_THUMBNAIL_SIZE,
+    },
+    importTitleRow: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      flexWrap: "wrap" as const,
+      gap: spacing.xs,
+    },
+  }));
+}

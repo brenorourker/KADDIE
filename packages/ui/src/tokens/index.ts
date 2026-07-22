@@ -1,53 +1,5 @@
-export const colors = {
-  action: {
-    primary: "#38E33C",
-    primaryPressed: "#2FC933",
-    onPrimary: "#000000",
-
-    onSecondary: "#020617",
-
-    onGhost: "#0F172A",
-    ghostPressed: "#F1F5F9",
-
-    destructive: "#EF4444",
-    destructivePressed: "#DC2626",
-    onDestructive: "#FFFFFF",
-
-    disabled: "#E2E8F0",
-    onDisabled: "#94A3B8",
-  },
-  text: {
-    primary: "#0F172A",
-    secondary: "#475569",
-    tertiary: "#64748B",
-    disabled: "#94A3B8",
-  },
-  background: {
-    surface: "#FFFFFF",
-    muted: "#F1F5F9",
-    accentSubtle: "#F7EBDA",
-  },
-  border: {
-    default: "#E2E8F0",
-    strong: "#CBD5E1",
-    focus: "#38E33C",
-    error: "#EF4444",
-  },
-  feedback: {
-    error: "#B91C1C",
-    errorBg: "#FEF2F2",
-    successBg: "#ECFDEC",
-    successFg: "#239626",
-    infoBg: "#EFF6FF",
-    infoFg: "#1D4ED8",
-    warningBg: "#FFFBEB",
-    warningFg: "#B45309",
-  },
-  surface: "#FFFFFF",
-  surfaceMuted: "#F3F4F6",
-  textMuted: "#6B7280",
-  borderLegacy: "#E5E7EB",
-} as const;
+export type { ColorTokens } from "./colors";
+export { colors, lightColors, darkColors } from "./colors";
 
 export const spacing = {
   xxxs: 2,

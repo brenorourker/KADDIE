@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import {
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
@@ -11,12 +10,14 @@ import {
   Accordion,
   Button,
   Checkbox,
-  colors,
   controlSize,
   Icon,
   iconSize,
   spacing,
   typography,
+  useColors,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 import { usePersona } from "../personas/PersonaProvider";
 import {
@@ -37,6 +38,7 @@ type ClubCheckboxRowProps = {
 };
 
 function ClubCheckboxRow({ club, checked, onToggle }: ClubCheckboxRowProps) {
+  const styles = useAddClubScreenStyles();
   return (
     <Pressable
       accessibilityRole="checkbox"
@@ -58,6 +60,8 @@ export function AddClubScreen({ onBack, onDone }: AddClubScreenProps) {
   const { activePersona, clubSelection, setClubSelection } = usePersona();
   const addClubData = activePersona.data.addClub;
   const insets = useSafeAreaInsets();
+  const colors = useColors();
+  const styles = useAddClubScreenStyles();
   const bottomPadding = Math.max(insets.bottom + spacing.xl, spacing["2xl"] + spacing.lg);
   const savedSignature = useMemo(
     () => selectionSignature(clubSelection),
@@ -138,59 +142,61 @@ export function AddClubScreen({ onBack, onDone }: AddClubScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background.muted,
-  },
-  headerBar: {
-    alignItems: "center",
-    backgroundColor: colors.background.surface,
-    borderBottomColor: colors.border.default,
-    borderBottomWidth: 1,
-    flexDirection: "row",
-    gap: spacing.sm,
-    minHeight: controlSize.appBar,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  headerIconButton: {
-    alignItems: "center",
-    height: controlSize.md,
-    justifyContent: "center",
-    width: controlSize.md,
-  },
-  headerTitle: {
-    ...typography.headingH3,
-    color: colors.text.primary,
-    flex: 1,
-    minWidth: 0,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    gap: spacing.lg,
-    paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-  },
-  intro: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  accordionContent: {
-    gap: spacing.md,
-  },
-  checkboxRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: spacing.sm,
-    minHeight: 24,
-  },
-  checkboxLabel: {
-    ...typography.bodyDefault,
-    color: colors.text.primary,
-    flex: 1,
-  },
-});
+function useAddClubScreenStyles() {
+  return useThemedStyles((c: ColorTokens) => ({
+    root: {
+      flex: 1,
+      backgroundColor: c.background.muted,
+    },
+    headerBar: {
+      alignItems: "center" as const,
+      backgroundColor: c.background.surface,
+      borderBottomColor: c.border.default,
+      borderBottomWidth: 1,
+      flexDirection: "row" as const,
+      gap: spacing.sm,
+      minHeight: controlSize.appBar,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+    },
+    headerIconButton: {
+      alignItems: "center" as const,
+      height: controlSize.md,
+      justifyContent: "center" as const,
+      width: controlSize.md,
+    },
+    headerTitle: {
+      ...typography.headingH3,
+      color: c.text.primary,
+      flex: 1,
+      minWidth: 0,
+    },
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      gap: spacing.lg,
+      paddingHorizontal: spacing.lg,
+      paddingTop: spacing.lg,
+    },
+    intro: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+    },
+    accordionContent: {
+      gap: spacing.md,
+    },
+    checkboxRow: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      gap: spacing.sm,
+      minHeight: 24,
+    },
+    checkboxLabel: {
+      ...typography.bodyDefault,
+      color: c.text.primary,
+      flex: 1,
+    },
+  }));
+}

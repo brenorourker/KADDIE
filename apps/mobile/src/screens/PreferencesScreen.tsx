@@ -1,9 +1,7 @@
 import { useState } from "react";
 import {
-  Alert,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
@@ -11,25 +9,28 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   AppBar,
   Avatar,
-  colors,
   Icon,
   iconSize,
   radii,
   spacing,
   ToggleButton,
   typography,
+  useColors,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
+import { useAppearance } from "../app/AppearanceProvider";
 import { usePersona } from "../personas/PersonaProvider";
 import {
   PreferenceSectionScreen,
   type PreferenceSectionId,
 } from "./preferences";
 import {
-  preferenceScreenStyles,
   SettingsGroup,
   SettingsRow,
   SettingsSection,
   SettingsSwitchRow,
+  usePreferenceScreenStyles,
 } from "./preferences/settingsChrome";
 
 type PreferencesScreenProps = {
@@ -37,10 +38,72 @@ type PreferencesScreenProps = {
   onOpenProfile: () => void;
 };
 
+function appearanceLabel(appearance: string) {
+  if (appearance === "light") return "Light";
+  if (appearance === "dark") return "Dark";
+  return "System";
+}
+
 export function PreferencesScreen({ onBack, onOpenProfile }: PreferencesScreenProps) {
   const { activePersona } = usePersona();
+  const { appearance } = useAppearance();
+  const colors = useColors();
   const preferencesData = activePersona.data.preferences;
   const insets = useSafeAreaInsets();
+  const screenStyles = usePreferenceScreenStyles();
+  const styles = useThemedStyles((c: ColorTokens) => ({
+    profileCard: {
+      alignItems: "center" as const,
+      backgroundColor: c.background.surface,
+      borderColor: c.border.default,
+      borderRadius: radii.lg,
+      borderWidth: 1,
+      flexDirection: "row" as const,
+      gap: spacing.lg,
+      padding: spacing.lg,
+    },
+    profileText: {
+      flex: 1,
+      gap: spacing.xxxs,
+      minWidth: 0,
+    },
+    profileName: {
+      ...typography.headingH3,
+      color: c.text.primary,
+    },
+    profileEmail: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+    },
+    row: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      gap: spacing.md,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+    },
+    unitsRow: {
+      minHeight: 72,
+    },
+    rowBorder: {
+      borderBottomColor: c.border.default,
+      borderBottomWidth: 1,
+    },
+    rowPressed: {
+      backgroundColor: c.background.muted,
+    },
+    rowTitle: {
+      ...typography.bodyDefault,
+      color: c.text.primary,
+    },
+    rowTitleFlex: {
+      flex: 1,
+      minWidth: 0,
+    },
+    unitsToggle: {
+      width: 162,
+    },
+  }));
   const bottomPadding = Math.max(insets.bottom + spacing.xl, spacing["2xl"] + spacing.lg);
   const [unitsIndex, setUnitsIndex] = useState(0);
   const [windIndex, setWindIndex] = useState(0);
@@ -48,10 +111,6 @@ export function PreferencesScreen({ onBack, onOpenProfile }: PreferencesScreenPr
   const [autoUpdateClubDistances, setAutoUpdateClubDistances] = useState(true);
   const [activeSection, setActiveSection] =
     useState<PreferenceSectionId | null>(null);
-
-  const showComingSoon = (label: string) => {
-    Alert.alert(label, "Not connected yet.");
-  };
 
   if (activeSection) {
     return (
@@ -64,15 +123,15 @@ export function PreferencesScreen({ onBack, onOpenProfile }: PreferencesScreenPr
   }
 
   return (
-    <View style={preferenceScreenStyles.root}>
+    <View style={screenStyles.root}>
       <AppBar title="Preferences" onLeadingPress={onBack} />
 
       <ScrollView
         contentContainerStyle={[
-          preferenceScreenStyles.scrollContent,
+          screenStyles.scrollContent,
           { paddingBottom: bottomPadding },
         ]}
-        style={preferenceScreenStyles.scroll}
+        style={screenStyles.scroll}
       >
         <Pressable
           accessibilityRole="button"
@@ -122,8 +181,8 @@ export function PreferencesScreen({ onBack, onOpenProfile }: PreferencesScreenPr
           <SettingsRow
             isLast
             title="App appearance"
-            value={preferencesData.gameSettings.appAppearance}
-            onPress={() => showComingSoon("App appearance")}
+            value={appearanceLabel(appearance)}
+            onPress={() => setActiveSection("appearance")}
           />
         </SettingsGroup>
 
@@ -186,59 +245,3 @@ export function PreferencesScreen({ onBack, onOpenProfile }: PreferencesScreenPr
     </View>
   );
 }
-
-const UNITS_TOGGLE_WIDTH = 162;
-
-const styles = StyleSheet.create({
-  profileCard: {
-    alignItems: "center",
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.default,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    flexDirection: "row",
-    gap: spacing.lg,
-    padding: spacing.lg,
-  },
-  profileText: {
-    flex: 1,
-    gap: spacing.xxxs,
-    minWidth: 0,
-  },
-  profileName: {
-    ...typography.headingH3,
-    color: colors.text.primary,
-  },
-  profileEmail: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-  row: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: spacing.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  unitsRow: {
-    minHeight: 72,
-  },
-  rowBorder: {
-    borderBottomColor: colors.border.default,
-    borderBottomWidth: 1,
-  },
-  rowPressed: {
-    backgroundColor: colors.background.muted,
-  },
-  rowTitle: {
-    ...typography.bodyDefault,
-    color: colors.text.primary,
-  },
-  rowTitleFlex: {
-    flex: 1,
-    minWidth: 0,
-  },
-  unitsToggle: {
-    width: UNITS_TOGGLE_WIDTH,
-  },
-});

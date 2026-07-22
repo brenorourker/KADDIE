@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import Svg, { Defs, RadialGradient, Rect, Stop } from "react-native-svg";
-import { colors, fontFamily, typography } from "@kaddie/ui";
+import { fontFamily, lightColors, typography } from "@kaddie/ui";
 
 type SplashScreenProps = {
   showText?: boolean;
@@ -45,19 +45,21 @@ export function SplashScreen({ showText = true }: SplashScreenProps) {
   );
 }
 
+// Splash is a fixed brand moment (green background), not themed — always uses
+// the light palette regardless of the user's dark/light mode preference.
 const styles = StyleSheet.create({
   root: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.action.primary,
+    backgroundColor: lightColors.action.primary,
   },
   content: {
     alignItems: "center",
     gap: 12,
   },
   title: {
-    color: colors.text.primary,
+    color: lightColors.text.primary,
     fontFamily: fontFamily.poppinsBold,
     fontSize: 40,
     fontWeight: "700",
@@ -66,7 +68,7 @@ const styles = StyleSheet.create({
   },
   tagline: {
     ...typography.labelDefault,
-    color: colors.text.primary,
+    color: lightColors.text.primary,
     fontFamily: fontFamily.poppinsMedium,
     fontSize: 14,
     letterSpacing: 2.8,

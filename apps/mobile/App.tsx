@@ -9,7 +9,8 @@ import {
   Poppins_600SemiBold,
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
-import { colors } from "@kaddie/ui";
+import { lightColors, useColors, useTheme } from "@kaddie/ui";
+import { AppearanceProvider } from "./src/app/AppearanceProvider";
 import { AppChromeProvider, useAppChrome } from "./src/app/AppChrome";
 import { AppShell } from "./src/app/AppShell";
 import { inRoundColors } from "./src/round/inRoundTheme";
@@ -52,24 +53,32 @@ export function App() {
 
   return (
     <SafeAreaProvider>
-      <AppChromeProvider>
-        <AppWithChrome />
-      </AppChromeProvider>
+      <AppearanceProvider>
+        <AppChromeProvider>
+          <AppWithChrome />
+        </AppChromeProvider>
+      </AppearanceProvider>
     </SafeAreaProvider>
   );
 }
 
 function AppWithChrome() {
   const { chrome } = useAppChrome();
+  const { resolvedScheme } = useTheme();
+  const colors = useColors();
   const inRound = chrome === "in-round";
 
   return (
     <SafeAreaView
-      style={[styles.container, inRound && styles.containerInRound]}
+      style={[
+        styles.container,
+        { backgroundColor: colors.surfaceMuted },
+        inRound && styles.containerInRound,
+      ]}
     >
       <AppShell />
       <StatusBar
-        style={inRound ? "light" : "dark"}
+        style={inRound || resolvedScheme === "dark" ? "light" : "dark"}
         backgroundColor={
           inRound ? inRoundColors.background : colors.surfaceMuted
         }
@@ -81,11 +90,10 @@ function AppWithChrome() {
 const styles = StyleSheet.create({
   splashRoot: {
     flex: 1,
-    backgroundColor: colors.action.primary,
+    backgroundColor: lightColors.action.primary,
   },
   container: {
     flex: 1,
-    backgroundColor: colors.surfaceMuted,
   },
   containerInRound: {
     backgroundColor: inRoundColors.background,

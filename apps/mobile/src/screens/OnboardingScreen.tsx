@@ -3,14 +3,12 @@ import {
   Image,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Button,
-  colors,
   controlSize,
   Dropdown,
   Icon,
@@ -21,6 +19,9 @@ import {
   spacing,
   Stepper,
   typography,
+  useColors,
+  useThemedStyles,
+  type ColorTokens,
 } from "@kaddie/ui";
 import { usePersona } from "../personas/PersonaProvider";
 import { courseOptions } from "./roundConfig";
@@ -69,6 +70,8 @@ export function OnboardingScreen({
   const { activePersona } = usePersona();
   const profileData = activePersona.data.profile;
   const insets = useSafeAreaInsets();
+  const colors = useColors();
+  const styles = useOnboardingScreenStyles();
   const bottomPadding = Math.max(insets.bottom + spacing.xl, spacing["2xl"] + spacing.lg);
   const [fullName, setFullName] = useState(profileData.fullName);
   const [handicap, setHandicap] = useState(parseHandicap(profileData.handicap));
@@ -187,85 +190,87 @@ export function OnboardingScreen({
 const AVATAR_SIZE = 112;
 const AVATAR_IMAGE_SIZE = 52;
 
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: colors.background.muted,
-  },
-  embeddedRoot: {
-    flex: 1,
-  },
-  headerBar: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    minHeight: controlSize.appBar,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm,
-  },
-  closeButton: {
-    alignItems: "center",
-    borderRadius: radii.lg,
-    height: controlSize.md,
-    justifyContent: "center",
-    width: controlSize.md,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    alignItems: "center",
-    flexGrow: 1,
-    gap: spacing.lg,
-    paddingHorizontal: spacing["2xl"],
-    paddingTop: spacing.lg,
-  },
-  stepper: {
-    alignSelf: "center",
-  },
-  avatarWrap: {
-    alignItems: "center",
-    backgroundColor: colors.feedback.infoBg,
-    borderRadius: radii.full,
-    height: AVATAR_SIZE,
-    justifyContent: "center",
-    width: AVATAR_SIZE,
-  },
-  avatarImage: {
-    height: AVATAR_IMAGE_SIZE,
-    width: AVATAR_IMAGE_SIZE,
-  },
-  title: {
-    ...typography.headingH1,
-    color: colors.text.primary,
-    textAlign: "center",
-    width: "100%",
-  },
-  form: {
-    alignSelf: "stretch",
-    gap: spacing.md,
-    width: "100%",
-  },
-  fullWidthField: {
-    maxWidth: "100%",
-    width: "100%",
-  },
-  footerSpacer: {
-    flexGrow: 1,
-    minHeight: spacing.xl,
-  },
-  fullWidthButton: {
-    alignSelf: "stretch",
-    width: "100%",
-  },
-  skipButton: {
-    alignItems: "center",
-    height: controlSize.lg,
-    justifyContent: "center",
-    width: "100%",
-  },
-  skipLabel: {
-    ...typography.bodySmall,
-    color: colors.text.secondary,
-  },
-});
+function useOnboardingScreenStyles() {
+  return useThemedStyles((c: ColorTokens) => ({
+    root: {
+      flex: 1,
+      backgroundColor: c.background.muted,
+    },
+    embeddedRoot: {
+      flex: 1,
+    },
+    headerBar: {
+      alignItems: "center" as const,
+      flexDirection: "row" as const,
+      justifyContent: "flex-end" as const,
+      minHeight: controlSize.appBar,
+      paddingHorizontal: spacing.sm,
+      paddingVertical: spacing.sm,
+    },
+    closeButton: {
+      alignItems: "center" as const,
+      borderRadius: radii.lg,
+      height: controlSize.md,
+      justifyContent: "center" as const,
+      width: controlSize.md,
+    },
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      alignItems: "center" as const,
+      flexGrow: 1,
+      gap: spacing.lg,
+      paddingHorizontal: spacing["2xl"],
+      paddingTop: spacing.lg,
+    },
+    stepper: {
+      alignSelf: "center" as const,
+    },
+    avatarWrap: {
+      alignItems: "center" as const,
+      backgroundColor: c.feedback.infoBg,
+      borderRadius: radii.full,
+      height: AVATAR_SIZE,
+      justifyContent: "center" as const,
+      width: AVATAR_SIZE,
+    },
+    avatarImage: {
+      height: AVATAR_IMAGE_SIZE,
+      width: AVATAR_IMAGE_SIZE,
+    },
+    title: {
+      ...typography.headingH1,
+      color: c.text.primary,
+      textAlign: "center" as const,
+      width: "100%" as const,
+    },
+    form: {
+      alignSelf: "stretch" as const,
+      gap: spacing.md,
+      width: "100%" as const,
+    },
+    fullWidthField: {
+      maxWidth: "100%" as const,
+      width: "100%" as const,
+    },
+    footerSpacer: {
+      flexGrow: 1,
+      minHeight: spacing.xl,
+    },
+    fullWidthButton: {
+      alignSelf: "stretch" as const,
+      width: "100%" as const,
+    },
+    skipButton: {
+      alignItems: "center" as const,
+      height: controlSize.lg,
+      justifyContent: "center" as const,
+      width: "100%" as const,
+    },
+    skipLabel: {
+      ...typography.bodySmall,
+      color: c.text.secondary,
+    },
+  }));
+}

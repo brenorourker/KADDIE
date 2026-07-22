@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Animated,
   Easing,
@@ -9,13 +9,14 @@ import {
   ViewStyle,
 } from "react-native";
 import type { IconName } from "../assets/icons/registry";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   iconSize,
   radii,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 import { Icon } from "./Icon";
 
@@ -55,6 +56,8 @@ function ToggleSegment({
   onPress,
   accessibilityLabel,
 }: SegmentProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const isPill = variant === "pill";
 
   const textColor = isPill
@@ -94,6 +97,8 @@ export function ToggleButton({
   variant = "pill",
   style,
 }: ToggleButtonProps) {
+  const colors = useColors();
+  const styles = useMemo(() => createStyles(colors), [colors]);
   const [trackWidth, setTrackWidth] = useState(0);
   const animatedIndex = useRef(new Animated.Value(value)).current;
   const hasMounted = useRef(false);
@@ -192,71 +197,73 @@ export function ToggleButton({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: controlSize.md,
-  },
-  containerPill: {
-    backgroundColor: colors.background.muted,
-    borderRadius: radii.full,
-    padding: pillPadding,
-    position: "relative",
-    overflow: "hidden",
-  },
-  containerFilled: {
-    backgroundColor: colors.background.surface,
-    borderColor: colors.border.default,
-    borderWidth: 1,
-    borderRadius: radii.sm,
-    overflow: "hidden",
-  },
-  pillIndicator: {
-    position: "absolute",
-    top: pillPadding,
-    left: pillPadding,
-    height: controlSize.sm,
-    borderRadius: radii.full,
-    backgroundColor: colors.background.surface,
-    shadowColor: "#0F172A",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 0,
-  },
-  segment: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: spacing.xs,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xxs,
-    minWidth: 0,
-    zIndex: 1,
-  },
-  segmentPill: {
-    height: controlSize.sm,
-    borderRadius: radii.full,
-    paddingHorizontal: spacing.sm,
-  },
-  segmentFilled: {
-    height: "100%",
-  },
-  segmentFilledSelected: {
-    backgroundColor: colors.action.primary,
-  },
-  segmentFilledDivider: {
-    borderRightColor: colors.border.default,
-    borderRightWidth: 1,
-  },
-  pressed: {
-    opacity: 0.85,
-  },
-  label: {
-    ...typography.labelDefault,
-    letterSpacing: 0.028,
-    flexShrink: 0,
-  },
-});
+function createStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    container: {
+      flexDirection: "row",
+      alignItems: "center",
+      height: controlSize.md,
+    },
+    containerPill: {
+      backgroundColor: colors.background.muted,
+      borderRadius: radii.full,
+      padding: pillPadding,
+      position: "relative",
+      overflow: "hidden",
+    },
+    containerFilled: {
+      backgroundColor: colors.background.surface,
+      borderColor: colors.border.default,
+      borderWidth: 1,
+      borderRadius: radii.sm,
+      overflow: "hidden",
+    },
+    pillIndicator: {
+      position: "absolute",
+      top: pillPadding,
+      left: pillPadding,
+      height: controlSize.sm,
+      borderRadius: radii.full,
+      backgroundColor: colors.background.surface,
+      shadowColor: "#0F172A",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.08,
+      shadowRadius: 2,
+      elevation: 0,
+    },
+    segment: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: spacing.xs,
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.xxs,
+      minWidth: 0,
+      zIndex: 1,
+    },
+    segmentPill: {
+      height: controlSize.sm,
+      borderRadius: radii.full,
+      paddingHorizontal: spacing.sm,
+    },
+    segmentFilled: {
+      height: "100%",
+    },
+    segmentFilledSelected: {
+      backgroundColor: colors.action.primary,
+    },
+    segmentFilledDivider: {
+      borderRightColor: colors.border.default,
+      borderRightWidth: 1,
+    },
+    pressed: {
+      opacity: 0.85,
+    },
+    label: {
+      ...typography.labelDefault,
+      letterSpacing: 0.028,
+      flexShrink: 0,
+    },
+  });
+}

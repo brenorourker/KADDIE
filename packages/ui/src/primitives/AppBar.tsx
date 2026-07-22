@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -7,12 +7,13 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { useColors } from "../theme/Theme";
 import {
-  colors,
   controlSize,
   iconSize,
   spacing,
   typography,
+  type ColorTokens,
 } from "../tokens";
 import { Icon } from "./Icon";
 import { Menu, MenuOption } from "./Menu";
@@ -88,6 +89,8 @@ export function AppBar({
   secondTrailingAccessibilityLabel = "More options",
   style,
 }: AppBarProps) {
+  const colors = useColors();
+  const colorStyles = useMemo(() => createColorStyles(colors), [colors]);
   const [internalMenuOpen, setInternalMenuOpen] = useState(false);
   const isCentered = variant === "centered";
   const showSecondTrailing = variant === "with-action";
@@ -137,7 +140,7 @@ export function AppBar({
 
   return (
     <View style={[styles.root, isMenuOpen ? styles.rootOpen : null, style]}>
-      <View style={styles.bar}>
+      <View style={colorStyles.bar}>
         <AppBarIconSlot
           accessibilityLabel={leadingAccessibilityLabel}
           onPress={onLeadingPress}
@@ -147,12 +150,15 @@ export function AppBar({
 
         {isCentered ? (
           <View style={styles.centeredTitleWrap}>
-            <Text numberOfLines={1} style={[styles.title, styles.titleCentered]}>
+            <Text
+              numberOfLines={1}
+              style={[colorStyles.title, styles.titleCentered]}
+            >
               {title}
             </Text>
           </View>
         ) : (
-          <Text numberOfLines={1} style={[styles.title, styles.titleStart]}>
+          <Text numberOfLines={1} style={[colorStyles.title, styles.titleStart]}>
             {title}
           </Text>
         )}
@@ -202,27 +208,11 @@ const styles = StyleSheet.create({
   rootOpen: {
     zIndex: 20,
   },
-  bar: {
-    minHeight: controlSize.appBar,
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.sm,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    backgroundColor: colors.background.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.default,
-  },
   iconSlot: {
     width: iconSize.lg,
     height: iconSize.lg,
     alignItems: "center",
     justifyContent: "center",
-  },
-  title: {
-    ...typography.headingH3,
-    color: colors.text.primary,
   },
   titleStart: {
     flex: 1,
@@ -251,3 +241,24 @@ const styles = StyleSheet.create({
     marginTop: spacing.xxs,
   },
 });
+
+function createColorStyles(colors: ColorTokens) {
+  return StyleSheet.create({
+    bar: {
+      minHeight: controlSize.appBar,
+      width: "100%",
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.sm,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+      backgroundColor: colors.background.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border.default,
+    },
+    title: {
+      ...typography.headingH3,
+      color: colors.text.primary,
+    },
+  });
+}
